@@ -1,0 +1,43 @@
+This repository is a mirror of this SVN repository on Google Code [[ http://code.google.com/p/php-dave-api/ ]]
+
+--------------------------------------------------------------------------
+
+Who is DAVE?
+
+DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.
+
+DAVE does the work for you, and he's not CRUD
+
+The DAVE API was built to be a robust, multi-node capable framework for transactional APIs, appropriate for social networking, games, and more. This API represents the philosophy that a single "desktop" website will not be the only way that your consumers interact with your product. This traditional website is just one of many possible "views" that may be required of your application that might include raw API access for your users and developers, compiled applications, JSON lookups, and more.
+
+To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in /Actions to see the logic behind adding, editing, viewing, and deleting users. This includes logging in.
+
+The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action"s that handle the input, such as "AddUser?" or "GeoLocate?". The DAVE API is NOT traditionally "RESTful", in that it does not use the normal verbs (Get, Put, etc). This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices that may not have access to more than loading a remote URL.
+
+The DAVE API understands 2 types of security methodology. "Public" actions can be called by anyone, and then can implement optional user-based security (checking userIDs and PasswordHashes?). Optionally, certain Actions can be defined as "Private", and will require a defined developer to authenticate with every request. This requires your developers to provide an MD5 hash of their APIKey and private DeveloperID to authenticate with. You can mix private and public actions.
+
+Features
+- Abstraction of basic DAVE actions
+- Built with a Multi-Node system in mind, but works great on a single machine
+- Developer-based authentication
+- Rate Limiting for client connections
+- Class-based abstraction of mySQL connections
+- Built-in support for multiple types of Caching (Flat File, mySQL, memcache)
+- CRON processing of delayed events
+- Simple error handling and input sanitization
+- XML, JSON, Serialized PHP output types built in
+
+Requirements
+- PHP 5.2+
+- mySQL server 5.1+
+- Web-server (tested with Apache 2.0+)
+- root access to web-server with CRON
+
+Setup
+- Configure your database
+- Setup the CONFIG.php file
+- CHMOD the CACHE directory to 777
+- Install the CRON.php file to run from CRONTAB
+
+Note on MaxMind GeoLocation
+- You will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder.
