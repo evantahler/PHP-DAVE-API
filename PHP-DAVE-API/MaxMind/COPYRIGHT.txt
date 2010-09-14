@@ -1,0 +1,4 @@
+Database and Contents Copyright (c) 2003 MaxMind LLC
+
+This database is confidential and proprietary to MaxMind LLC and may not be
+reproduced, published or disclosed to others without company authorization.

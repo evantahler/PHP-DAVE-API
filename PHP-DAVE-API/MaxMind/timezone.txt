@@ -1,0 +1,309 @@
+country	region	timezone
+US	AL	America/Chicago
+US	AK	America/Anchorage
+US	AZ	America/Phoenix
+US	AR	America/Chicago
+US	CA	America/Los_Angeles
+US	CO	America/Denver
+US	CT	America/New_York
+US	DE	America/New_York
+US	DC	America/New_York
+US	FL	America/New_York
+US	GA	America/New_York
+US	HI	Pacific/Honolulu
+US	ID	America/Denver
+US	IL	America/Chicago
+US	IN	America/Indianapolis
+US	IA	America/Chicago
+US	KS	America/Chicago
+US	KY	America/New_York
+US	LA	America/Chicago
+US	ME	America/New_York
+US	MD	America/New_York
+US	MA	America/New_York
+US	MI	America/New_York
+US	MN	America/Chicago
+US	MS	America/Chicago
+US	MO	America/Chicago
+US	MT	America/Denver
+US	NE	America/Chicago
+US	NV	America/Los_Angeles
+US	NH	America/New_York
+US	NJ	America/New_York
+US	NM	America/Denver
+US	NY	America/New_York
+US	NC	America/New_York
+US	ND	America/Chicago
+US	OH	America/New_York
+US	OK	America/Chicago
+US	OR	America/Los_Angeles
+US	PA	America/New_York
+US	RI	America/New_York
+US	SC	America/New_York
+US	SD	America/Chicago
+US	TN	America/Chicago
+US	TX	America/Chicago
+US	UT	America/Denver
+US	VT	America/New_York
+US	VA	America/New_York
+US	WA	America/Los_Angeles
+US	WV	America/New_York
+US	WI	America/Chicago
+US	WY	America/Denver
+CA	AB	America/Edmonton
+CA	BC	America/Vancouver
+CA	MB	America/Winnipeg
+CA	NB	America/Halifax
+CA	NL	America/St_Johns
+CA	NT	America/Yellowknife
+CA	NS	America/Halifax
+CA	NU	America/Rankin_Inlet
+CA	ON	America/Rainy_River
+CA	PE	America/Halifax
+CA	QC	America/Montreal
+CA	SK	America/Regina
+CA	YT	America/Whitehorse
+AU	01	Australia/Canberra
+AU	02	Australia/NSW
+AU	03	Australia/North
+AU	04	Australia/Queensland
+AU	05	Australia/South
+AU	06	Australia/Tasmania
+AU	07	Australia/Victoria
+AU	08	Australia/West
+AS		US/Samoa
+CI		Africa/Abidjan
+GH		Africa/Accra
+DZ		Africa/Algiers
+ER		Africa/Asmera
+ML		Africa/Bamako
+CF		Africa/Bangui
+GM		Africa/Banjul
+GW		Africa/Bissau
+CG		Africa/Brazzaville
+BI		Africa/Bujumbura
+EG		Africa/Cairo
+MA		Africa/Casablanca
+GN		Africa/Conakry
+SN		Africa/Dakar
+DJ		Africa/Djibouti
+SL		Africa/Freetown
+BW		Africa/Gaborone
+ZW		Africa/Harare
+ZA		Africa/Johannesburg
+UG		Africa/Kampala
+SD		Africa/Khartoum
+RW		Africa/Kigali
+NG		Africa/Lagos
+GA		Africa/Libreville
+TG		Africa/Lome
+AO		Africa/Luanda
+ZM		Africa/Lusaka
+GQ		Africa/Malabo
+MZ		Africa/Maputo
+LS		Africa/Maseru
+SZ		Africa/Mbabane
+SO		Africa/Mogadishu
+LR		Africa/Monrovia
+KE		Africa/Nairobi
+TD		Africa/Ndjamena
+NE		Africa/Niamey
+MR		Africa/Nouakchott
+BF		Africa/Ouagadougou
+ST		Africa/Sao_Tome
+LY		Africa/Tripoli
+TN		Africa/Tunis
+AI		America/Anguilla
+AG		America/Antigua
+AW		America/Aruba
+BB		America/Barbados
+BZ		America/Belize
+CO		America/Bogota
+VE		America/Caracas
+KY		America/Cayman
+MX		America/Chihuahua
+CR		America/Costa_Rica
+DM		America/Dominica
+SV		America/El_Salvador
+GD		America/Grenada
+FR		Europe/Paris
+GP		America/Guadeloupe
+GT		America/Guatemala
+EC		America/Guayaquil
+GY		America/Guyana
+CU		America/Havana
+JM		America/Jamaica
+BO		America/La_Paz
+PE		America/Lima
+NI		America/Managua
+MQ		America/Martinique
+AR		America/Mendoza
+UY		America/Montevideo
+MS		America/Montserrat
+BS		America/Nassau
+PA		America/Panama
+SR		America/Paramaribo
+PR		America/Puerto_Rico
+KN		America/St_Kitts
+LC		America/St_Lucia
+VC		America/St_Vincent
+HN		America/Tegucigalpa
+YE		Asia/Aden
+KZ		Asia/Almaty
+JO		Asia/Amman
+TM		Asia/Ashgabat
+IQ		Asia/Baghdad
+BH		Asia/Bahrain
+AZ		Asia/Baku
+TH		Asia/Bangkok
+LB		Asia/Beirut
+KG		Asia/Bishkek
+BN		Asia/Brunei
+IN		Asia/Calcutta
+MN		Asia/Choibalsan
+CN		Asia/Chongqing
+LK		Asia/Colombo
+BD		Asia/Dhaka
+AE		Asia/Dubai
+TJ		Asia/Dushanbe
+HK		Asia/Hong_Kong
+TR		Asia/Istanbul
+ID		Asia/Jakarta
+IL		Asia/Jerusalem
+AF		Asia/Kabul
+PK		Asia/Karachi
+NP		Asia/Katmandu
+KW		Asia/Kuwait
+MO		Asia/Macao
+PH		Asia/Manila
+OM		Asia/Muscat
+CY		Asia/Nicosia
+KP		Asia/Pyongyang
+QA		Asia/Qatar
+MM		Asia/Rangoon
+SA		Asia/Riyadh
+KR		Asia/Seoul
+SG		Asia/Singapore
+TW		Asia/Taipei
+UZ		Asia/Tashkent
+GE		Asia/Tbilisi
+BT		Asia/Thimphu
+JP		Asia/Tokyo
+LA		Asia/Vientiane
+AM		Asia/Yerevan
+PT		Atlantic/Azores
+BM		Atlantic/Bermuda
+CV		Atlantic/Cape_Verde
+FO		Atlantic/Faeroe
+IS		Atlantic/Reykjavik
+GS		Atlantic/South_Georgia
+SH		Atlantic/St_Helena
+BR		Brazil/Acre
+CL		Chile/Continental
+NL		Europe/Amsterdam
+AD		Europe/Andorra
+GR		Europe/Athens
+YU		Europe/Belgrade
+DE		Europe/Berlin
+SK		Europe/Bratislava
+BE		Europe/Brussels
+RO		Europe/Bucharest
+HU		Europe/Budapest
+DK		Europe/Copenhagen
+IE		Europe/Dublin
+GI		Europe/Gibraltar
+FI		Europe/Helsinki
+UA		Europe/Kiev
+SI		Europe/Ljubljana
+GB		Europe/London
+LU		Europe/Luxembourg
+ES		Europe/Madrid
+MT		Europe/Malta
+BY		Europe/Minsk
+MC		Europe/Monaco
+RU		Europe/Moscow
+NO		Europe/Oslo
+CZ		Europe/Prague
+LV		Europe/Riga
+IT		Europe/Rome
+SM		Europe/San_Marino
+BA		Europe/Sarajevo
+MK		Europe/Skopje
+BG		Europe/Sofia
+SE		Europe/Stockholm
+EE		Europe/Tallinn
+AL		Europe/Tirane
+LI		Europe/Vaduz
+VA		Europe/Vatican
+AT		Europe/Vienna
+LT		Europe/Vilnius
+PL		Europe/Warsaw
+HR		Europe/Zagreb
+IR		Asia/Tehran
+NZ		Pacific/Auckland
+MG		Indian/Antananarivo
+CX		Indian/Christmas
+CC		Indian/Cocos
+KM		Indian/Comoro
+MV		Indian/Maldives
+MU		Indian/Mauritius
+YT		Indian/Mayotte
+RE		Indian/Reunion
+FJ		Pacific/Fiji
+TV		Pacific/Funafuti
+GU		Pacific/Guam
+NR		Pacific/Nauru
+NU		Pacific/Niue
+NF		Pacific/Norfolk
+PW		Pacific/Palau
+PN		Pacific/Pitcairn
+CK		Pacific/Rarotonga
+WS		Pacific/Samoa
+KI		Pacific/Tarawa
+TO		Pacific/Tongatapu
+WF		Pacific/Wallis
+TZ		Africa/Dar_es_Salaam
+VN		Asia/Phnom_Penh
+KH		Asia/Phnom_Penh
+CM		Africa/Lagos
+DO		America/Santo_Domingo
+TL		Asia/Jakarta
+ET		Africa/Addis_Ababa
+FX		Europe/Paris
+GL		America/Godthab
+HT		America/Port-au-Prince
+CH		Europe/Zurich
+AN		America/Curacao
+BJ		Africa/Porto-Novo
+EH		Africa/El_Aaiun
+FK		Atlantic/Stanley
+GF		America/Cayenne
+IO		Indian/Chagos
+MD		Europe/Chisinau
+MP		Pacific/Saipan
+MW		Africa/Blantyre
+NA		Africa/Windhoek
+NC		Pacific/Noumea
+PG		Pacific/Port_Moresby
+PM		America/Miquelon
+PS		Asia/Gaza
+PY		America/Asuncion
+SB		Pacific/Guadalcanal
+SC		Indian/Mahe
+SJ		Arctic/Longyearbyen
+SY		Asia/Damascus
+TC		America/Grand_Turk
+TF		Indian/Kerguelen
+TK		Pacific/Fakaofo
+TT		America/Port_of_Spain
+VG		America/Tortola
+VI		America/St_Thomas
+VU		Pacific/Efate
+RS		Europe/Belgrade
+ME		Europe/Podgorica
+AX		Europe/Mariehamn
+GG		Europe/Guernsey
+IM		Europe/Isle_of_Man
+JE		Europe/Jersey
+BL		America/St_Barthelemy
+MF		America/Marigot
