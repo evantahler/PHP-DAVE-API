@@ -30,7 +30,7 @@ require("GetPostVars.php");
 date_default_timezone_set($systemTimeZone);
 
 // Get IP (if not provided)
-if (empty($IP) || $IP = "")
+if (empty($IP) || $IP == "")
 {
 	if (getenv(HTTP_X_FORWARDED_FOR)) {							
    		$IPList = getenv(HTTP_X_FORWARDED_FOR); 

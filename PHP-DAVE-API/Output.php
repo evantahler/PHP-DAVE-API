@@ -32,6 +32,7 @@ elseif ($OutputType == "XML")
 		{
 			$j = 0;
 			while ($j < ($depth-1)) { echo "\t"; $j++; }
+			if (is_int($container)) { $container = "item"; }
 			echo '<'.(string)$container.'>'."\r\n";
 		}
 		
@@ -59,6 +60,7 @@ elseif ($OutputType == "XML")
 		{
 			$j = 0;
 			while ($j < ($depth-1)) { echo "\t"; $j++; }
+			if (is_int($container)) { $container = "item"; }
 			echo '</'.(string)$container.'>'."\r\n";
 		}
 	}
@@ -74,7 +76,7 @@ elseif ($OutputType == "JSON")
 	$JSON = json_encode($OUTPUT);
 	if (strlen($Callback) > 0)
 	{
-		echo $Callback."([".$JSON."]);";
+		echo $Callback."(".$JSON.");";
 	}
 	else
 	{

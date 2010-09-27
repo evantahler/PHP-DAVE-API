@@ -32,7 +32,6 @@ function CleanInput($string,$Connection)
     return $string;
 }
 
-
 if ($ERROR == 100)
 {
 	require ("CheckSafetyString.php");
@@ -44,13 +43,14 @@ if ($ERROR == 100)
 	$i = 0;
 	$DBObj = new DBConnection();
 	$Connection = $DBObj->GetConnection();
+	
 	if ($Connection)
 	{
-		while ($i <  count($POST_VARIABLES))
+		foreach($POST_VARIABLES as $var)
 		{
-			$$POST_VARIABLES[$i] = CleanInput($_REQUEST[$POST_VARIABLES[$i]],$Connection);
-			$i++;
+			$$var = CleanInput($_REQUEST[$var],$Connection);
 		}
+				
 		// Special Checks
 		if ($Rand == "") { $Rand = CleanInput($_REQUEST['Rand'],$Connection); }
 		if ($Rand == "") { $Rand = CleanInput($_REQUEST['rand'],$Connection); }

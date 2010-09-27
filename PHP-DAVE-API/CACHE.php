@@ -43,12 +43,13 @@ elseif($CacheType == "DB")
 		if ($ThisCacheTime == null) { $ThisCacheTime = $CacheTime; }
 		
 		$ExpireTime = time() + $ThisCacheTime;
-		$SQL = 'INSERT INTO `'.$CacheTable.'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key).'", "'.mysql_real_escape_string(serialize($Value)).'", "'.mysql_real_escape_string($ExpireTime).'");' ;
 				
 		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
+			$Connection = $DBObj->GetConnection();
+			$SQL = 'INSERT INTO `'.$CacheTable.'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key,$Connection).'", "'.mysql_real_escape_string(serialize($Value),$Connection).'", "'.mysql_real_escape_string($ExpireTime,$Connection).'");' ;
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
 			if ($Status === true){ $DBObj->close(); return true;}
@@ -61,13 +62,13 @@ elseif($CacheType == "DB")
 	function GetCache($Key)
 	{	
 		global $CacheTime, $CacheTable;
-		
-		$SQL = 'SELECT `Value` FROM `'.$CacheTable.'` WHERE (`Key` = "'.mysql_real_escape_string($Key).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time()).'") LIMIT 1;' ;
-		
+				
 		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
+			$Connection = $DBObj->GetConnection();
+			$SQL = 'SELECT `Value` FROM `'.$CacheTable.'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") LIMIT 1;' ;
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
 			if ($Status === true){
