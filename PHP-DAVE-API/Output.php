@@ -50,7 +50,8 @@ elseif ($OutputType == "XML")
 				while ($j < $depth) { echo "\t"; $j++; }
 				if (strlen($keys[$i]) > 0)
 				{
-					print "<".(string)$keys[$i].">".(string)$Array[$keys[$i]]."</".(string)$keys[$i].">"."\r\n";
+					if (is_int($keys[$i])) { $this_key = $container; } else { $this_key = $keys[$i];} 
+					print "<".(string)$this_key.">".(string)$Array[$keys[$i]]."</".$this_key.">"."\r\n";
 				}
 			}
 			$i++;
