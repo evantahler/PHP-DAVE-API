@@ -1,8 +1,6 @@
-This repository is a mirror of this SVN repository on Google Code [[ http://code.google.com/p/php-dave-api/ ]]
-
---------------------------------------------------------------------------
-
 Who is DAVE?
+
+<img src="https://github.com/evantahler/PHP-DAVE-API/raw/master/PHP-DAVE-API/Documentation/DAVE_Archetecture.png" />
 
 DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.
 
