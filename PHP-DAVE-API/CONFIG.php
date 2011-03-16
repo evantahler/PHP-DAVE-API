@@ -84,6 +84,13 @@ $SpecialStrings[] = array('%%ZERO%%',"0");
 $SpecialStrings[] = array('%%zero%%',"0");
 
 /*********************************************************/
+// load object classes.  Assumes each file in the /Objects directory contains object classes
+foreach (glob("Objects/*.php") as $filename)
+{
+	require_once($filename);
+}
+
+/*********************************************************/
 // Actions, defined as "verb",  then "page location", then "Public" or "Private" indicatiing if an APIKey is needed to access the function
 
 $ACTIONS = array();
@@ -91,6 +98,7 @@ $ACTIONS = array();
 // some basic actions
 $ACTIONS[] = array('GeoCode', 'Actions/Geocode.php', 'Public');
 $ACTIONS[] = array('CacheTest', 'Actions/CacheTest.php', 'Public');
+$ACTIONS[] = array('DescribeTables', 'Actions/DescribeTables.php', 'Public');
 
 // Demo actions for building a user system
 $ACTIONS[] = array('UserAdd', 'Actions/UserAdd.php', 'Public');
@@ -100,29 +108,16 @@ $ACTIONS[] = array('UserDelete', 'Actions/UserDelete.php', 'Public');
 $ACTIONS[] = array('LogIn', 'Actions/LogIn.php', 'Public');
 
 /*********************************************************/
-// Table Definitions
-$TABLES = array();
-$POST_VARIABLES = array();
-
-// USERS table
-//the KEY meta param is used to define which table is used to look up and edit information with.  This should be a unique column
-$TABLES['Users']['META']['KEY'] = "UserID";
-// every column in a table (that you care to access) is defined as [[ array( ColName, Unique? (true or false), Required? (true or false)) ]].  Any and all unique variables will be used to sort/select SQL lookups
-$TABLES['Users'][] = array('UserID', true, false);
-$TABLES['Users'][] = array('FirstName', false, true);
-$TABLES['Users'][] = array('LastName', false, true);
-$TABLES['Users'][] = array('PhoneNumber', true, false);
-$TABLES['Users'][] = array('Gender', false, false);
-$TABLES['Users'][] = array('ScreenName', true, true);
-$TABLES['Users'][] = array('EMail', true, true);
-$TABLES['Users'][] = array('Birthday', false, false);
-$TABLES['Users'][] = array('PasswordHash', false, true);
-$TABLES['Users'][] = array('Salt', false, true);
-$TABLES['Users'][] = array('Joined', false, false);
+// Table information
+$TableConfigFile = "DB/TABLES.php";
+$TableConfigRefreshTime = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
+require("DB/TableConfig.php");
 
 /*********************************************************/
 
 // Variables that might not be in the TABLLES.  List any extra parameters your application might need
+$POST_VARIABLES = array();
+
 $POST_VARIABLES[] = "Action";
 $POST_VARIABLES[] = "APIKey";
 $POST_VARIABLES[] = "IP";
