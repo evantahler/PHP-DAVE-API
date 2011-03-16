@@ -20,8 +20,8 @@ $ComputationStartTime = microtime_float();
 // Start the Output
 $OUTPUT = array();
 
-require("CONFIG.php");
 require("ConnectToDatabase.php");
+require("CONFIG.php");
 require("DAVE.php");
 require("CACHE.php");
 require("CommonFunctions.php");
