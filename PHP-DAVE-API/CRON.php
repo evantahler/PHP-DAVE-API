@@ -68,6 +68,18 @@ if ($Status === true)
 $DBObj->close();
 
 /////////////////////////////////////////////////////////////////////////
+// Clear the LOG of old LOG entries, acording to $SessionAge
+$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $SessionAge)).'") ;'; 	
+$DBObj = new DBConnection();
+$Status = $DBObj->GetStatus();
+if ($Status === true)
+{
+	$DBObj->Query($SQL);
+	$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." expired Sessions. \r\n";
+}
+$DBObj->close();
+
+/////////////////////////////////////////////////////////////////////////
 // Delete Big Log Files, list set in CONFIG
 clearstatcache();
 $i = 0;

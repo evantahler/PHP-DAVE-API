@@ -466,7 +466,7 @@ function _getRequiredTableVars($Table)
 	$i = 0;
 	while ($i < count($TABLES[$Table]))
 	{
-		if ($TABLES[$Table][$i][2] == true)
+		if ($TABLES[$Table][$i][2] == true && $TABLES[$Table]["META"]["KEY"] != $TABLES[$Table][$i][0])
 		{
 			$RequiredVars[] = $TABLES[$Table][$i][0];
 		}

@@ -64,6 +64,10 @@ $NoLogAPIKeys = array();
 $NoLogActions[] = "A_Blocked_APIKey";
 
 /*********************************************************/
+// Sessions
+$SessionAge = 60*60*24; // how long to keep session information in the DB (in seconds)
+
+/*********************************************************/
 // Safe Mode: Use this to force the MD5 Checks to occur
 // md5($DeveloperID{secret}.$APIKey.$Rand).
 $SafeMode = true; //can be "true" or "false"

@@ -44,11 +44,13 @@ CREATE TABLE IF NOT EXISTS `CACHE` (
 
 CREATE TABLE IF NOT EXISTS `Developers` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `DeveloperID` text NOT NULL,
-  `APIKey` text NOT NULL,
+  `DeveloperID` varchar(32) NOT NULL,
+  `APIKey` varchar(32) NOT NULL,
   `UserActions` tinyint(1) NOT NULL,
   `IsAdmin` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `DeveloperID` (`DeveloperID`),
+  UNIQUE KEY `APIKey` (`APIKey`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
@@ -88,18 +90,37 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `UserID` int(11) NOT NULL AUTO_INCREMENT,
   `FirstName` text NOT NULL,
   `LastName` text NOT NULL,
-  `PhoneNumber` text NOT NULL,
+  `PhoneNumber` varchar(32) DEFAULT NULL,
   `Gender` text NOT NULL,
-  `ScreenName` text NOT NULL,
-  `EMail` text NOT NULL,
+  `ScreenName` varchar(32) DEFAULT NULL,
+  `EMail` varchar(32) DEFAULT NULL,
   `Birthday` date NOT NULL,
   `PasswordHash` text NOT NULL,
   `Salt` text NOT NULL,
   `Joined` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`UserID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `PhoneNumber` (`PhoneNumber`),
+  UNIQUE KEY `ScreenName` (`ScreenName`),
+  UNIQUE KEY `EMail` (`EMail`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `Users`
 --
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `SESSIONS`
+--
+
+CREATE TABLE  `daveapi`.`SESSIONS` (
+`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`KEY` VARCHAR( 128 ) NOT NULL ,
+`DATA` TEXT NOT NULL ,
+`created_at` DATETIME NOT NULL ,
+`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+UNIQUE (
+`KEY`
+)
+) ENGINE = MYISAM ;

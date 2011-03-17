@@ -26,8 +26,16 @@ if ($ERROR == 100)
 	if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
 	{
 		$OUTPUT['LOGIN'] = "TRUE";
-		$CookieKey = md5(date('D').date('h').$PasswordHash.date('Y'));
-		$OUTPUT['CookieKey'] = $CookieKey;
+		$OUTPUT['SessionKey'] = create_session();
+		$SessionData = array();
+		$SessionData["login_time"] = time();
+		$userData = $result[0];
+		foreach ($userData as $k => $v)
+		{
+			$SessionData[$k] = $v;
+		}
+		update_session($OUTPUT['SessionKey'], $SessionData);
+		$OUTPUT['SESSION'] = get_session_data($OUTPUT['SessionKey']);
 	}
 	else // another user
 	{

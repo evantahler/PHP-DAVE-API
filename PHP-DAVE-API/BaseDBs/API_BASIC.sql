@@ -44,11 +44,13 @@ CREATE TABLE IF NOT EXISTS `CACHE` (
 
 CREATE TABLE IF NOT EXISTS `Developers` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `DeveloperID` text NOT NULL,
-  `APIKey` text NOT NULL,
+  `DeveloperID` varchar(32) NOT NULL,
+  `APIKey` varchar(32) NOT NULL,
   `UserActions` tinyint(1) NOT NULL,
   `IsAdmin` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `DeveloperID` (`DeveloperID`),
+  UNIQUE KEY `APIKey` (`APIKey`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
