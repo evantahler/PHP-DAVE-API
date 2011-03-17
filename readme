@@ -42,6 +42,8 @@ Example Site: http://dave.evantahler.com
 Actions you can try [[&Action=..]] :
 	- CacheTest
 		Send a Hash [[ &Hash=MyString ]] and I will first store it in the cache, and on subsequent calls retrieve the vale from the cache until expired.  Change the value of the Hash and note the old value will be displayeed until it expires
+	- DescribeActions
+		I will list all the actions avaialble to the API
 	- DescribeTables
 		I am an introspection method that will show the results of the auto-described available tables and cols.  I will show weather or not a col is required and if it is unique
 	- Geocode

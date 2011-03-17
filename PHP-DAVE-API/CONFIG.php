@@ -33,8 +33,8 @@ $dbpass = "MrAPIPassword";
 
 /*********************************************************/
 // Files and Folders
-$PHP_Path = "/Applications/XAMPP/xamppfiles/bin/php/"; // where is the PHP excecutable?
-$App_dir = "/Applications/XAMPP/xamppfiles/htdocs/API/"; // the location of this application
+$PHP_Path = "/usr/bin/php/"; // where is the PHP excecutable?
+$App_dir = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/
 // CRON
@@ -49,7 +49,7 @@ $LogsToCheck[] = $App_dir.$CronLogFile;
 $CacheType = "DB"; // Options are "", "MemCache", "FlatFile", or "DB";
 $CacheTime = 10; // time to keep a cached value (in seconds)
 $CacheTable = "CACHE"; // if using the DB method
-$CacheFolder = "/Applications/XAMPP/xamppfiles/htdocs/API/CACHE/"; // chmod 777, if using FlatFile mode
+$CacheFolder = "/var/www/html/API/CACHE/"; // chmod 777, if using FlatFile mode
 $MemCacheHost = 'localhost'; // The Server name or IP address of the memcache host, if CacheType = MemCache
 
 /*********************************************************/
@@ -94,6 +94,9 @@ foreach (glob("Objects/*.php") as $filename)
 // Actions, defined as "verb",  then "page location", then "Public" or "Private" indicatiing if an APIKey is needed to access the function
 
 $ACTIONS = array();
+
+// default actions
+$ACTIONS[] = array('DescribeActions', 'Actions/DescribeActions.php', 'Public');
 
 // some basic actions
 $ACTIONS[] = array('GeoCode', 'Actions/Geocode.php', 'Public');

@@ -113,6 +113,7 @@ if ($ERROR == 100)
 	{
 		$ERROR = "That Action cannot be found.  Did you send the 'Action' parameter?";
 		$Action = "Unknown Action";
+		$OUTPUT["KnownActions"] = humanize_actions();
 	}
 }
 

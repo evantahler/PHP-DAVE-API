@@ -42,15 +42,16 @@ if ($ToReload)
 			$Response = $DBObj->GetResults();
 			foreach ($Response as $col)
 			{
+				echo $col['Field']."\r\n";
+				if ($col['Key'] == "PRI")
+				{
+					$TABLES[$ThisTable]['META']['KEY'] = $col['Field'];
+				}
 				$is_unique = false;
 				$is_required = false;
 				if ($col['Key'] == "UNI" || $col['Key'] == "PRI") { $is_unique = true; }
 				if ($col['Null'] == "NO") { $is_required = true; } 
 				$TABLES[$ThisTable][] = array($col['Field'],$is_unique,$is_required);
-				if ($col['Key'] == "PRI")
-				{
-					$TABLES[$ThisTable]['META']['KEY'] = $col['Field'];
-				}
 			}
 		}
 	}
@@ -68,7 +69,7 @@ if ($ToReload)
 		$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = '.$TABLES[$ThisTable]['META']['KEY']."; \r\n";
 		foreach($TABLES[$ThisTable] as $col)
 		{
-			if ($col["META"] == null)
+			if ($col["KEY"] == null)
 			{
 				if ($col[1] == 1){$col[1] = "true";}
 				else {$col[1] = "false";}
