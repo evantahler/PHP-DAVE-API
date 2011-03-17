@@ -42,7 +42,6 @@ if ($ToReload)
 			$Response = $DBObj->GetResults();
 			foreach ($Response as $col)
 			{
-				echo $col['Field']."\r\n";
 				if ($col['Key'] == "PRI")
 				{
 					$TABLES[$ThisTable]['META']['KEY'] = $col['Field'];
