@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 Set this page to be fired off every minute by your cron process, and then put the logic inside this page.
 The output of this page will be added to the CRON_LOG.txt file

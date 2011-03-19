@@ -1,13 +1,13 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 This page will grab all the possible variables sent to the system and make them avaialbe for use.  This will also check certain variables for bad chars
 
- I should be called uppon opperating SQL commands to look for special commands that would have been posted for empty sets and 0s
+I should be called uppon opperating SQL commands to look for special commands that would have been posted for empty sets and 0s
 
 ***********************************************/
 

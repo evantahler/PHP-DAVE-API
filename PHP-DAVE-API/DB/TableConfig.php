@@ -1,5 +1,14 @@
 <?php
 
+/***********************************************
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
+
+I inspect the state of your mySQL database and build the array descirbing all the colums and thier attributes.  I will also log this to a file for quicked access next time
+
+***********************************************/
+
 // Table Definitions
 $TABLES = array();
 $ToReload = false;

@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 I am an example class that can be used by another PHP application (perhaps the application that renders the consumer-facing website) to connect to the DAVE API
 

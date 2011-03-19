@@ -1,8 +1,8 @@
 <?php
 
-function CheckForBadWord($word)
+function is_bad_word($word)
 {
-	$result = "pass";
+	$result = false;
 	
 	// check for whole words
 	$i = 0;
@@ -13,7 +13,7 @@ function CheckForBadWord($word)
 	  	$words[$i] = substr($words[$i],0,-1);
 	  	if(strcmp(strtolower($word),$words[$i]) == 0)
 	  	{
-	  		$result = "fail";
+	  		$result = true;
 	  	}
 	  	$i++;
 	}
@@ -30,7 +30,7 @@ function CheckForBadWord($word)
 		
 	  	if ((strpos(strtolower($word),$words[$i])) > 0)
 	  	{
-	  		$result = "fail";
+	  		$result = true;
 	  	}
 	  	$i++;
 	}

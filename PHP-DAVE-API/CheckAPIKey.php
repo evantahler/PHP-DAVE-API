@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 This page will attempt to check that the API key in use is OK for the function in qusetion.  I use the APIKey and DeveloperID pair to authenticate the action.  I am used for Private functions
 ***********************************************/

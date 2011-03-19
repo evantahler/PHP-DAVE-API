@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 After reading and parsing the Config files, I do some cleanup on the defined input variables and ensure uniqueness
 ***********************************************/

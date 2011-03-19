@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 Even when an action fails, we should log that it happened.  This is importnat to bloc IPs that access the IP too much, etc.  This page should not use the safety string or do error checks, because we want it to always happen even if there is an error.
 

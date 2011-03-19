@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 I define the types of cachign allowed, and how to deal with them.
 Note: Allow CRON to deal with the removal of old entries for flat files and within the DB, so that these acessors can work faster

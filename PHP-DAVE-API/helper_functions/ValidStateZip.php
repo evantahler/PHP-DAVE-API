@@ -1,3 +1,5 @@
+<?php
+
 function validstatezip($state, $zip5)
 {
    $allstates = array (
@@ -70,4 +72,5 @@ function validstatezip($state, $zip5)
    $valid = "FALSE"; 
    return ($valid);
 }
+
 ?>

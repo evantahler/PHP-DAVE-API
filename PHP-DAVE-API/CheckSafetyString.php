@@ -1,9 +1,9 @@
 <?php
 
 /***********************************************
-Evan Tahler
-evantahler@gmail.com
-2010
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
 
 This page will ensure that the the SafetyString is present and matches the right value.  If it doesn't, that means that this page (or the page that included it) wasn't launched from index.php (or another allowed page).  This will then set an error so that bad things don't happen
 
