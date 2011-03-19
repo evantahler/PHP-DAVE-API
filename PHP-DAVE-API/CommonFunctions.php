@@ -25,30 +25,32 @@ function humanize_actions()
 
 function create_session()
 {
-	global $OUTPUT, $KEY, $DATA, $created_at, $updated_at;
-	$KEY = md5( uniqid() );
-	$DATA = serialize(array());
-	$created_at = date("Y-m-d H:i:s");
-	$updated_at = date("Y-m-d H:i:s");
-	_ADD("SESSIONS");
-	return($KEY);
+	$key = md5( uniqid() );
+	_ADD("SESSIONS", array(
+		"KEY" => $key,
+		"DATA" => serialize(array()),
+		"created_at" => date("Y-m-d H:i:s"),
+		"updated_at" => date("Y-m-d H:i:s")
+	));
+	return $key;
 }
 
 function update_session($SessionKey, $SessionData)
 {
 	// this function is destructive and will replace the entire array of session data previously stored
-	global $OUTPUT, $KEY, $DATA;
-	$KEY = $SessionKey;
-	$updated_at = date("Y-m-d H:i:s");
-	$DATA = serialize($SessionData);
-	_EDIT("SESSIONS");
+	_EDIT("SESSIONS",array(
+		"KEY" => $SessionKey,
+		"updated_at" => date("Y-m-d H:i:s"),
+		"DATA" => serialize($SessionData)
+	));
 }
 
 function get_session_data($SessionKey)
 {
-	global $OUTPUT, $KEY;
-	$KEY = $SessionKey;
-	$results = _VIEW("SESSIONS");
+	global $OUTPUT;
+	$results = _VIEW("SESSIONS", 
+		array('KEY' => $SessionKey)
+	);
 	if ($results[0] != 1)
 	{
 		$OUTPUT["SessionError"] = "Session cannot be found by this key";

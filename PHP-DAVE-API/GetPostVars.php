@@ -33,20 +33,23 @@ function CleanInput($string,$Connection=null)
 }
 
 // Use "REQUEST" so that both POST and GET will work, along with cookie data
-	
 foreach($POST_VARIABLES as $var)
 {
-	$$var = CleanInput($_REQUEST[$var],$Connection);
+	$value = CleanInput($_REQUEST[$var],$Connection);
+	if ($value) { 
+		// $$var = $value;
+		$PARAMS[$var] = $value; 
+	}
 }
 		
 // Special Checks
-if ($Rand == "") { $Rand = CleanInput($_REQUEST['Rand'],$Connection); }
-if ($Rand == "") { $Rand = CleanInput($_REQUEST['rand'],$Connection); }
-if ($Hash == "") { $Hash = CleanInput($_REQUEST['Hash'],$Connection); }
-if ($Hash == "") { $Hash = CleanInput($_REQUEST['hash'],$Connection); }	
-if ($Hash == "" && $DeveloperID != "" && $Rand != "")
+if ($PARAMS["Rand"] == "") { $PARAMS["Rand"] = CleanInput($_REQUEST['Rand'],$Connection); }
+if ($PARAMS["Rand"] == "") { $PARAMS["Rand"] = CleanInput($_REQUEST['rand'],$Connection); }
+if ($PARAMS["Hash"] == "") { $PARAMS["Hash"] = CleanInput($_REQUEST['Hash'],$Connection); }
+if ($PARAMS["Hash"] == "") { $PARAMS["Hash"] = CleanInput($_REQUEST['hash'],$Connection); }	
+if ($PARAMS["Hash"] == "" && $PARAMS["DeveloperID"] != "" && $PARAMS["Rand"] != "")
 {
-	$Hash = md5($DeveloperID.$APIKey.$Rand);
+	$PARAMS["Hash"] = md5($PARAMS["DeveloperID"].$PARAMS["APIKey"].$PARAMS["Rand"]);
 }
 
 ?>

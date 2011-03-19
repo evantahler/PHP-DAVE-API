@@ -8,22 +8,22 @@ Evan Tahler | 2011
 I handle formatting the $OUTPUT object into XML, JSON, etc
 
 ***********************************************/
-if ($OutputType == "")
+if ($PARAMS["OutputType"] == "")
 {
-	$OutputType = $DefaultOutputType;
+	$PARAMS["OutputType"] = $DefaultOutputType;
 }
 
-if ($OutputType == "VAR")
+if ($PARAMS["OutputType"] == "VAR")
 {
 	var_dump($OUTPUT);
 }
 
-elseif ($OutputType == "PHP")
+elseif ($PARAMS["OutputType"] == "PHP")
 {
 	echo serialize($OUTPUT);
 }
 
-elseif ($OutputType == "XML")
+elseif ($PARAMS["OutputType"] == "XML")
 {
 	function _DepthArrayPrint($Array,$depth,$container=null)
 	{
@@ -71,7 +71,7 @@ elseif ($OutputType == "XML")
 	echo '</'.$XML_ROOT_NODE.'>'."\r\n";
 }
 
-elseif ($OutputType == "JSON")
+elseif ($PARAMS["OutputType"] == "JSON")
 {
 	$JSON = json_encode($OUTPUT);
 	if (strlen($Callback) > 0)
@@ -84,7 +84,7 @@ elseif ($OutputType == "JSON")
 	}
 }
 
-elseif ($OutputType == "SOAP")
+elseif ($PARAMS["OutputType"] == "SOAP")
 {	
 	// coming soon
 	echo "SOAP support coming soon";

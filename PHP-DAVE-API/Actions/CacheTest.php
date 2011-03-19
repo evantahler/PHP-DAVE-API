@@ -19,7 +19,7 @@ if ($ERROR == 100)
 
 if ($ERROR == 100)
 {
-	if (strlen($Hash) == 0)
+	if (strlen($PARAMS["Hash"]) == 0)
 	{
 		$ERROR = "You need to provide a Hash";
 	}
@@ -30,6 +30,7 @@ if ($ERROR == 100)
 		if ($result != false)
 		{
 			$OUTPUT['CacheAction'] = "Found in Cache";
+			$OUTPUT['CacheKey'] = $CacheKey;
 			$OUTPUT['CachedResult'] = $result;
 		}
 		else
@@ -37,6 +38,7 @@ if ($ERROR == 100)
 			$OUTPUT['CacheAction'] = "Added to Cache";
 			SetCache($CacheKey,$Hash);
 			$result = GetCache($CacheKey);
+			$OUTPUT['CacheKey'] = $CacheKey;
 			$OUTPUT['CachedResult'] = $result;
 		}
 	}

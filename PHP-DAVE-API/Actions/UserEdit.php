@@ -7,15 +7,15 @@ Evan Tahler | 2011
 I am an example function to Edit a user
 ***********************************************/
 // do some special input filtering
-if (strlen($EMail) > 0 && $ERROR == 100)
+if (strlen($PARAMS["EMail"]) > 0 && $ERROR == 100)
 {
-	$func_out = validate_EMail($EMail);
+	$func_out = validate_EMail($PARAMS["EMail"]);
 	if ($func_out != 100){ $ERROR = $func_out; }
 }
 
-if ($ERROR == 100 && strlen($PhoneNumber) > 0)
+if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 {
-	list($fun_out, $PhoneNumber) = validate_PhoneNumber($PhoneNumber);  // I may update the PhoneNumber variable with some formatting.
+	list($fun_out, $PARAMS["PhoneNumber"]) = validate_PhoneNumber($PARAMS["PhoneNumber"]);
 	if ($func_out != 100){ $ERROR = $func_out; }
 }
 
@@ -31,20 +31,24 @@ if ($ERROR == 100)
 	{
 		if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
 		{
-			if(strlen($Password) > 0) // user is trying to change password
+			if(strlen($PARAMS["Password"]) > 0) // user is trying to change password
 			{
 				$Salt = md5(rand(1,999).(microtime()/rand(1,999)).rand(1,999));
-				$PasswordHash = md5($Password.$Salt);
+				$PasswordHash = md5($PARAMS["Password"].$Salt);
 			}
 			if (count($result) == 1)
 			{
-				list($pass,$result) = _EDIT("Users");
+				$UserData = $PARAMS;
+				$UserData["PasswordHash"] = $PasswordHash;
+				$UserData["Salt"] = $Salt;
+				
+				list($pass,$result) = _EDIT("Users", $UserData);
 				if (!$pass){ $ERROR = $result; }
 				elseif (count($result) == 1)
 				{
 					foreach( $result[0] as $key => $val)
 					{
-						$OUTPUT[$key] = $val;
+						$OUTPUT["User"][$key] = $val;
 					}
 				}
 			}

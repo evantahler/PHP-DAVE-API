@@ -7,24 +7,24 @@ Evan Tahler | 2011
 I am an example function to Add a user
 ***********************************************/
 // do some special input filtering
-if (strlen($EMail) > 0 && $ERROR == 100)
+if (strlen($PARAMS["EMail"]) > 0 && $ERROR == 100)
 {
-	$func_out = validate_EMail($EMail);
+	$func_out = validate_EMail($PARAMS["EMail"]);
 	if ($func_out != 100){ $ERROR = $func_out; }
 }
 
-if ($ERROR == 100 && strlen($PhoneNumber) > 0)
+if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 {
-	list($fun_out, $PhoneNumber) = validate_PhoneNumber($PhoneNumber); // I may update the PhoneNumber variable with some formatting.
+	list($fun_out, $PARAMS["PhoneNumber"]) = validate_PhoneNumber($PARAMS["PhoneNumber"]); // baisc format checking
 	if ($func_out != 100){ $ERROR = $func_out; }
 }
 
 if ($ERROR == 100)
 {
-	if (strlen($Password) > 0)
+	if (strlen($PARAMS["Password"]) > 0)
 	{
 		$Salt = md5(rand(1,999).(microtime()/rand(1,999)).rand(1,999));
-		$PasswordHash = md5($Password.$Salt);
+		$PasswordHash = md5($PARAMS["Password"].$Salt);
 	}
 	else
 	{
@@ -35,7 +35,11 @@ if ($ERROR == 100)
 // use the DAVE Add to take care of the actual DB checks and adding
 if ($ERROR == 100)
 {
-	list($pass,$result) = _ADD("Users");
+	$UserData = $PARAMS;
+	$UserData["PasswordHash"] = $PasswordHash;
+	$UserData["Salt"] = $Salt;
+	
+	list($pass,$result) = _ADD("Users", $UserData);
 	if (!$pass)
 	{
 		$ERROR = $result; 

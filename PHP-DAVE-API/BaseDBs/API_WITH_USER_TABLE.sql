@@ -72,8 +72,9 @@ CREATE TABLE IF NOT EXISTS `LOG` (
   `ERROR` text NOT NULL,
   `APIKey` text NOT NULL,
   `DeveloperID` text NOT NULL,
+  `Params` text NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `LOG`
@@ -88,20 +89,21 @@ CREATE TABLE IF NOT EXISTS `LOG` (
 
 CREATE TABLE IF NOT EXISTS `Users` (
   `UserID` int(11) NOT NULL AUTO_INCREMENT,
-  `FirstName` text NOT NULL,
-  `LastName` text NOT NULL,
+  `FirstName` varchar(32) NOT NULL,
+  `LastName` varchar(32) NOT NULL,
   `PhoneNumber` varchar(32) DEFAULT NULL,
-  `Gender` text NOT NULL,
-  `ScreenName` varchar(32) DEFAULT NULL,
-  `EMail` varchar(32) DEFAULT NULL,
-  `Birthday` date NOT NULL,
-  `PasswordHash` text NOT NULL,
-  `Salt` text NOT NULL,
-  `Joined` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Gender` text,
+  `ScreenName` varchar(32) NOT NULL,
+  `EMail` varchar(32) NOT NULL,
+  `Birthday` date DEFAULT NULL,
+  `PasswordHash` varchar(32) NOT NULL,
+  `Salt` varchar(32) NOT NULL,
+  `Joined` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`UserID`),
-  UNIQUE KEY `PhoneNumber` (`PhoneNumber`),
   UNIQUE KEY `ScreenName` (`ScreenName`),
-  UNIQUE KEY `EMail` (`EMail`)
+  UNIQUE KEY `EMail` (`EMail`),
+  UNIQUE KEY `PasswordHash` (`PasswordHash`),
+  UNIQUE KEY `PhoneNumber` (`PhoneNumber`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --

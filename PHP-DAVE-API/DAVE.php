@@ -10,9 +10,12 @@ The 4 major functions will return an array.  The first value is true or false in
 
 ***********************************************/
 
-function _ADD($Table)
+function _ADD($Table, $VARS = null)
 {
-	Global $POST_VARIABLES, $TABLES, $DBObj, $Connection; 
+	Global $TABLES, $DBObj, $Connection, $PARAMS; 
+	
+	if ($VARS == null){$VARS = $PARAMS;}
+	
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
@@ -28,70 +31,40 @@ function _ADD($Table)
 			return array(false,$Status);
 		}
 		
-		foreach($POST_VARIABLES as $var)
-		{ 
-			Global $$var; 
-			if (in_array($var, $RequiredVars)) // required
+		foreach($RequiredVars as $req)
+		{
+			if(strlen($VARS[$req]) == 0)
 			{
-				if (_isSpecialString($$var))
-				{
-					return array(false,$var." is a required value and you must provide a value");
-				}
-				elseif (strlen($$var) > 0)
-				{
-					if (in_array($var, $UniqueVars))  // unique
-					{
-						$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$$var.'") ;';
-						$DBObj->Query($SQL);
-						$Status = $DBObj->GetStatus();
-						if ($Status === true){
-							$results = $DBObj->GetResults();
-							if ($results[0]['COUNT(*)'] > 0)
-							{
-								return array(false,"There is already an entry of '".$$var."' for ".$var);
-							}
-							else // var OK!
-							{
-								$SQLKeys[] = $var;
-								$SQLValues[] = $$var;
-							}
-						}
-					}
-					else // non-unique
-					{
-						$SQLKeys[] = $var;
-						$SQLValues[] = $$var;
-					}
-				}
-				else
-				{
-					return array(false,$var." is a required value");
-				}
+				return array(false,$req." is a required value and you must provide a value");
 			}
-			elseif (in_array($var,$AllTableVars)) // optional
+		}
+		
+		foreach($VARS as $var => $val)
+		{ 
+			if (in_array($var,$AllTableVars))
 			{
-				if (in_array($var, $UniqueVars) && strlen($$var) > 0)  // unique
+				if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 				{
-					$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$$var.'") ;';
+					$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'") ;';
 					$DBObj->Query($SQL);
 					$Status = $DBObj->GetStatus();
 					if ($Status === true){
 						$results = $DBObj->GetResults();
 						if ($results[0]['COUNT(*)'] > 0)
 						{
-							return array(false,"There is already an entry of '".$$var."' for ".$var);
+							return array(false,"There is already an entry of '".$val."' for ".$var);
 						}
 						else // var OK!
 						{
 							$SQLKeys[] = $var;
-							$SQLValues[] = $$var;
+							$SQLValues[] = $val;
 						}
 					}
 				}
-				elseif (strlen($$var) > 0) // non-unique
+				elseif (strlen($val) > 0) // non-unique
 				{
 					$SQLKeys[] = $var;
-					$SQLValues[] = $$var;
+					$SQLValues[] = $val;
 				}
 			}
 		}
@@ -135,9 +108,11 @@ function _ADD($Table)
 
 /***********************************************/
 
-function _EDIT($Table)
+function _EDIT($Table, $VARS = null)
 {
-	Global $POST_VARIABLES, $TABLES, $$TABLES[$Table]['META']['KEY'], $DBObj, $Connection;
+	Global $TABLES, $DBObj, $Connection, $PARAMS;
+	
+	if ($VARS == null){$VARS = $PARAMS;}
 	
 	if(_tableCheck($Table))
 	{
@@ -154,17 +129,16 @@ function _EDIT($Table)
 			return array(false,$Status);
 		}
 		// get the META KEY if it wasn't provided explicitly
-		if ($$TABLES[$Table]['META']['KEY'] == "")
+		if ($VARS[$TABLES[$Table]['META']['KEY']] == "")
 		{
 			$SQL = 'SELECT '.$TABLES[$Table]['META']['KEY'].' FROM `'.$Table.'` WHERE ( ';
 			$NeedAnd = false;
-			foreach($POST_VARIABLES as $var)
+			foreach($VARS as $var => $val)
 			{
-				Global $$var; 
-				if (in_array($var,$UniqueVars) && $$var != "")
+				if (in_array($var,$UniqueVars) && $val != "")
 				{
 					if ($NeedAnd) { $SQL .= " AND "; }
-					$SQL .= ' `'.$var.'` = "'.$$var.'" ';
+					$SQL .= ' `'.$var.'` = "'.$val.'" ';
 					$NeedAnd = true;
 				}
 			}
@@ -176,7 +150,7 @@ function _EDIT($Table)
 				$results = $DBObj->GetResults();
 				if (count($results) == 1)
 				{
-					$$TABLES[$Table]['META']['KEY'] = $results[0][$TABLES[$Table]['META']['KEY']];
+					$VARS[$TABLES[$Table]['META']['KEY']] = $results[0][$TABLES[$Table]['META']['KEY']];
 				}
 				else // var OK!
 				{
@@ -189,45 +163,44 @@ function _EDIT($Table)
 			}
 		}
 		//loop
-		foreach($POST_VARIABLES as $var)
+		foreach($VARS as $var => $val)
 		{
 			if ($var != $TABLES[$Table]['META']['KEY'])
 			{
-				Global $$var; 
-				if (in_array($var, $RequiredVars) && _isSpecialString($$var)) // required
+				if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
 				{
 						return array(false,$var." is a required value and you must provide a value");
 				}
 				elseif (in_array($var,$AllTableVars)) // optional
 				{
-					if (in_array($var, $UniqueVars) && strlen($$var) > 0)  // unique
+					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 					{
-						$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$$var.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$$TABLES[$Table]['META']['KEY'].'") ;'; 
+						$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
 						$DBObj->Query($SQL);
 						$Status = $DBObj->GetStatus();
 						if ($Status === true){
 							$results = $DBObj->GetResults();
 							if ($results[0]['COUNT(*)'] > 0)
 							{
-								return array(false,"There is already an entry of '".$$var."' for ".$var);
+								return array(false,"There is already an entry of '".$val."' for ".$var);
 							}
 							else // var OK!
 							{
 								$SQLKeys[] = $var;
-								$SQLValues[] = $$var;
+								$SQLValues[] = $val;
 							}
 						}
 					}
-					elseif (strlen($$var) > 0) // non-unique
+					elseif (strlen($val) > 0) // non-unique
 					{
 						$SQLKeys[] = $var;
-						$SQLValues[] = $$var;
+						$SQLValues[] = $val;
 					}
 				}
 			}
 		}
 		//
-		if(strlen($$TABLES[$Table]['META']['KEY']) > 0)
+		if(strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0)
 		{
 			if (count($SQLKeys) > 0)
 			{			
@@ -242,7 +215,7 @@ function _EDIT($Table)
 					$i++;
 				}
 				
-				$SQL .= ' WHERE ( `'.$TABLES[$Table]['META']['KEY'].'` = "'.$$TABLES[$Table]['META']['KEY'].'" ); ';
+				$SQL .= ' WHERE ( `'.$TABLES[$Table]['META']['KEY'].'` = "'.$VARS[$TABLES[$Table]['META']['KEY']].'" ); ';
 				$DBObj->Query($SQL);
 				$Status = $DBObj->GetStatus();
 				if ($Status === true)
@@ -259,7 +232,7 @@ function _EDIT($Table)
 		}
 		else
 		{
-			return array(false,"You need to provide a parameter for the KEY of this table, ".$$TABLES[$Table]['META']['KEY']);
+			return array(false,"You need to provide a parameter for the KEY of this table, ".$VARS[$TABLES[$Table]['META']['KEY']]);
 		}
 	}
 	else
@@ -270,9 +243,20 @@ function _EDIT($Table)
 
 /***********************************************/
 
-function _VIEW($Table, $select = null, $join = null, $where_additions = null, $sort = null, $SQL_Override = false)
+//function _VIEW($Table, $select = null, $join = null, $where_additions = null, $sort = null, $SQL_Override = false)
+function _VIEW($Table, $VARS = null, $Settings = null )
 {
-	Global $POST_VARIABLES, $TABLES, $LowerLimit, $UpperLimit, $$TABLES[$Table]['META']['KEY'], $DBObj, $Connection; 
+	Global $TABLES, $LowerLimit, $UpperLimit, $DBObj, $Connection, $PARAMS; 
+	if ($VARS == null){$VARS = $PARAMS;}
+	
+	// Additonal _VIEW Options and Configurations
+	if ($Settings == null){ $Settings = array(); }
+	$select = $Settings["select"];
+	$join = $Settings["join"];
+	$where_additions = $Settings["where_additions"];
+	$sort = $Settings["sort"];
+	$SQL_Override = $Settings["SQL_Override"];
+	
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
@@ -290,20 +274,19 @@ function _VIEW($Table, $select = null, $join = null, $where_additions = null, $s
 		}
 		$SQL .= " WHERE (";
 		$NeedAnd = false;
-		if (strlen($$TABLES[$Table]['META']['KEY']) > 0 && $SQL_Override != true) // if the primary key is given, use JUST this
+		if (strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0 && $SQL_Override != true) // if the primary key is given, use JUST this
 		{
-			$SQL .= ' `'.$TABLES[$Table]['META']['KEY'].'` = "'.$$TABLES[$Table]['META']['KEY'].'" ';
+			$SQL .= ' `'.$TABLES[$Table]['META']['KEY'].'` = "'.$VARS[$TABLES[$Table]['META']['KEY']].'" ';
 			$NeedAnd = true;
 		}
 		else
 		{
-			foreach($POST_VARIABLES as $var)
+			foreach($VARS as $var => $val)
 			{ 
-				Global $$var; 
-				if (in_array($var, $UniqueVars) && strlen($$var) > 0)
+				if (in_array($var, $UniqueVars) && strlen($val) > 0)
 				{
 					if ($NeedAnd) { $SQL .= " AND "; } 
-					$SQL .= ' `'.$var.'` = "'.$$var.'" ';
+					$SQL .= ' `'.$var.'` = "'.$val.'" ';
 					$NeedAnd = true;
 				}
 			}
@@ -350,23 +333,25 @@ function _VIEW($Table, $select = null, $join = null, $where_additions = null, $s
 
 /***********************************************/
 
-function _DELETE($Table)
+function _DELETE($Table, $VARS = null)
 {
-	Global $POST_VARIABLES, $TABLES, $DBObj, $Connection; 
+	Global $TABLES, $DBObj, $Connection, $PARAMS; 
+	
+	if ($VARS == null){$VARS = $PARAMS;}
+	
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
 		$SQL2 = "SELECT COUNT(*) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
-		foreach($POST_VARIABLES as $var)
+		foreach($VARS as $var => $val)
 		{ 
-			Global $$var; 
-			if (in_array($var, $UniqueVars) && strlen($$var) > 0)
+			if (in_array($var, $UniqueVars) && strlen($val) > 0)
 			{
 				if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
-				$SQL .= ' `'.$var.'` = "'.$$var.'" ';
-				$SQL2 .= ' `'.$var.'` = "'.$$var.'" ';
+				$SQL .= ' `'.$var.'` = "'.$val.'" ';
+				$SQL2 .= ' `'.$var.'` = "'.$val.'" ';
 				$NeedAnd = true;
 			}
 		}

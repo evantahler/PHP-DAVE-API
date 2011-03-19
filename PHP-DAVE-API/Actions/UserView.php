@@ -9,29 +9,20 @@ If "this" user is viewing (indicated by propper password hash along with another
 ***********************************************/
 if ($ERROR == 100)
 {
-	$CacheKey = $UserID."_".$ScreenName."_".$EMail."_".$PhoneNumber."_"."_UserView";
-	$result = GetCache($CacheKey);
-	if ($result === false)
-	{
-		list($pass,$result) = _VIEW("Users");
-		if (!$pass){ $ERROR = $result; }
-		else{ SetCache($CacheKey,$result); $OUTPUT['CACHE'] = "FALSE"; }
-	}
-	else
-	{
-		$OUTPUT['CACHE'] = "TRUE"; 
-	}
+	list($pass,$result) = _VIEW("Users");
+	if (!$pass){ $ERROR = $result; }
 }
 
 if ($ERROR == 100)
 {
-	if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
+	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 	{
 		if (count($result) == 1)
 		{
+			$OUTPUT["User"]['InformationType'] = "Private";
 			foreach( $result[0] as $key => $val)
 			{
-				$OUTPUT[$key] = $val;
+				$OUTPUT["User"][$key] = $val;
 			}
 		}
 		else
@@ -41,9 +32,9 @@ if ($ERROR == 100)
 	}
 	else // another user
 	{
-		$OUTPUT['ScreenName'] = $result[0]['ScreenName'];
-		$OUTPUT['Gender'] = $result[0]['Gender'];
-		$OUTPUT['Joined'] = $result[0]['Joined'];
+		$OUTPUT["User"]['InformationType'] = "Public";
+		$OUTPUT["User"]['ScreenName'] = $result[0]['ScreenName'];
+		$OUTPUT["User"]['Joined'] = $result[0]['Joined'];
 	}
 }
 

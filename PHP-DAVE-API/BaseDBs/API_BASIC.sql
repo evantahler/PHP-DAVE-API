@@ -72,8 +72,9 @@ CREATE TABLE IF NOT EXISTS `LOG` (
   `ERROR` text NOT NULL,
   `APIKey` text NOT NULL,
   `DeveloperID` text NOT NULL,
+  `Params` text NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `LOG`

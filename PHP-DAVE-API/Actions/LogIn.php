@@ -16,9 +16,9 @@ if ($ERROR == 100)
 
 if ($ERROR == 100)
 {
-	if (strlen($Password) > 0)
+	if (strlen($PARAMS["Password"]) > 0)
 	{
-		$PasswordHash = md5($Password.$result[0]['Salt']);
+		$PasswordHash = md5($PARAMS["Password"].$result[0]['Salt']);
 	}
 	if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
 	{

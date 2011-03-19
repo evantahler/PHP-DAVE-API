@@ -18,10 +18,7 @@ if ($ERROR == 100)
 	{
 		if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
 		{
-			if (count($result) == 1)
-			{
-				_DELETE("Users");
-			}
+			_DELETE("Users");
 		}
 		else // another user
 		{

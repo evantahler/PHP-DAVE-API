@@ -9,12 +9,12 @@ Even when an action fails, we should log that it happened.  This is importnat to
 
 ***********************************************/
 
-if (!(in_array($Action,$NoLogActions)) && !(in_array($APIKey,$NoLogAPIKeys)))
+if (!(in_array($PARAMS["Action"],$NoLogActions)) && !(in_array($PARAMS["APIKey"],$NoLogAPIKeys)))
 {
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
-		$SQL= 'INSERT INTO `'.$LogTable.'` (`Action`, `APIKey`, `DeveloperID`, `ERROR`, `IP`) VALUES ("'.mysql_real_escape_string($Action,$Connection).'", "'.mysql_real_escape_string($APIKey,$Connection).'", "'.mysql_real_escape_string($DeveloperID,$Connection).'", "'.mysql_real_escape_string($ERROR,$Connection).'", "'.mysql_real_escape_string($IP,$Connection).'");'; 
+		$SQL= 'INSERT INTO `'.$LogTable.'` (`Action`, `APIKey`, `DeveloperID`, `ERROR`, `IP`, `Params`) VALUES ("'.mysql_real_escape_string($PARAMS["Action"],$Connection).'", "'.mysql_real_escape_string($PARAMS["APIKey"],$Connection).'", "'.mysql_real_escape_string($PARAMS["DeveloperID"],$Connection).'", "'.mysql_real_escape_string($ERROR,$Connection).'", "'.mysql_real_escape_string($IP,$Connection).'" , "'.mysql_real_escape_string(json_encode($PARAMS),$Connection).'");'; 
 		$DBObj->Query($SQL);
 	}
 }
