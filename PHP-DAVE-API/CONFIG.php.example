@@ -38,6 +38,7 @@ $App_dir = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/
 // CRON
+@mkdir("LOG");
 $CronLogFile = "LOG/CRON_LOG.txt";
 $MySQLLogFile = "LOG/SQL.txt";
 $MaxLogFileSize = 1048576 * 1;  // 1MB
