@@ -6,9 +6,6 @@ Evan Tahler | 2011
 
 I am an example function to Delete a user
 ***********************************************/
-
-if ($ERROR == 100){ require("CheckSafetyString.php"); }
-
 if ($ERROR == 100)
 {
 	// look up the user info

@@ -28,14 +28,12 @@ $CRON_OUTPUT .= date("m-d-Y H:i:s")." \r\n";
 if($CacheType == "DB")
 {
 	$SQL= 'DELETE FROM `'.$DB.'`.`'.$CacheTable.'` WHERE (`ExpireTime` < "'.(time() - $CacheTime).'") ;';
-	$DBObj = new DBConnection();
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
 		$DBObj->Query($SQL);
 		$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." entries from the CACHE DB. \r\n";
 	}
-	$DBObj->close();
 }
 /////////////////////////////////////////////////////////////////////////
 // Check the CACHE Folder table for old entries, and remove them
@@ -57,27 +55,23 @@ if($CacheType == "FlatFile")
 
 /////////////////////////////////////////////////////////////////////////
 // Clear the LOG of old LOG entries, acording to $LogAge
-$SQL= 'DELETE FROM `'.$LogTable.'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $LogAge)).'") ;'; 	
-$DBObj = new DBConnection();
 $Status = $DBObj->GetStatus();
 if ($Status === true)
 {
+	$SQL= 'DELETE FROM `'.$LogTable.'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $LogAge)).'") ;'; 	
 	$DBObj->Query($SQL);
 	$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." entries from the LOG. \r\n";
 }
-$DBObj->close();
 
 /////////////////////////////////////////////////////////////////////////
 // Clear the LOG of old LOG entries, acording to $SessionAge
-$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $SessionAge)).'") ;'; 	
-$DBObj = new DBConnection();
 $Status = $DBObj->GetStatus();
 if ($Status === true)
 {
+	$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $SessionAge)).'") ;'; 	
 	$DBObj->Query($SQL);
 	$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." expired Sessions. \r\n";
 }
-$DBObj->close();
 
 /////////////////////////////////////////////////////////////////////////
 // Delete Big Log Files, list set in CONFIG
@@ -107,6 +101,8 @@ echo $CRON_OUTPUT;
 $fh = fopen($App_dir.$CronLogFile, 'a');
 fwrite($fh, $CRON_OUTPUT);
 fclose($fh);
+
+$DBObj->close();
 
 exit;
 ?>

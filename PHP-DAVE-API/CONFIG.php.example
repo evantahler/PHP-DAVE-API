@@ -101,11 +101,11 @@ $ACTIONS = array();
 
 // default actions
 $ACTIONS[] = array('DescribeActions', 'Actions/DescribeActions.php', 'Public');
+$ACTIONS[] = array('DescribeTables', 'Actions/DescribeTables.php', 'Public');
 
 // some basic actions
 $ACTIONS[] = array('GeoCode', 'Actions/Geocode.php', 'Public');
 $ACTIONS[] = array('CacheTest', 'Actions/CacheTest.php', 'Public');
-$ACTIONS[] = array('DescribeTables', 'Actions/DescribeTables.php', 'Public');
 
 // Demo actions for building a user system
 $ACTIONS[] = array('UserAdd', 'Actions/UserAdd.php', 'Public');
@@ -118,7 +118,18 @@ $ACTIONS[] = array('LogIn', 'Actions/LogIn.php', 'Public');
 // Table information
 $TableConfigFile = "DB/TABLES.php";
 $TableConfigRefreshTime = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
-require("DB/TableConfig.php");
+
+$DBObj = new DBConnection();
+$Status = $DBObj->GetStatus();
+if ($Status === true)
+{
+	$Connection = $DBObj->GetConnection();
+	require("DB/TableConfig.php");
+}
+else
+{
+	$ERROR = "DB Cannot be reached: ".$Status;
+}
 
 /*********************************************************/
 

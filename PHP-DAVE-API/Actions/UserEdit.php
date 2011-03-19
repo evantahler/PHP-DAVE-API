@@ -6,9 +6,6 @@ Evan Tahler | 2011
 
 I am an example function to Edit a user
 ***********************************************/
-
-if ($ERROR == 100){ require("CheckSafetyString.php"); }
-
 // do some special input filtering
 if (strlen($EMail) > 0 && $ERROR == 100)
 {

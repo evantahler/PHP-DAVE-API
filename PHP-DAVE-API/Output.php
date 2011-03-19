@@ -8,7 +8,6 @@ Evan Tahler | 2011
 I handle formatting the $OUTPUT object into XML, JSON, etc
 
 ***********************************************/
-
 if ($OutputType == "")
 {
 	$OutputType = $DefaultOutputType;

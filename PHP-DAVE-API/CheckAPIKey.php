@@ -22,7 +22,6 @@ if ($ERROR == 100)
 	if ($result === false)
 	{
 		$SQL = 'SELECT * FROM `Developers` WHERE (`APIKey` = "'.$APIKey.'") LIMIT 1;';
-		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
@@ -32,7 +31,6 @@ if ($ERROR == 100)
 			else{ $ERROR = $Status; }
 		}
 		else { $ERROR = $Status; } 
-		$DBObj->close();
 	}
 	
 	$DeveloperID_ = $Results[0]['DeveloperID_'];

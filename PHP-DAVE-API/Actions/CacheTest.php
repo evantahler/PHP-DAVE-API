@@ -8,10 +8,7 @@ Evan Tahler | 2011
 I am a way to test that cahce functions are working
 I'll store and return a user provided variable
 ***********************************************/
-
 // I'll use HASH as the variable to log by IP address;
-if ($ERROR == 100){ require("CheckSafetyString.php"); }
-
 if ($ERROR == 100)
 {
 	if ($CacheType == "")

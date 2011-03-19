@@ -7,9 +7,6 @@ Evan Tahler | 2011
 I am an example function to view a user.
 If "this" user is viewing (indicated by propper password hash along with another key, all data is shown), otherwise, just basic info is returned
 ***********************************************/
-
-if ($ERROR == 100){ require("CheckSafetyString.php"); }
-
 if ($ERROR == 100)
 {
 	$CacheKey = $UserID."_".$ScreenName."_".$EMail."_".$PhoneNumber."_"."_UserView";

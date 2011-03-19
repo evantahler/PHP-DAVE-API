@@ -12,7 +12,7 @@ The 4 major functions will return an array.  The first value is true or false in
 
 function _ADD($Table)
 {
-	Global $POST_VARIABLES, $TABLES; 
+	Global $POST_VARIABLES, $TABLES, $DBObj, $Connection; 
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
@@ -22,11 +22,9 @@ function _ADD($Table)
 		$SQLKeys = array();
 		$SQLValues= array();
 		
-		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status !== true)
 		{
-			$DBObj->close(); 
 			return array(false,$Status);
 		}
 		
@@ -101,7 +99,6 @@ function _ADD($Table)
 		$SQL = "INSERT INTO `".$Table."` ( ";
 		$i = 0;
 		$needComma = false;
-		$Connection = $DBObj->GetConnection();
 		while ($i < count($SQLKeys))
 		{
 			if ($needComma) { $SQL .= ", "; } 
@@ -126,12 +123,9 @@ function _ADD($Table)
 		if ($Status === true)
 		{
 			$NewKey = $DBObj->GetLastInsert();
-			$DBObj->close();
 			return array(true,array( $TABLES[$Table]['META']['KEY'] => $NewKey)); 
 		}
-		else{$DBObj->close(); return array(false,$Status); }
-		//
-		$DBObj->close();
+		else{return array(false,$Status); }
 	}
 	else
 	{
@@ -143,7 +137,7 @@ function _ADD($Table)
 
 function _EDIT($Table)
 {
-	Global $POST_VARIABLES, $TABLES, $$TABLES[$Table]['META']['KEY'];
+	Global $POST_VARIABLES, $TABLES, $$TABLES[$Table]['META']['KEY'], $DBObj, $Connection;
 	
 	if(_tableCheck($Table))
 	{
@@ -154,11 +148,9 @@ function _EDIT($Table)
 		$SQLKeys = array();
 		$SQLValues= array();
 		
-		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status !== true)
 		{
-			$DBObj->close(); 
 			return array(false,$Status);
 		}
 		// get the META KEY if it wasn't provided explicitly
@@ -239,7 +231,6 @@ function _EDIT($Table)
 		{
 			if (count($SQLKeys) > 0)
 			{			
-				$Connection = $DBObj->GetConnection();
 				$SQL = "UPDATE `".$Table."` SET ";
 				$i = 0;
 				$needComma = false;
@@ -257,12 +248,9 @@ function _EDIT($Table)
 				if ($Status === true)
 				{
 					$NewKey = $DBObj->GetLastInsert();
-					$DBObj->close();
 					return _VIEW($Table); // do a view again to return fresh data
 				}
-				else{$DBObj->close(); return array(false,$Status); }
-				//
-				$DBObj->close();
+				else{ return array(false,$Status); }
 			}
 			else
 			{
@@ -284,7 +272,7 @@ function _EDIT($Table)
 
 function _VIEW($Table, $select = null, $join = null, $where_additions = null, $sort = null, $SQL_Override = false)
 {
-	Global $POST_VARIABLES, $TABLES, $LowerLimit, $UpperLimit, $$TABLES[$Table]['META']['KEY']; 
+	Global $POST_VARIABLES, $TABLES, $LowerLimit, $UpperLimit, $$TABLES[$Table]['META']['KEY'], $DBObj, $Connection; 
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
@@ -344,17 +332,15 @@ function _VIEW($Table, $select = null, $join = null, $where_additions = null, $s
 		if ($UpperLimit == "") {$UpperLimit = 100; }
 		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
 		//
-		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
-			if ($Status === true){$DBObj->close(); return array(true, $DBObj->GetResults()); }
-			else{$DBObj->close(); return array(false,$Status); }
+			if ($Status === true){ return array(true, $DBObj->GetResults()); }
+			else{ return array(false,$Status); }
 		}
-		else {$DBObj->close(); return array(false,$Status); } 
-		$DBObj->close();
+		else { return array(false,$Status); } 
 	}
 	else
 	{
@@ -366,7 +352,7 @@ function _VIEW($Table, $select = null, $join = null, $where_additions = null, $s
 
 function _DELETE($Table)
 {
-	Global $POST_VARIABLES, $TABLES; 
+	Global $POST_VARIABLES, $TABLES, $DBObj, $Connection; 
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
@@ -396,7 +382,6 @@ function _DELETE($Table)
 		$SQL .= " ) ;"; // There is no limit to allow more than one removal
 		$SQL2 .= " ) ;";
 		//
-		$DBObj = new DBConnection();
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
@@ -407,19 +392,17 @@ function _DELETE($Table)
 				$results = $DBObj->GetResults();
 				if ($results[0]['COUNT(*)'] < 1)
 				{
-					$DBObj->close();
 					return array(false,"The item you are requesting to delete is not found");
 				}
 			}
-			else{$DBObj->close(); return array(false,"The item you are requesting to delete is not found"); }
+			else{ return array(false,"The item you are requesting to delete is not found"); }
 			
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
-			if ($Status === true){$DBObj->close(); return array(true, $DBObj->GetResults()); }
-			else{$DBObj->close(); return array(false,$Status); }
+			if ($Status === true){ return array(true, $DBObj->GetResults()); }
+			else{ return array(false,$Status); }
 		}
-		else {$DBObj->close(); return array(false,$Status); } 
-		$DBObj->close();
+		else {return array(false,$Status); } 
 	}
 	else
 	{

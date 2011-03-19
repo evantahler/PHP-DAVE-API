@@ -35,7 +35,6 @@ if ($ToReload)
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
-		$Connection = $DBObj->GetConnection();
 		$SQL= 'SHOW TABLES;';
 		$DBObj->Query($SQL);
 		$out = $DBObj->GetResults();
@@ -63,7 +62,6 @@ if ($ToReload)
 			}
 		}
 	}
-	$DBObj->close();
 	$TABLES["TableBuildTime"] = time();
 	@unlink($TableConfigFile);
 	$TableStringOutput = "";

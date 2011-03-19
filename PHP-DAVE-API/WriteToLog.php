@@ -11,15 +11,12 @@ Even when an action fails, we should log that it happened.  This is importnat to
 
 if (!(in_array($Action,$NoLogActions)) && !(in_array($APIKey,$NoLogAPIKeys)))
 {
-	$DBObj = new DBConnection();
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
-		$Connection = $DBObj->GetConnection();
 		$SQL= 'INSERT INTO `'.$LogTable.'` (`Action`, `APIKey`, `DeveloperID`, `ERROR`, `IP`) VALUES ("'.mysql_real_escape_string($Action,$Connection).'", "'.mysql_real_escape_string($APIKey,$Connection).'", "'.mysql_real_escape_string($DeveloperID,$Connection).'", "'.mysql_real_escape_string($ERROR,$Connection).'", "'.mysql_real_escape_string($IP,$Connection).'");'; 
 		$DBObj->Query($SQL);
 	}
-	$DBObj->close();
 }
 
 ?>
