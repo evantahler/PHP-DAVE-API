@@ -51,5 +51,7 @@ if ($PARAMS["Hash"] == "" && $PARAMS["DeveloperID"] != "" && $PARAMS["Rand"] != 
 {
 	$PARAMS["Hash"] = md5($PARAMS["DeveloperID"].$PARAMS["APIKey"].$PARAMS["Rand"]);
 }
+if ($PARAMS["Rand"] == ""){unset($PARAMS["Rand"]);}
+if ($PARAMS["Hash"] == ""){unset($PARAMS["Hash"]);}
 
 ?>

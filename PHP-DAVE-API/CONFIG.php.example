@@ -38,11 +38,13 @@ $App_dir = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/
 // CRON
-$CronLogFile = "CRON_LOG.txt"; // I'll be placed in the App_Dir
+$CronLogFile = "LOG/CRON_LOG.txt";
+$MySQLLogFile = "LOG/SQL.txt";
 $MaxLogFileSize = 1048576 * 1;  // 1MB
 
-$LogsToCheck = array(); // log files that might get big
+$LogsToCheck = array(); // log files that might get big that you want to automatically truncate
 $LogsToCheck[] = $App_dir.$CronLogFile;
+$LogsToCheck[] = $App_dir.$MySQLLogFile;
 
 /*********************************************************/
 // CACHE

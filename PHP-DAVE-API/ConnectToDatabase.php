@@ -32,7 +32,7 @@ class DBConnection
 	
 	public function __construct($OtherDB = "")
 	{
-		global $dbhost, $dbuser, $dbpass, $DB;
+		global $dbhost, $dbuser, $dbpass, $DB, $MySQLLogFile;
 		$this->Status = true;
 		
 		if ($OtherDB != "") { $this->DataBase = $OtherDB ; } 
@@ -59,6 +59,25 @@ class DBConnection
 		}		
 	}
 	
+	private function mysql_log($line)
+	{
+		global $IP, $MySQLLogFile;
+		
+		$host = $IP;
+		if ($host == ""){$host = "local_system";}
+		
+		$line = date("Y-m-d H:i:s")." | ".$host." | ".$line;
+		if (strlen($MySQLLogFile) > 0)
+		{
+			$LogFileHandle = fopen($MySQLLogFile, 'a');
+			if($LogFileHandle)
+			{
+				fwrite($LogFileHandle, ($line."\r\n"));
+			}
+			fclose($LogFileHandle);
+		}
+	}
+	
 	private function CheckForSpecialStrings($string)
 	{	
 		global $SpecialStrings;
@@ -66,6 +85,7 @@ class DBConnection
 		{
 			$string = str_replace($term[0],$term[1],$string);
 		}
+		$string = str_replace("  "," ",$string);
 		return $string;
 	}
 	
@@ -82,10 +102,13 @@ class DBConnection
 		else
 		{
 			$SQL = $this->CheckForSpecialStrings($SQL);
+			$LogLine = $SQL;
 			$Query=mysql_query($SQL);
 			if (empty($Query))
 			{
 				$this->Status = "MYSQL Query Error: ".mysql_errno($this->Connection) . ": " . mysql_error($this->Connection);
+				$LogLine .= " | Error->".$this->Status;
+				$this->mysql_log($LogLine);
 				return false;
 			}
 			else
@@ -93,6 +116,12 @@ class DBConnection
 				$this->OUT = array();
 				$tmp = array();
 				$NumRows=@mysql_num_rows($Query);
+				
+				if ($NumRows > 0){ $LogLine .= " | RowsFond -> ".$NumRows; }
+				elseif($this->NumRowsEffected > 0){ $LogLine .= " | RowsEffected -> ".$this->NumRowsEffected; } 
+				if ($this->GetLastInsert > 0){ $LogLine .= " | InsertID -> ".$this->GetLastInsert; }
+				
+				$this->mysql_log($LogLine);
 				if ($NumRows > 0)
 				{
 					while($row = mysql_fetch_assoc($Query))

@@ -63,7 +63,7 @@ if ($RequestLimitPerHour > 0)
 				}
 				else
 				{
-					$OUTPUT['api_requests_remaining'] = $RequestLimitPerHour - $Results[0]['COUNT(*)'];
+					$OUTPUT['api_requests_remaining'] = $RequestLimitPerHour - $Results[0]['total'];
 				}
 			}
 			else{ $ERROR = $Status; }

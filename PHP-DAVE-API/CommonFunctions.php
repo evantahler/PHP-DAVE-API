@@ -23,6 +23,23 @@ function humanize_actions()
 	return $HumanActions;
 }
 
+function reload_tables()
+{
+	global $ERROR, $DBObj, $TableConfigFile, $TABLES;
+	
+	$Status = $DBObj->GetStatus();
+	if ($Status === true)
+	{
+		$TABLES = array();
+		@unlik($TableConfigFile);
+		require("DB/TableConfig.php");
+	}
+	else
+	{
+		$ERROR = "DB Cannot be reached: ".$Status;
+	}
+}
+
 function create_session()
 {
 	$key = md5( uniqid() );

@@ -167,11 +167,11 @@ function _EDIT($Table, $VARS = null)
 		{
 			if ($var != $TABLES[$Table]['META']['KEY'])
 			{
-				if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
-				{
-						return array(false,$var." is a required value and you must provide a value");
-				}
-				elseif (in_array($var,$AllTableVars)) // optional
+				// if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
+				// {
+				// 		return array(false,$var." is a required value and you must provide a value");
+				// }
+				if (in_array($var,$AllTableVars))
 				{
 					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 					{
@@ -221,7 +221,7 @@ function _EDIT($Table, $VARS = null)
 				if ($Status === true)
 				{
 					$NewKey = $DBObj->GetLastInsert();
-					return _VIEW($Table); // do a view again to return fresh data
+					return _VIEW($Table, $VARS); // do a view again to return fresh data
 				}
 				else{ return array(false,$Status); }
 			}
@@ -246,7 +246,7 @@ function _EDIT($Table, $VARS = null)
 //function _VIEW($Table, $select = null, $join = null, $where_additions = null, $sort = null, $SQL_Override = false)
 function _VIEW($Table, $VARS = null, $Settings = null )
 {
-	Global $TABLES, $LowerLimit, $UpperLimit, $DBObj, $Connection, $PARAMS; 
+	Global $TABLES, $DBObj, $Connection, $PARAMS; 
 	if ($VARS == null){$VARS = $PARAMS;}
 	
 	// Additonal _VIEW Options and Configurations
@@ -255,11 +255,15 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$join = $Settings["join"];
 	$where_additions = $Settings["where_additions"];
 	$sort = $Settings["sort"];
+	$UpperLimit = $Settings["UpperLimit"];
+	$LowerLimit = $Settings["LowerLimit"];
 	$SQL_Override = $Settings["SQL_Override"];
-	
+		
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
+		$AllTableVars = _getAllTableCols($Table);
+		
 		if ($select != null)
 		{
 			$SQL = "SELECT ". $select . " ";
@@ -283,7 +287,7 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		{
 			foreach($VARS as $var => $val)
 			{ 
-				if (in_array($var, $UniqueVars) && strlen($val) > 0)
+				if (in_array($var, $AllTableVars) && strlen($val) > 0)
 				{
 					if ($NeedAnd) { $SQL .= " AND "; } 
 					$SQL .= ' `'.$var.'` = "'.$val.'" ';
@@ -304,6 +308,10 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 				$msg .= $var." ";
 			}
 			return array(false,$msg);
+		}
+		elseif ($NeedAnd == false && $SQL_Override == true)
+		{
+			$SQL .= " true ";
 		}
 		$SQL .= " ) ";
 		if ($sort != null)
@@ -384,7 +392,7 @@ function _DELETE($Table, $VARS = null)
 			
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
-			if ($Status === true){ return array(true, $DBObj->GetResults()); }
+			if ($Status === true){ return array(true, true); }
 			else{ return array(false,$Status); }
 		}
 		else {return array(false,$Status); } 
