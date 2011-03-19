@@ -91,6 +91,7 @@ $SpecialStrings[] = array('%%zero%%',"0");
 
 /*********************************************************/
 // load object classes.  Assumes each file in the /Objects directory contains object classes
+require_once("Objects/_BASE.php");
 foreach (glob("Objects/*.php") as $filename)
 {
 	require_once($filename);
