@@ -13,8 +13,14 @@ I hold all the configuration variables for the API
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
+$PublicURL = "http://localhost/PHP-DAVE-API/";
+
+// working directory
+$path = substr(__FILE__,0,(strlen(__FILE__) - strlen("CONFIG.php")));
+chdir($path);
+
 // Set the ERROR.  This is used by all steps to ensure that nothing has perviously gone awry, and allows the next step to excecute.  All steps will first check to make sure that ERROR == 100.
-$ERROR = 100; 
+$ERROR = 1000; 
 $systemTimeZone = "America/New_York";
 $DefaultOutputType = "XML" ;  // XML, PHP, VAR, SOAP, or JSON
 $XML_ROOT_NODE = "XML"; // what is the root node of your XML output called?

@@ -34,7 +34,7 @@ class APIRequest
 {
 	protected $PostArray, $response, $API_URL;
 	
-	public function __construct($IP="", $API_URL="", $PostArray=array())
+	public function __construct($API_URL="", $PostArray=array(), $IP="")
 	{
 		if (!is_array($PostArray)){ $PostArray = array(); }
 		$this->PostArray = $PostArray;
@@ -82,6 +82,11 @@ class APIRequest
 	public function ShowResponse()
 	{
         return unserialize($this->response);
+    }
+
+	public function ShowRawResponse()
+	{
+        return $this->response;
     }
 }
 
