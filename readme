@@ -2,7 +2,7 @@ Who is DAVE?
 
 DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.
 
-DAVE does the work for you, and he's not CRUD
+DAVE does the work for you, and he's not CRUD.  Dave was built to be both easy to use, but to be as simple as possible.  I was tiered of bloated frameworks that were designed to be monolithic applications which include the VIEW MVC layer. DAVE is lean and only MV.
 
 The DAVE API was built to be a robust, multi-node capable framework for transactional APIs, appropriate for social networking, games, and more. This API represents the philosophy that a single "desktop" website will not be the only way that your consumers interact with your product. This traditional website is just one of many possible "views" that may be required of your application that might include raw API access for your users and developers, compiled applications, JSON lookups, and more.
 
@@ -14,14 +14,17 @@ The DAVE API understands 2 types of security methodology. "Public" actions can b
 
 Features
 - Abstraction of basic DAVE actions
+- Active Database Modeling on-the-fly or fixed per your requirements
+- Objects for Database entities with DAVE abstraction
 - Built with a Multi-Node system in mind, but works great on a single machine
-- Developer-based authentication
+- Developer-based authentication in tandem with user-level authentication
 - Rate Limiting for client connections
 - Class-based abstraction of mySQL connections
 - Built-in support for multiple types of Caching (Flat File, mySQL, memcache)
 - CRON processing of delayed events
 - Simple error handling and input sanitization
 - XML, JSON, Serialized PHP output types built in
+- End-to-end spec testing framework for the API including custom assertions
 
 Requirements
 - PHP 5.2+
@@ -30,24 +33,25 @@ Requirements
 - root access to web-server with CRON
 
 Setup
-- Configure your database
+- Configure your database using mySQL.  Use standard mySQL types (like non-null and uniqueness) to inform DAVE of the rules on each column
 - Setup the CONFIG.php file
-- CHMOD the CACHE directory to 777
+- CHMOD the CACHE and LOG directory to 777
 - Install the CRON.php file to run from CRONTAB
+- Launch your webserver!
 
 Note on MaxMind GeoLocation
 - You will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder.
 
 Example Site: http://dave.evantahler.com
 Actions you can try [[&Action=..]] :
-	- CacheTest
-		Send a Hash [[ &Hash=MyString ]] and I will first store it in the cache, and on subsequent calls retrieve the vale from the cache until expired.  Change the value of the Hash and note the old value will be displayeed until it expires
 	- DescribeActions
-		I will list all the actions avaialble to the API
+		I will list all the actions available to the API
 	- DescribeTables
 		I am an introspection method that will show the results of the auto-described available tables and cols.  I will show weather or not a col is required and if it is unique
 	- Geocode
 		I will use your IP address and return geographic information about you
+	- CacheTest
+		Send a Hash [[ &Hash=MyString ]] and I will first store it in the cache, and on subsequent calls retrieve the vale from the cache until expired.  Change the value of the Hash and note the old value will be displayed until it expires
 	- LogIn
 		Example user system.  Follow returned error messages.
 	- UserAdd
@@ -58,8 +62,5 @@ Actions you can try [[&Action=..]] :
 		Example user system.  Follow returned error messages.
 	- UserView
 		Example user system.  Follow returned error messages.
-	
-Output:  
-	- ?OutputType=PHP
-	- ?OutputType=JSON
-	- ?OutputType=XML
+	- ObjectTest
+		An example of on-the-fly database object manipulation.  Check the code for this file to see how simple it is.
