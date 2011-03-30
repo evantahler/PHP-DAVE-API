@@ -9,6 +9,7 @@ I setup the testing enviorment and include handy functions for the test suite
 $path = substr(__FILE__,0,(strlen(__FILE__) - strlen($_SERVER['SCRIPT_NAME'])));
 
 require_once("../../AccessTools/APIRequest.php");
+require_once("../../helper_functions/colors.php");
 require_once("../../ConnectToDatabase.php");
 require_once("../../CONFIG.php");
 date_default_timezone_set($systemTimeZone);
@@ -19,18 +20,19 @@ if (!class_exists(DaveTest))
 {
 class DaveTest
 {
-	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage;
+	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage, $colors;
 	
 	public function __construct($title = null)
 	{
 		$this->StartTime = time();
+		$this->colors = new Colors();
 		
 		global $TestLog;
 		
 		if ($title == null){$title == "Unknown Test";}
 		$this->title = $title;
 		$this->TestLog = $TestLog;
-		$this->log("Starting new Test: ".$this->title);
+		$this->log($this->colors->getColoredString("Starting new Test: ".$this->title,"purple","yellow"));
 		
 		$this->Successes = array();
 		$this->Failures = array();
@@ -241,21 +243,28 @@ class DaveTest
 			return false;
 		}
 	}
-	
+
 	public function end()
 	{
 		$this->log("");
-		$this->log("Summary: ");
+		$this->log($this->colors->getColoredString("Summary: ", "null", "cyan"));
 		$duration = (time() - $this->StartTime);
 		$timeString = $this->secondsToWords($duration);
-		$this->log("Test suite [".($this->Successes + $this->Failures)."] complete in ".$timeString);
-		$this->log(count($this->Successes)." successes");
-		$this->log(count($this->Failures)." failures");
+		$this->log("Test suite [".(count($this->Successes) + count($this->Failures))."] complete in ".$timeString);
+		$this->log($this->colors->getColoredString(count($this->Successes)." successes","green", null));
+		if (count($this->Failures) == 0)
+		{
+			$this->log($this->colors->getColoredString(count($this->Failures)." failures","green", null));
+		}
+		else
+		{
+			$this->log($this->colors->getColoredString(count($this->Failures)." failures","red", "black"));
+		}
 		foreach($this->Failures as $fail)
 		{
-			$this->log("Failure: ".$fail);
+			$this->log($this->color->getColoredString("Failure: ".$fail,"red",black));
 		}
-		$this->log("");
+		$this->log("");	
 	}
 	
 	private function log($line)

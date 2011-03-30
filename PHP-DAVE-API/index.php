@@ -44,7 +44,7 @@ if (empty($IP) || $IP == "")
 // check if this user has made too many requests this hour
 if ($RequestLimitPerHour > 0)
 {
-	if ($CorrectLimitLockPass != $LimitLockPass)
+	if ($CorrectLimitLockPass != $PARAMS["LimitLockPass"])
 	{
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)

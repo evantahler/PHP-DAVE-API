@@ -12,7 +12,8 @@ $T = new DaveTest("Output Tests");
 // I should return an array of actions
 $PostArray = array(
 	"OutputType" => "PHP",
-	"Action" => "DescribeActions"
+	"Action" => "DescribeActions",
+	"LimitLockPass" => $CorrectLimitLockPass
 );
 $APIRequest = new APIRequest($PublicURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
