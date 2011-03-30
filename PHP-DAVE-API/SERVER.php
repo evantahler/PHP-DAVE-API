@@ -1,0 +1,233 @@
+<?php
+/***********************************************
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
+
+I am a single-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
+How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
+
+TODO: Page Rendering for PHP PAges
+TODO: Headers for errors (like 404)
+TODO: Headers for file types (images and JS)
+TODO: Supply the SERVER varaibles to PHP pages
+TODO: Supply the GET, POST, adn COOKIE variables to PHP pages
+***********************************************/
+
+// CONFIG
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+// show errors on scrern
+ini_set("display_errors","1");
+error_reporting (E_ALL ^ E_NOTICE);
+
+$ServerPort = 3000;
+$ServerLog = "LOG/SERVER_LOG.txt";
+$max_clients = 100;
+
+function _server_log($string)
+{
+	global $ServerLog;
+	$string = date("m-d-Y H:i:s")." | ".$string."\r\n";
+    print($string);
+    if (!(file_exists($ServerLog)))
+    {
+		$Logfh = fopen($ServerLog, 'a');
+		fwrite($Logfh, "");
+		fclose($Logfh);
+		chmod($ServerLog, 0777);
+    }
+    $Logfh = fopen($ServerLog, 'a');
+    fwrite($Logfh, $string);
+    fclose($Logfh);
+}
+
+function SendDataToClient($ClientData, $Message)
+{
+        if (isset($ClientData['sock']))
+        {
+                @socket_write($ClientData['sock'], $Message."\r\n");
+                ob_end_clean();
+        }
+}
+
+function EndTransfer($ClientData)
+{
+	global $client;
+	socket_close($ClientData['sock']);
+    unset($ClientData);
+    $client = array_values($client);
+}
+
+// INIT
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+/* Setup */
+$ServerStartTime = time();
+set_time_limit (0);
+ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
+
+$client = array();
+$sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+socket_set_nonblock($sock);
+socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
+$j = 0;
+while (@socket_bind($sock, 0, $ServerPort) == false)
+{
+        sleep($Sleeper);
+        $j++;
+        if ($j > 3)
+        {
+                _server_log('Server Restart Not Needed or Aborted');
+                exit;
+                break;
+        }
+}
+        
+// Start listening for connections
+socket_listen($sock);
+_server_log('..........Starting Server @ port '.$ServerPort.'..........'."\r\n");
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/* LOOP FOREVER! */
+
+while (true) {
+    // Setup clients listen socket for reading
+    $read[0] = $sock;
+    for ($i = 0; $i < $max_clients; $i++)
+    {
+        if ($client[$i]['sock']  != null)
+            $read[$i + 1] = $client[$i]['sock'] ;
+    }
+    // Set up a blocking call to socket_select()
+    $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = 100000);
+
+    /* if a new connection is being made add it to the client array */
+    if (in_array($sock, $read)) {
+        for ($i = 0; $i < $max_clients; $i++)
+        {
+            if ($client[$i]['sock'] == null) 
+            {
+                $client[$i]['sock'] = socket_accept($sock);
+                // set defaults
+                socket_getpeername($client[$i]['sock'],$ip,$RemotePort);
+                $client[$i]['IP'] = $ip;
+                break;
+            }
+            elseif ($i == $max_clients - 1) { _server_log(("too many clients"), $LogFile); }
+        }
+        if (--$ready <= 0) 
+            continue;
+    } 
+    
+    // If a client is trying to write - handle it now
+    for ($i = 0; $i < $max_clients; $i++) // for each client
+    {
+        if (in_array($client[$i]['sock'] , $read))
+        {
+            $input = @socket_read($client[$i]['sock'] , 1024*1024, PHP_BINARY_READ);
+			$input = trim($input);
+            if(strlen($input) < 1){ break; }
+			else
+			{				
+				$_COOKIE = array();
+				$_POST = array();
+				$_GET = array();
+				$URL = "";
+				
+				$lines = explode("\n", $input);
+				foreach($lines as $line)
+				{
+					// GET
+					if (substr($line,0,4) == "GET ")
+					{
+						$sections = explode(" ",$line);
+						$full_url = $sections[1];
+						$a = explode("?",$full_url);
+						$URL = $a[0];
+						$get = $a[1];
+						$vars = explode("&",$get);
+						foreach($vars as $var)
+						{
+							$var = trim($var);
+							$sub = explode("=",$var);
+							$_GET[$sub[0]] = $sub[1];
+						}
+					}
+					
+					// POST
+					if (substr($line,0,5) == "POST ")
+					{
+						$sections = explode(" ",$line);
+						$full_url = $sections[1];
+						$a = explode("?",$full_url);
+						$URL = $a[0];
+						
+						$post = $lines[(count($lines) - 1)];
+						$vars = explode("&",$post);
+						foreach($vars as $var)
+						{
+							$var = trim($var);
+							$sub = explode("=",$var);
+							$_POST[$sub[0]] = $sub[1];
+						}
+					}
+					
+					// COOKIES
+					if (substr($line,0,8) == "Cookie: ")
+					{
+						$line = substr($line,8);
+						$vars = explode(";",$line);
+						foreach($vars as $var)
+						{
+							$var = trim($var);
+							$sub = explode("=",$var);
+							$_COOKIE[$sub[0]] = $sub[1];
+						}
+					}					
+				}
+				
+				_server_log("[".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIES)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
+				
+				// Return page content
+				if ($URL == "/"){ $URL = "index.php"; }
+				else{ $URL = substr($URL,1); }
+				if(file_exists($URL))
+				{
+					$contents = file_get_contents($URL);
+					if ($contents === false){
+						SendDataToClient($client[$i], "400");
+						_server_log("[".$client[$i]["IP"]."] RESPONSE: "."400");
+					}
+					else
+					{
+						if (substr($URL,-4) == ".php")
+						{
+							_server_log("[".$client[$i]["IP"]."] RESPONSE: "."200 (php)");
+						}
+						else
+						{
+							SendDataToClient($client[$i], $contents);
+							_server_log("[".$client[$i]["IP"]."] RESPONSE: "."200 (not php)");
+						}
+					}
+				}
+				else
+				{
+					SendDataToClient($client[$i], "404");
+					_server_log("[".$client[$i]["IP"]."] RESPONSE: "."404");
+				}
+			}
+			EndTransfer($client[$i]);
+        }
+    }
+}
+socket_close($sock);
+
+?>
