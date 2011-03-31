@@ -13,14 +13,7 @@ How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/so
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-// show errors on scrern
-ini_set("display_errors","1");
-error_reporting (E_ALL ^ E_NOTICE);
-
-$ServerPort = 3000;
-$ServerLog = "LOG/SERVER_LOG.txt";
-$max_clients = 100;
-$domain = "localhost";
+require("CONFIG.php");
 
 function _server_log($string)
 {
