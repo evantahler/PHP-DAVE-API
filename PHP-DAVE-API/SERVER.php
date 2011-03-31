@@ -6,12 +6,6 @@ Evan Tahler | 2011
 
 I am a single-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
-
-TODO: Page Rendering for PHP PAges
-TODO: Headers for errors (like 404)
-TODO: Headers for file types (images and JS)
-TODO: Supply the SERVER varaibles to PHP pages
-TODO: Supply the GET, POST, and COOKIE variables to PHP pages
 ***********************************************/
 
 // CONFIG
