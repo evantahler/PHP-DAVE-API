@@ -11,7 +11,7 @@ TODO: Page Rendering for PHP PAges
 TODO: Headers for errors (like 404)
 TODO: Headers for file types (images and JS)
 TODO: Supply the SERVER varaibles to PHP pages
-TODO: Supply the GET, POST, adn COOKIE variables to PHP pages
+TODO: Supply the GET, POST, and COOKIE variables to PHP pages
 ***********************************************/
 
 // CONFIG
@@ -26,6 +26,7 @@ error_reporting (E_ALL ^ E_NOTICE);
 $ServerPort = 3000;
 $ServerLog = "LOG/SERVER_LOG.txt";
 $max_clients = 100;
+$domain = "localhost";
 
 function _server_log($string)
 {
@@ -61,6 +62,71 @@ function EndTransfer($ClientData)
     $client = array_values($client);
 }
 
+function make_headers($error_code = 200, $URL, $cookies = null)
+{
+	global $domain;
+	
+	$out = "HTTP/1.0 ";
+	if ($error_code == 400){$out .= "400 Bad Request\r\n";}
+	elseif ($error_code == 403){$out .= "403 Forbidden\r\n";}
+	elseif ($error_code == 404){$out .= "404 Not Found\r\n";}
+	elseif ($error_code == 500){$out .= "500 Internal Server Error\r\n";}
+	elseif ($error_code == 501){$out .= "501 Not Implemented\r\n";}
+	else {$out .= "200 OK\r\n";}
+	$out .= "Connection: close\r\n";
+	$out .= "Server: DaveMiniTestServer\r\n";
+	$out .= "Content-Type: ".get_content_type($URL)."\r\n";
+	if ($cookies == null){$cookies = array();}
+	foreach ($cookies as $cookie)
+	{
+		if (!($cookie["expire_timestamp"] > 0)){$cookie["expire_timestamp"] = time() + 60*60;}
+		$datetime = new DateTime($cookie["expire_timestamp"]);
+		$cookie_time = $datetime->format(DATE_COOKIE);
+		$out .= "Set-Cookie: ".$cookie["variable"]."=".$cookie["value"]."; expires=".$cookie_time."; path=/; domain=".$domain."\r\n";
+	}
+	return $out;
+}
+
+function get_content_type($URL)
+{
+	// http://en.wikipedia.org/wiki/Internet_media_type
+	$tmp = explode(".",$URL);
+	$extension = $tmp[(count($tmp) - 1)];
+	$extension = strtolower($extension);
+	$out = "text/html";
+	if ($extension == "html"){ $out = "text/html"; }
+	elseif ($extension == "htmls"){ $out = "text/html"; }
+	elseif ($extension == "php"){ $out = "text/html"; }
+	elseif ($extension == "xml"){ $out = "text/xml"; }
+	elseif ($extension == "jpg"){ $out = "image/jpeg"; }
+	elseif ($extension == "jpeg"){ $out = "image/jpeg"; }
+	elseif ($extension == "png"){ $out = "image/png"; }
+	elseif ($extension == "gif"){ $out = "image/gif"; }
+	elseif ($extension == "css"){ $out = "text/css"; }
+	elseif ($extension == "js"){ $out = "text/javascript"; }
+	elseif ($extension == "mp4"){ $out = "video/mp4"; }
+	return $out;
+}
+
+function _run($URL, $remote_ip) 
+{
+	global $_GET, $_POST, $_COOKIE, $domain;
+	
+	$_SERVER = array(
+		"PHP_SELF" => $URL,
+		"SERVER_ADDR" => $domain,
+		"SERVER_NAME" => $domain,
+		"SERVER_PROTOCOL" => "HTTP/1.0",
+		"REMOTE_ADDR" => $remote_ip,
+	);
+	$_FILE = getcwd()."/".$URL;
+
+	$sys = escapeshellcmd("/usr/bin/php ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE));
+	$sys = str_replace('"','\"',$sys);
+	$script_output = `$sys`;
+	return $script_output;
+}
+
 // INIT
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
@@ -82,7 +148,7 @@ while (@socket_bind($sock, 0, $ServerPort) == false)
         $j++;
         if ($j > 3)
         {
-                _server_log('Server Restart Not Needed or Aborted');
+                _server_log('Server already running on port '.$ServerPort);
                 exit;
                 break;
         }
@@ -90,7 +156,7 @@ while (@socket_bind($sock, 0, $ServerPort) == false)
         
 // Start listening for connections
 socket_listen($sock);
-_server_log('..........Starting Server @ port '.$ServerPort.'..........'."\r\n");
+_server_log('..........Starting Server @ port '.$ServerPort.'..........');
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +223,7 @@ while (true) {
 						{
 							$var = trim($var);
 							$sub = explode("=",$var);
-							$_GET[$sub[0]] = $sub[1];
+							if (strlen($sub[0]) > 0) { $_GET[$sub[0]] = $sub[1]; }
 						}
 					}
 					
@@ -168,14 +234,21 @@ while (true) {
 						$full_url = $sections[1];
 						$a = explode("?",$full_url);
 						$URL = $a[0];
-						
+						$get = $a[1];
+						$vars = explode("&",$get);
+						foreach($vars as $var)
+						{
+							$var = trim($var);
+							$sub = explode("=",$var);
+							if (strlen($sub[0]) > 0) { $_GET[$sub[0]] = $sub[1]; }
+						}
 						$post = $lines[(count($lines) - 1)];
 						$vars = explode("&",$post);
 						foreach($vars as $var)
 						{
 							$var = trim($var);
 							$sub = explode("=",$var);
-							$_POST[$sub[0]] = $sub[1];
+							if (strlen($sub[0]) > 0) { $_POST[$sub[0]] = $sub[1]; }
 						}
 					}
 					
@@ -198,30 +271,42 @@ while (true) {
 				// Return page content
 				if ($URL == "/"){ $URL = "index.php"; }
 				else{ $URL = substr($URL,1); }
+				$StartTime = time();
 				if(file_exists($URL))
 				{
 					$contents = file_get_contents($URL);
 					if ($contents === false){
-						SendDataToClient($client[$i], "400");
-						_server_log("[".$client[$i]["IP"]."] RESPONSE: "."400");
+						$headers = make_headers(404, $URL);
+						SendDataToClient($client[$i], $headers);
+						SendDataToClient($client[$i], "Error: 404");
+						_server_log("[".$client[$i]["IP"]."] -> "."404 [".(time() - $StartTime)."s]");
 					}
 					else
 					{
 						if (substr($URL,-4) == ".php")
 						{
-							_server_log("[".$client[$i]["IP"]."] RESPONSE: "."200 (php)");
+							$script_output = _run($URL, $client[$i]["IP"]);
+							if ($script_output == ""){$script_output = "ERROR.  Please check the server log for more information.";}
+							$headers = make_headers(200, $URL);
+							SendDataToClient($client[$i], $headers);
+							SendDataToClient($client[$i], $script_output);
+							_server_log("[".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $StartTime)."s]");
 						}
 						else
 						{
+							$headers = make_headers(200, $URL);
+							SendDataToClient($client[$i], $headers);
 							SendDataToClient($client[$i], $contents);
-							_server_log("[".$client[$i]["IP"]."] RESPONSE: "."200 (not php)");
+							_server_log("[".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $StartTime)."s]");
 						}
 					}
 				}
 				else
 				{
-					SendDataToClient($client[$i], "404");
-					_server_log("[".$client[$i]["IP"]."] RESPONSE: "."404");
+					$headers = make_headers(404, $URL);
+					SendDataToClient($client[$i], $headers);
+					SendDataToClient($client[$i], "Error: 404");
+					_server_log("[".$client[$i]["IP"]."] -> "."404 [".(time() - $StartTime)."s]");
 				}
 			}
 			EndTransfer($client[$i]);

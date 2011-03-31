@@ -27,9 +27,9 @@ if ($ERROR == 100)
 	
 	// add a new user
 	$OurUserData = array(
-		"FirstName" => "Evan",
-		"LastName" => "Taler",
-		"EMail" => "test_user@test.com",
+		"FirstName" => "John",
+		"LastName" => "Doe",
+		"EMail" => "john_doe@test.com",
 		"ScreenName" => "DaveAPI",
 		"Password" => "password"
 	);

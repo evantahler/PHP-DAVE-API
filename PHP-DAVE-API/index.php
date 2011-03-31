@@ -39,6 +39,9 @@ if (empty($IP) || $IP == "")
 	} else { 
     	$IP = getenv(REMOTE_ADDR);
 	}
+	if ($IP == ""){
+		$IP = $_SERVER["REMOTE_ADDR"];
+	}
 }
 
 // check if this user has made too many requests this hour
