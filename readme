@@ -26,6 +26,11 @@ Features
 - XML, JSON, Serialized PHP output types built in
 - End-to-end spec testing framework for the API including custom assertions
 
+Stand-Alone Development Webserver written in PHP [ SERVER.php & script_runner.php ]
+- To help with development, a single-threaded multi-request webserver is a part of this project.  This will allow you to locally run this framework in "development mode".  This webserver is written entirely in PHP and has support for basic static file-types (css, js, images, html) along with the sand-boxed execution of PHP scripts (including all of those required for this framework.).  The server currently provides the normal $_GET, $_POST, $_COOKIE, $_REQUEST arrays and a basic emulation of $SERVER.  Cookie-writing coming soon.
+- run "php SERVER.php" from within the project directory to get started.  Point your browser at http://localhost:3000 
+- future versions of this project will have a server master which manages multiple SERVERS and runners, similar to the Rails unicorn framework [[ http://unicorn.bogomips.org/ ]]
+
 Requirements
 - PHP 5.2+
 - mySQL server 5.1+

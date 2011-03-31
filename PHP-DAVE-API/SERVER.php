@@ -6,6 +6,9 @@ Evan Tahler | 2011
 
 I am a single-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
+
+TODO: Overwrite the SetCookie method for setting cookies (probably within the script_runner)
+TODO: Currently the _run method will block until a request completes.  USE background exec and PID tracking to solve this
 ***********************************************/
 
 // CONFIG
