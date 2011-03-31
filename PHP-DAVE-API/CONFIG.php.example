@@ -64,7 +64,7 @@ $LogsToCheck[] = $App_dir.$MySQLLogFile;
 $CacheType = "DB"; // Options are "", "MemCache", "FlatFile", or "DB";
 $CacheTime = 10; // time to keep a cached value (in seconds)
 $CacheTable = "CACHE"; // if using the DB method
-$CacheFolder = "/CACHE/"; // chmod 777, if using FlatFile mode
+$CacheFolder = "CACHE/"; // chmod 777, if using FlatFile mode
 $MemCacheHost = 'localhost'; // The Server name or IP address of the memcache host, if CacheType = MemCache
 
 /*********************************************************/
