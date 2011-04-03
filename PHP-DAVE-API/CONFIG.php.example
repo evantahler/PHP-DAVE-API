@@ -38,10 +38,10 @@ $ServerAddress = $_SERVER["SERVER_ADDR"];
 $ServerName = $_SERVER["SERVER_NAME"];
 
 // mySQL database
-$DB = "API";  // the name of the database in use
+$DB = "daveapi";  // the name of the database in use
 $dbhost = "localhost";
-$dbuser = "MrAPI";
-$dbpass = "MrAPIPassword";
+$dbuser = "root";
+$dbpass = "";
 
 /*********************************************************/
 // Files and Folders
