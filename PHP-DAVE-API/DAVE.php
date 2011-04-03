@@ -258,6 +258,9 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$UpperLimit = $Settings["UpperLimit"];
 	$LowerLimit = $Settings["LowerLimit"];
 	$SQL_Override = $Settings["SQL_Override"];
+	
+	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
+	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
 		
 	if(_tableCheck($Table))
 	{
