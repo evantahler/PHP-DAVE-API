@@ -45,7 +45,7 @@ $dbpass = "";
 
 /*********************************************************/
 // Files and Folders
-$PHP_Path = "/usr/bin/php/"; // where is the PHP excecutable?
+$PHP_Path = "/usr/bin/php"; // where is the PHP excecutable?
 $App_dir = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/

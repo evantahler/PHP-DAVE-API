@@ -122,7 +122,7 @@ function get_content_type($URL)
 
 function _run($URL, $remote_ip) 
 {
-	global $_GET, $_POST, $_COOKIE, $domain;
+	global $_GET, $_POST, $_COOKIE, $domain, $PHP_Path;
 	
 	$_SERVER = array(
 		"PHP_SELF" => $URL,
