@@ -9,7 +9,6 @@ How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/so
 
 *** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
 
-TODO: Overwrite the SetCookie method for setting cookies (probably within the script_runner)
 TODO: Currently the _run method will block until a request completes.  USE background exec and PID tracking to solve this
 ***********************************************/
 
