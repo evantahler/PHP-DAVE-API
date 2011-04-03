@@ -134,7 +134,7 @@ function _run($URL, $remote_ip)
 	);
 	$_FILE = getcwd()."/".$URL;
 
-	$sys = escapeshellcmd("/usr/bin/php ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE));
+	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE));
 	$sys = str_replace('"','\"',$sys);
 	$script_output = `$sys`;
 	return $script_output;
