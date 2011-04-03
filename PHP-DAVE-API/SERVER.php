@@ -7,6 +7,8 @@ Evan Tahler | 2011
 I am a single-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
 
+*** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
+
 TODO: Overwrite the SetCookie method for setting cookies (probably within the script_runner)
 TODO: Currently the _run method will block until a request completes.  USE background exec and PID tracking to solve this
 ***********************************************/
@@ -52,28 +54,49 @@ function EndTransfer($ClientData)
     $client = array_values($client);
 }
 
-function make_headers($error_code = 200, $URL, $cookies = null)
+function clean_body_output($script_output)
+{
+	$tmp = explode("<<HEADER_BREAK>>", $script_output);
+	return trim($tmp[0]);
+}
+
+function make_headers($error_code = 200, $URL, $script_output = "")
 {
 	global $domain;
 	
-	$out = "HTTP/1.0 ";
-	if ($error_code == 400){$out .= "400 Bad Request\r\n";}
-	elseif ($error_code == 403){$out .= "403 Forbidden\r\n";}
-	elseif ($error_code == 404){$out .= "404 Not Found\r\n";}
-	elseif ($error_code == 500){$out .= "500 Internal Server Error\r\n";}
-	elseif ($error_code == 501){$out .= "501 Not Implemented\r\n";}
-	else {$out .= "200 OK\r\n";}
-	$out .= "Connection: close\r\n";
-	$out .= "Server: DaveMiniTestServer\r\n";
-	$out .= "Content-Type: ".get_content_type($URL)."\r\n";
-	if ($cookies == null){$cookies = array();}
-	foreach ($cookies as $cookie)
+	$extra_lines = array();
+	$code_override = false;
+	if ($script_output != null)
 	{
-		if (!($cookie["expire_timestamp"] > 0)){$cookie["expire_timestamp"] = time() + 60*60;}
-		$datetime = new DateTime($cookie["expire_timestamp"]);
-		$cookie_time = $datetime->format(DATE_COOKIE);
-		$out .= "Set-Cookie: ".$cookie["variable"]."=".$cookie["value"]."; expires=".$cookie_time."; path=/; domain=".$domain."\r\n";
+		$tmp = explode("<<HEADER_BREAK>>", $script_output);
+		$header_lines = explode("<<HEADER_LINE_BREAK>>", $tmp[1]);
+		foreach($header_lines as $line)
+		{
+			if (strlen($line) > 0)
+			{
+				$extra_lines[] = $line; 
+				if (strpos($line,"Location:") !== false){$code_override = "301 Moved Permanently\r\n";}
+			}
+		}
 	}
+	
+	$out = "HTTP/1.0 ";
+	if ($code_override != false) {$out .= $code_override;}
+	else
+	{
+		if ($error_code == 400){$out .= "400 Bad Request\r\n";}
+		elseif ($error_code == 403){$out .= "403 Forbidden\r\n";}
+		elseif ($error_code == 404){$out .= "404 Not Found\r\n";}
+		elseif ($error_code == 500){$out .= "500 Internal Server Error\r\n";}
+		elseif ($error_code == 501){$out .= "501 Not Implemented\r\n";}
+		else {$out .= "200 OK\r\n";}
+	}
+	$out .= "Connection: close\r\n";
+	$out .= "Server: DaveServer\r\n";
+	$out .= "Content-Type: ".get_content_type($URL)."\r\n";
+
+	foreach ($extra_lines as $line){ $out .= $line."\r\n"; }
+
 	return $out;
 }
 
@@ -199,9 +222,9 @@ while (true) {
 				
 				$lines = explode("\n", $input);
 				foreach($lines as $line)
-				{
+				{					
 					// GET
-					if (substr($line,0,4) == "GET ")
+					if (strpos($line,"GET ") !== false)
 					{
 						$sections = explode(" ",$line);
 						$full_url = $sections[1];
@@ -218,7 +241,7 @@ while (true) {
 					}
 					
 					// POST
-					if (substr($line,0,5) == "POST ")
+					if (strpos($line,"POST ") !== false)
 					{
 						$sections = explode(" ",$line);
 						$full_url = $sections[1];
@@ -243,20 +266,20 @@ while (true) {
 					}
 					
 					// COOKIES
-					if (substr($line,0,8) == "Cookie: ")
+					if (strpos($line,"Cookie: ") !== false)
 					{
 						$line = substr($line,8);
-						$vars = explode(";",$line);
+						$vars = explode("; ",$line);
 						foreach($vars as $var)
 						{
 							$var = trim($var);
 							$sub = explode("=",$var);
 							$_COOKIE[$sub[0]] = $sub[1];
 						}
-					}					
+					}		
 				}
 				
-				_server_log("[".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIES)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
+				_server_log("[".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
 				
 				// Return page content
 				if ($URL == "/"){ $URL = "index.php"; }
@@ -276,10 +299,26 @@ while (true) {
 						if (substr($URL,-4) == ".php")
 						{
 							$script_output = _run($URL, $client[$i]["IP"]);
-							if ($script_output == ""){$script_output = "ERROR.  Please check the server log for more information.";}
-							$headers = make_headers(200, $URL);
+							if ($script_output == ""){$script_output = "SERVER ERROR.  Please check the server log for more information.";}
+							$headers = make_headers(200, $URL, $script_output);
 							SendDataToClient($client[$i], $headers);
-							SendDataToClient($client[$i], $script_output);
+							if ( strpos($headers,"301 Moved Permanently") !== false)
+							{
+								$header_lines = explode("\r\n", $headers);
+								foreach($header_lines as $line)
+								{
+									if (strpos($line,"Location:") !== false)
+									{
+										$new_loc = substr($line,8,(strlen($line) - 1));
+									}
+								}
+								$out = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\r\n<html><head>\r\n<title>301 Moved Permanently</title>\r\n</head><body>\r\n<h1>Moved Permanently</h1>\r\n<p>The document has moved <a href=\"".$new_loc."\">here</a>.</p>\r\n</body></html>";
+								SendDataToClient($client[$i],$out);
+							}
+							else
+							{
+								SendDataToClient($client[$i], clean_body_output($script_output));
+							}
 							_server_log("[".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $StartTime)."s]");
 						}
 						else
