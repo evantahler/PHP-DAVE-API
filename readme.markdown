@@ -9,7 +9,7 @@ The DAVE API was built to be a robust, multi-node capable framework for transact
 
 To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in /Actions to see the logic behind adding, editing, viewing, and deleting users. This includes logging in.
 
-The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action"s that handle the input, such as "AddUser?" or "GeoLocate?". The DAVE API is NOT traditionally "RESTful", in that it does not use the normal verbs (Get, Put, etc). This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices that may not have access to more than loading a remote URL.
+The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action's" that handle the input, such as "AddUser" or "GeoLocate". The DAVE API is NOT traditionally "RESTful", in that it does not use the normal verbs (Get, Put, etc). This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.
 
 The DAVE API understands 2 types of security methodology. "Public" actions can be called by anyone, and then can implement optional user-based security (checking userIDs and PasswordHashes?). Optionally, certain Actions can be defined as "Private", and will require a defined developer to authenticate with every request. This requires your developers to provide an MD5 hash of their APIKey and private DeveloperID to authenticate with. You can mix private and public actions.
 
@@ -30,9 +30,9 @@ Features
 
 Stand-Alone Development Webserver written in PHP [ SERVER.php & script_runner.php ]
 -----------------------------------------------------------------------------------
-To help with development, a single-threaded multi-request webserver is a part of this project.  This will allow you to locally run this framework in "development mode".  This webserver is written entirely in PHP and has support for basic static file-types (css, js, images, html) along with the sand-boxed execution of PHP scripts (including all of those required for this framework.).  The server currently provides the normal $_GET, $_POST, $_COOKIE, $_REQUEST arrays and a basic emulation of $SERVER.  Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  These functions will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways.
-* run "php SERVER.php" from within the project directory to get started.  Point your browser at http://localhost:3000 
-* this server implementation was inspired by nginx, and makes use of spawning OS-level processes to do the heavy lifting for each request
+To help with development, a single-threaded multi-request webserver is a part of this project.  This will allow you to locally run this framework in "development mode".  This webserver is written entirely in PHP and has support for basic static file-types (css, js, images, html) along with the sand-boxed execution of PHP scripts (including all of those required for this framework.).  The server currently provides the normal $_GET, $_POST, $_COOKIE, $_REQUEST arrays and a basic emulation of $SERVER.  Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  These functions will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate their behavior in other ways.  This server implementation was inspired by nginx, and makes use of spawning OS-level processes to do the heavy lifting for each request
+
+Run "php SERVER.php" from within the project directory to get started.  Point your browser at http://localhost:3000 
 
 Requirements
 ------------
