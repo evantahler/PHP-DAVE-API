@@ -11,11 +11,11 @@ $T = new DaveTest("Output Tests");
 
 // api_requests_remaining should decrement on subsequent loads
 $PostArray = array("OutputType" => "PHP");
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $first = $APIDATA["api_requests_remaining"];
 $T->assert(">",$first,0);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $second = $APIDATA["api_requests_remaining"];
 $T->assert(">",$second,0);
@@ -23,7 +23,7 @@ $T->assert("<",$second,$first);
 
 // computation time should be > 0 but less than 10 seconds
 $PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $ComputationTime = $APIDATA["ComputationTime"];
 $T->assert(">",$ComputationTime,0);
@@ -31,14 +31,14 @@ $T->assert("<",$ComputationTime,10);
 
 //I should have an IP address
 $PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $IP = $APIDATA["IP"];
 $T->assert("true",IP_check($IP));
 
 //The sever should have an IP address and a ServerName
 $PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $ServerAddress = $APIDATA["IP"];
 $T->assert("true",IP_check($ServerAddress));

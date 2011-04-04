@@ -11,14 +11,14 @@ $T = new DaveTest("Output Tests");
 
 // PHP
 $PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $T->assert(">",count($APIDATA),0);
 $T->assert(">",strlen($APIDATA["ERROR"]),0);
 
 // JSON
 $PostArray = array("OutputType" => "JSON", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();
 $JSON_resp = json_decode($APIRequest->ShowRawResponse(), true);
 $T->assert(">",count($JSON_resp),0);
@@ -26,7 +26,7 @@ $T->assert(">",strlen($JSON_resp["ERROR"]),0);
 
 // XML
 $PostArray = array("OutputType" => "XML", "LimitLockPass" => $CorrectLimitLockPass);
-$APIRequest = new APIRequest($PublicURL, $PostArray);
+$APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();
 $XML_resp = simplexml_load_string($APIRequest->ShowRawResponse());
 $T->assert(">",count($XML_resp),0);

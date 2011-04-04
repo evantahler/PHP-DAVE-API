@@ -6,22 +6,20 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I hold all the configuration variables for the API
-
 ***********************************************/
 
 // show errors on scrern
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
-// SERVER
-$ServerPort = 3000;
-$InternalServerPort = 3001;
-$ServerPollTimeOut = 10000; // in micro-seconds. If you set me too large, your servers will have slow resposne times.  Setting me too fast will burn CPU.
-$ServerLog = "LOG/SERVER_LOG.txt";
-$max_clients = 100;
-$domain = "localhost";
-
-$PublicURL = "http://localhost/PHP-DAVE-API/";
+// SERVER (set me for but the API and SERVER (even if you don't need SERVER))
+$SERVER = array();
+$SERVER['public_port'] = 3000;
+$SERVER['internal_port'] = 3001;
+$SERVER['poll_timeout'] = 10000; // in micro-seconds. If you set me too large, your servers will have slow resposne time, Setting me too fast will burn CPU.
+$SERVER['log_file'] = "LOG/SERVER_LOG.txt";
+$SERVER['max_clients'] = 100;
+$SERVER['domain'] = "localhost";
 
 // working directory
 $path = substr(__FILE__,0,(strlen(__FILE__) - strlen("CONFIG.php")));
@@ -29,10 +27,10 @@ chdir($path);
 
 // Set the ERROR.  This is used by all steps to ensure that nothing has perviously gone awry, and allows the next step to excecute.  All steps will first check to make sure that ERROR == 100.
 $ERROR = 100; 
-$systemTimeZone = "America/New_York";
+$systemTimeZone = "America/Los_Angeles";
 $DefaultOutputType = "JSON" ;  // XML, PHP, VAR, SOAP, or JSON
 $XML_ROOT_NODE = "XML"; // what is the root node of your XML output called?
-$RequestLimitPerHour = 100; // limit how many times a specific IP can use the API per hour.  Set it to 0 to have no limit
+$RequestLimitPerHour = 1000; // limit how many times a specific IP can use the API per hour.  Set it to 0 to have no limit
 $CorrectLimitLockPass = "Sekret"; // If a user provides the phrase as the param "LimitLockPass", even with a request limit per hour set above, they will not be limited on the requests that they can make.
 
 //define some things about this API node

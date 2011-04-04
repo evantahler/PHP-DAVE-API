@@ -15,6 +15,7 @@ require_once("../../CONFIG.php");
 date_default_timezone_set($systemTimeZone);
 
 $TestLog = "LOG/test_log.txt"; // from project root
+$TestURL = $SERVER['domain'].":".$SERVER['public_port']
 
 if (!class_exists(DaveTest))
 {

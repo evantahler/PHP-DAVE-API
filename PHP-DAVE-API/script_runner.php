@@ -87,16 +87,19 @@ function _header($string)
 // cookie
 function _setcookie($name, $value = null, $expire = null, $path = null, $domain = null, $secure = null, $httponly = null)
 {
+	global $SERVER;
 	$out = @setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 	if ($out === false)
 	{
 		// TODO: Handle $domain, $secure and $httponly
 		
 		if (!($expire > 0)){$expire = time() + 60*60;} // 1 hour default cookie duration
-		$datetime = new DateTime(date("Y-m-d H:i:s",$expire));
+		$datetime = new DateTime(date("Y-m-d H:i:s",$expire), new DateTimeZone('GMT'));
 		$cookie_time = $datetime->format(DATE_COOKIE);
+		// $cookie_time = date("D, d-M-Y H:i:s T",$expire);
 		if ($path == null){$path = "/";}
-		$ret .= "Set-Cookie: ".urlencode($name)."=".urlencode($value)."; expires=".$cookie_time."; path=".$path.";";
+		if ($domain == null){$domain = $SERVER['domain'];}
+		$ret .= "Set-Cookie: ".urlencode($name)."=".urlencode($value)."; expires=".$cookie_time."; path=".$path."; domain=".$domain.";";
 		_header($ret);
 		return true;
 	}

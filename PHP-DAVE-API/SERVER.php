@@ -19,17 +19,17 @@ require("CONFIG.php");
 
 function _server_log($string)
 {
-	global $ServerLog;
+	global $SERVER;
 	$string = date("m-d-Y H:i:s")." | ".$string."\r\n";
     print($string);
-    if (!(file_exists($ServerLog)))
+    if (!(file_exists($SERVER['log_file'])))
     {
-		$Logfh = fopen($ServerLog, 'a');
+		$Logfh = fopen($SERVER['log_file'], 'a');
 		fwrite($Logfh, "");
 		fclose($Logfh);
-		chmod($ServerLog, 0777);
+		chmod($SERVER['log_file'], 0777);
     }
-    $Logfh = fopen($ServerLog, 'a');
+    $Logfh = fopen($SERVER['log_file'], 'a');
     fwrite($Logfh, $string);
     fclose($Logfh);
 }
@@ -59,7 +59,7 @@ function clean_body_output($script_output)
 
 function make_headers($error_code = 200, $URL, $script_output = "")
 {
-	global $domain;
+	global $SERVER;
 	
 	$extra_lines = array();
 	$code_override = false;
@@ -88,6 +88,8 @@ function make_headers($error_code = 200, $URL, $script_output = "")
 		elseif ($error_code == 501){$out .= "501 Not Implemented\r\n";}
 		else {$out .= "200 OK\r\n";}
 	}
+	$out .= "Expires: -1\r\n";
+	$out .= "Cache-Control: private, max-age=0\r\n";
 	$out .= "Connection: close\r\n";
 	$out .= "Server: DaveServer\r\n";
 	$out .= "Content-Type: ".get_content_type($URL)."\r\n";
@@ -126,18 +128,18 @@ function cleanInternalInput($string)
 
 function _run($URL, $remote_ip, $client_id) 
 {
-	global $_GET, $_POST, $_COOKIE, $domain, $PHP_Path, $InternalServerPort;
+	global $_GET, $_POST, $_COOKIE, $SERVER, $PHP_Path;
 	
 	$_SERVER = array(
 		"PHP_SELF" => $URL,
-		"SERVER_ADDR" => $domain,
-		"SERVER_NAME" => $domain,
+		"SERVER_ADDR" => $SERVER['domain'],
+		"SERVER_NAME" => $SERVER['domain'],
 		"SERVER_PROTOCOL" => "HTTP/1.0",
 		"REMOTE_ADDR" => $remote_ip,
 	);
 	$_FILE = getcwd()."/".$URL;
 
-	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($InternalServerPort)." --PARENT_URL=".serialize($domain))." > /dev/null 2>&1 & ";
+	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($SERVER['internal_port'])." --PARENT_URL=".serialize($SERVER['domain']))." > /dev/null 2>&1 & ";
 	$sys = str_replace('"','\"',$sys);
 	$script_output = `$sys`;
 	return $script_output;
@@ -158,13 +160,13 @@ $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 socket_set_nonblock($sock);
 socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
 $j = 0;
-while (@socket_bind($sock, 0, $ServerPort) == false)
+while (@socket_bind($sock, 0, $SERVER['public_port']) == false)
 {
         sleep(1);
         $j++;
         if ($j > 3)
         {
-                _server_log('Server already running on port '.$ServerPort);
+                _server_log('Server already running on port '.$SERVER['public_port']);
                 exit;
                 break;
         }
@@ -172,14 +174,14 @@ while (@socket_bind($sock, 0, $ServerPort) == false)
         
 // Start listening for connections
 socket_listen($sock);
-_server_log('..........Starting Server @ port '.$ServerPort.'..........');
+_server_log('..........Starting Server @ port '.$SERVER['public_port'].'..........');
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /* LOCAL PORT TO LISTEN FOR RESPONSES FROM WORKES */
 
-$internal_socket = stream_socket_server("tcp://0.0.0.0:".$InternalServerPort, $errno_internal, $errstr_internal);
+$internal_socket = stream_socket_server("tcp://0.0.0.0:".$SERVER['internal_port'], $errno_internal, $errstr_internal);
 if (!$internal_socket) {
     echo "$errstr_internal ($errno_internal) \r\n";
 	exit;
@@ -198,17 +200,17 @@ $RESPONSES = array(); // array to hold worker output from interal workers
 while (true) {
     // Setup clients listen socket for reading
     $read[0] = $sock;
-    for ($i = 0; $i < $max_clients; $i++)
+    for ($i = 0; $i < $SERVER['max_clients']; $i++)
     {
         if ($client[$i]['sock']  != null)
             $read[$i + 1] = $client[$i]['sock'] ;
     }
     // Set up a blocking call to socket_select(), but have it end fast
-    $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = $ServerPollTimeOut);
+    $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = $SERVER['poll_timeout']);
 
     /* if a new connection is being made add it to the client array */
     if (in_array($sock, $read)) {
-        for ($i = 0; $i < $max_clients; $i++)
+        for ($i = 0; $i < $SERVER['max_clients']; $i++)
         {
             if ($client[$i]['sock'] == null) 
             {
@@ -222,7 +224,7 @@ while (true) {
 				$connection_counter++;
                 break;
             }
-            elseif ($i == $max_clients - 1) { _server_log(("too many clients"), $LogFile); }
+            elseif ($i == $SERVER['max_clients'] - 1) { _server_log(("too many clients"), $LogFile); }
         }
         if (--$ready <= 0) 
             continue;
@@ -233,7 +235,7 @@ while (true) {
 
 
     // If a client is trying to write - handle it now
-    for ($i = 0; $i < $max_clients; $i++) // for each client
+    for ($i = 0; $i < $SERVER['max_clients']; $i++) // for each client
     {
         if (in_array($client[$i]['sock'] , $read))
         {
@@ -405,7 +407,7 @@ while (true) {
 	
 	// HANDLE INTERNAL CONNECTIONS
 	$internal_read = $internal_master;
-    $mod_fd = stream_select($internal_read, $_w = NULL, $_e = NULL, 0, $ServerPollTimeOut);
+    $mod_fd = stream_select($internal_read, $_w = NULL, $_e = NULL, 0, $SERVER['poll_timeout']);
     if ($mod_fd === FALSE) { break; }
 	for ($int_i = 0; $int_i < $mod_fd; ++$int_i) 
 	{
