@@ -45,11 +45,11 @@ function SendDataToClient($ClientData, $Message)
         }
 }
 
-function EndTransfer($ClientData)
+function EndTransfer($i)
 {
 	global $client;
-	socket_close($ClientData['sock']);
-    unset($ClientData);
+	socket_close($client[$i]['sock']);
+    unset($client[$i]);
     $client = array_values($client);
 }
 
@@ -120,9 +120,15 @@ function get_content_type($URL)
 	return $out;
 }
 
-function _run($URL, $remote_ip) 
+function cleanInternalInput($string)
 {
-	global $_GET, $_POST, $_COOKIE, $domain, $PHP_Path;
+	$string = trim($string);
+	return $string;
+}
+
+function _run($URL, $remote_ip, $client_id) 
+{
+	global $_GET, $_POST, $_COOKIE, $domain, $PHP_Path, $InternalServerPort;
 	
 	$_SERVER = array(
 		"PHP_SELF" => $URL,
@@ -133,7 +139,7 @@ function _run($URL, $remote_ip)
 	);
 	$_FILE = getcwd()."/".$URL;
 
-	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE));
+	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($InternalServerPort)." --PARENT_URL=".serialize($domain))." > /dev/null 2>&1 & ";
 	$sys = str_replace('"','\"',$sys);
 	$script_output = `$sys`;
 	return $script_output;
@@ -156,7 +162,7 @@ socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
 $j = 0;
 while (@socket_bind($sock, 0, $ServerPort) == false)
 {
-        sleep($Sleeper);
+        sleep(1);
         $j++;
         if ($j > 3)
         {
@@ -173,7 +179,23 @@ _server_log('..........Starting Server @ port '.$ServerPort.'..........');
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+/* LOCAL PORT TO LISTEN FOR RESPONSES FROM WORKES */
+
+$internal_socket = stream_socket_server("tcp://0.0.0.0:".$InternalServerPort, $errno_internal, $errstr_internal);
+if (!$internal_socket) {
+    echo "$errstr_internal ($errno_internal) \r\n";
+	exit;
+}
+$internal_master[] = $internal_socket;
+$internal_read = $internal_master;
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 /* LOOP FOREVER! */
+
+$connection_counter = 0;
+$RESPONSES = array(); // array to hold worker output from interal workers
 
 while (true) {
     // Setup clients listen socket for reading
@@ -183,8 +205,8 @@ while (true) {
         if ($client[$i]['sock']  != null)
             $read[$i + 1] = $client[$i]['sock'] ;
     }
-    // Set up a blocking call to socket_select()
-    $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = 100000);
+    // Set up a blocking call to socket_select(), but have it end fast
+    $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = $ServerPollTimeOut);
 
     /* if a new connection is being made add it to the client array */
     if (in_array($sock, $read)) {
@@ -196,6 +218,10 @@ while (true) {
                 // set defaults
                 socket_getpeername($client[$i]['sock'],$ip,$RemotePort);
                 $client[$i]['IP'] = $ip;
+				$client[$i]['JoinTime'] = time();
+				$client[$i]['mode'] = 'close';
+				$client[$i]['ID'] = $connection_counter;
+				$connection_counter++;
                 break;
             }
             elseif ($i == $max_clients - 1) { _server_log(("too many clients"), $LogFile); }
@@ -204,6 +230,10 @@ while (true) {
             continue;
     } 
     
+
+
+
+
     // If a client is trying to write - handle it now
     for ($i = 0; $i < $max_clients; $i++) // for each client
     {
@@ -278,12 +308,17 @@ while (true) {
 					}		
 				}
 				
-				_server_log("[".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
+				
+				
+				
+				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
+				
+				
+				
 				
 				// Return page content
 				if ($URL == "/"){ $URL = "index.php"; }
 				else{ $URL = substr($URL,1); }
-				$StartTime = time();
 				if(file_exists($URL))
 				{
 					$contents = file_get_contents($URL);
@@ -291,41 +326,21 @@ while (true) {
 						$headers = make_headers(404, $URL);
 						SendDataToClient($client[$i], $headers);
 						SendDataToClient($client[$i], "Error: 404");
-						_server_log("[".$client[$i]["IP"]."] -> "."404 [".(time() - $StartTime)."s]");
+						_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
 					}
 					else
 					{
 						if (substr($URL,-4) == ".php")
 						{
-							$script_output = _run($URL, $client[$i]["IP"]);
-							if ($script_output == ""){$script_output = "SERVER ERROR.  Please check the server log for more information.";}
-							$headers = make_headers(200, $URL, $script_output);
-							SendDataToClient($client[$i], $headers);
-							if ( strpos($headers,"301 Moved Permanently") !== false)
-							{
-								$header_lines = explode("\r\n", $headers);
-								foreach($header_lines as $line)
-								{
-									if (strpos($line,"Location:") !== false)
-									{
-										$new_loc = substr($line,8,(strlen($line) - 1));
-									}
-								}
-								$out = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\r\n<html><head>\r\n<title>301 Moved Permanently</title>\r\n</head><body>\r\n<h1>Moved Permanently</h1>\r\n<p>The document has moved <a href=\"".$new_loc."\">here</a>.</p>\r\n</body></html>";
-								SendDataToClient($client[$i],$out);
-							}
-							else
-							{
-								SendDataToClient($client[$i], clean_body_output($script_output));
-							}
-							_server_log("[".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $StartTime)."s]");
+							_run($URL, $client[$i]["IP"], $client[$i]["ID"]);
+							$client[$i]["mode"] = "wait";
 						}
 						else
 						{
 							$headers = make_headers(200, $URL);
 							SendDataToClient($client[$i], $headers);
 							SendDataToClient($client[$i], $contents);
-							_server_log("[".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $StartTime)."s]");
+							_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $client[$i]['JoinTime'])."s]");
 						}
 					}
 				}
@@ -334,12 +349,99 @@ while (true) {
 					$headers = make_headers(404, $URL);
 					SendDataToClient($client[$i], $headers);
 					SendDataToClient($client[$i], "Error: 404");
-					_server_log("[".$client[$i]["IP"]."] -> "."404 [".(time() - $StartTime)."s]");
+					_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
 				}
 			}
-			EndTransfer($client[$i]);
         }
+
+
+
+
+
+		// Handle data recipt and closure
+		if ($client[$i]['mode'] == 'wait')
+		{
+			if (strlen($RESPONSES[$client[$i]['ID']]) > 0)
+			{
+				// send the response!
+				$script_output = $RESPONSES[$client[$i]['ID']];
+				
+				if ($script_output == ""){$script_output = "SERVER ERROR.  Please check the server log for more information.";}
+				$headers = make_headers(200, $URL, $script_output);
+				SendDataToClient($client[$i], $headers);
+				if ( strpos($headers,"301 Moved Permanently") !== false)
+				{
+					$header_lines = explode("\r\n", $headers);
+					foreach($header_lines as $line)
+					{
+						if (strpos($line,"Location:") !== false)
+						{
+							$new_loc = substr($line,8,(strlen($line) - 1));
+						}
+					}
+					$out = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\r\n<html><head>\r\n<title>301 Moved Permanently</title>\r\n</head><body>\r\n<h1>Moved Permanently</h1>\r\n<p>The document has moved <a href=\"".$new_loc."\">here</a>.</p>\r\n</body></html>";
+					SendDataToClient($client[$i],$out);
+				}
+				else
+				{
+					SendDataToClient($client[$i], clean_body_output($script_output));
+				}
+				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $client[$i]['JoinTime'])."s]");
+				unset($RESPONSES[$i]);
+				$client[$i]['mode'] = "close";
+			}
+			// keep waiting...
+			else {  }
+		}
+
+		if ($client[$i]['mode'] == 'close')
+		{
+			EndTransfer($i);
+		}
     }
+	
+	
+	
+	
+	
+	
+	// HANDLE INTERNAL CONNECTIONS
+	$internal_read = $internal_master;
+    $mod_fd = stream_select($internal_read, $_w = NULL, $_e = NULL, 0, $ServerPollTimeOut);
+    if ($mod_fd === FALSE) { break; }
+	for ($int_i = 0; $int_i < $mod_fd; ++$int_i) 
+	{
+		if ($internal_read[$int_i] === $internal_socket) { // new clients
+		    $internal_conn = stream_socket_accept($internal_socket);
+		    $internal_master[] = $internal_conn;
+		} 
+		else 
+		{
+			$internal_sock_data = fread($internal_read[$int_i], 10240);
+		    if (strlen($internal_sock_data) === 0) { // connection closed
+		        $key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);
+		        fclose($internal_read[$int_i]);
+		        unset($internal_master[$key_to_del]);
+		    } elseif ($internal_sock_data === FALSE) {
+		        $key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);
+		        unset($internal_master[$key_to_del]);
+		    } else {
+				$tmp = explode("<<CLIENT_ID_BREAK>>", unserialize(cleanInternalInput($internal_sock_data)));
+				$RESPONSES[$tmp[1]] = $tmp[0];
+				_server_log(">> Response complete for connection ID #".$tmp[1]);
+				
+				// always DC when done
+				$key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);
+		        fclose($internal_read[$int_i]);
+		        unset($internal_master[$key_to_del]);
+			}
+		}
+	}
+
+
+	
+	
+	
 }
 socket_close($sock);
 

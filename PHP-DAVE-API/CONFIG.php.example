@@ -15,6 +15,8 @@ error_reporting (E_ALL ^ E_NOTICE);
 
 // SERVER
 $ServerPort = 3000;
+$InternalServerPort = 3001;
+$ServerPollTimeOut = 10000; // in micro-seconds. If you set me too large, your servers will have slow resposne times.  Setting me too fast will burn CPU.
 $ServerLog = "LOG/SERVER_LOG.txt";
 $max_clients = 100;
 $domain = "localhost";
@@ -150,6 +152,8 @@ if (class_exists("DBConnection")) {
 	$ACTIONS[] = array('UserEdit', 'Actions/UserEdit.php', 'Public');
 	$ACTIONS[] = array('UserDelete', 'Actions/UserDelete.php', 'Public');
 	$ACTIONS[] = array('LogIn', 'Actions/LogIn.php', 'Public');
+	$ACTIONS[] = array('CookieTest', 'Actions/CookieTest.php', 'Public');
+	$ACTIONS[] = array('SlowAction', 'Actions/SlowAction.php', 'Public');
 
 	/*********************************************************/
 

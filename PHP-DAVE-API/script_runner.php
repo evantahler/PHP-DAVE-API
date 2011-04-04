@@ -9,6 +9,11 @@ I am the slave thread to the SERVER which will run the request.  I exist to catc
 *** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
 
 Due to the implamention of this server captuing all script output in a buffer, setting headers and cookies should always cause that output to render to the end user before traditional output.
+
+Here's an example of the collection of params how I might be called from SERVER:
+
+/usr/bin/php /PROJECTS/php-dave-api/PHP-DAVE-API/script_runner.php --FILE=s:45:\"/PROJECTS/php-dave-api/PHP-DAVE-API/index.php\"\; --SERVER=a:5:\{s:8:\"PHP_SELF\"\;s:9:\"index.php\"\;s:11:\"SERVER_ADDR\"\;s:9:\"localhost\"\;s:11:\"SERVER_NAME\"\;s:9:\"localhost\"\;s:15:\"SERVER_PROTOCOL\"\;s:8:\"HTTP/1.0\"\;s:11:\"REMOTE_ADDR\"\;s:9:\"127.0.0.1\"\;\} --GET=a:0:\{\} --POST=a:3:\{s:13:\"LimitLockPass\"\;s:6:\"Sekret\"\;s:10:\"OutputType\"\;s:3:\"XML\"\;s:6:\"Action\"\;s:0:\"\"\;\} --COOKIE=a:0:\{\} --CLIENT_ID=i:0\; --PARENT_PORT=i:3001\; --PARENT_URL=s:9:\"localhost\"\;
+
 ***********************************************/
 require("helper_functions/parseArgs.php");
 function __ErrorHandler($errno, $errstr, $errfile, $errline)
@@ -55,7 +60,12 @@ $_GET = @unserialize($__input["GET"]);
 $_POST = @unserialize($__input["POST"]);
 $_SERVER = @unserialize($__input["SERVER"]);
 $_COOKIE = @unserialize($__input["COOKIE"]);
-$_FILE = @unserialize($__input["FILE"]);
+$__FILE = @unserialize($__input["FILE"]);
+$__CLIENT_ID = @unserialize($__input["CLIENT_ID"]);
+$__PARENT_URL = @unserialize($__input["PARENT_URL"]);
+$__PARENT_PORT = @unserialize($__input["PARENT_PORT"]);
+
+echo "-->".$__PARENT_URL."\r\n\r\n";
 
 foreach ($_GET as $k => $v){ $_REQUEST[$k] = $v; }
 foreach ($_POST as $k => $v){ $_REQUEST[$k] = $v; }
@@ -97,11 +107,25 @@ ob_start();ob_end_flush();
 
 // output buffer
 ob_start();
-require($_FILE);
+require($__FILE);
 echo "<<HEADER_BREAK>>";
 foreach($_HEADER as $header)
 {
 	echo $header."<<HEADER_LINE_BREAK>>";
 }
+echo "<<CLIENT_ID_BREAK>>".$__CLIENT_ID;
+$__OUT = ob_get_contents(); 
 ob_end_flush();
+
+// send data to parent
+if (strlen($__PARENT_URL) > 0)
+{
+	$socket = stream_socket_client("tcp://".$__PARENT_URL.":".$__PARENT_PORT, $errno, $errstr);
+	if ($socket)
+	{
+		fwrite($socket, serialize($__OUT));
+	}
+	fclose($socket);
+}
+
 ?>
