@@ -4,12 +4,10 @@ DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
-I am a single-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
+I am a muti-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAVE-API application locally by running "php SERVER.php".
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
 
 *** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
-
-TODO: Currently the _run method will block until a request completes.  USE background exec and PID tracking to solve this
 ***********************************************/
 
 // CONFIG
