@@ -64,9 +64,9 @@ Actions you can try [[&Action=..]] which are included in the framework:
 * CookieTest: Will set cookies in your browser.  Use this to test SERVER's implementation of _setcookie()
 * SlowAction: A simple action that will sleep for a number of seconds.  Use this to test SERVER's non-blocking implementation by making a slow request, and then other requests to ensure that a slow request will not block other actions from processing.
 	
-Example Site: [http://dave.evantahler.com][http://dave.evantahler.com]
+Example Site: http://dave.evantahler.com
 ----------------------------------------
 
 Note on MaxMind GeoLocation
 ---------------------------
-You will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here [http://www.maxmind.com/app/geolitecity][http://www.maxmind.com/app/geolitecity] and put it in the /MaxMind? folder.
+You will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder.
