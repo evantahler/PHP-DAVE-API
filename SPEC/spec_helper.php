@@ -16,7 +16,7 @@ require_once("../../API/CONFIG.php");
 
 $TestLog = "LOG/test_log.txt"; // from project root
 @mkdir("LOG");
-$TestURL = "localhost:3000";  // be sure to include the proper port (default for using included SERVER.php)
+$TestURL = $CONFIG['ServerAddress'];  // be sure to include the proper port (default for using included SERVER.php)
 
 if (!class_exists(DaveTest))
 {
@@ -62,18 +62,18 @@ class DaveTest
 	public function assert($eval = null, $a = null, $b = null)
 	{
 		$deets = debug_backtrace();
-		$ds = $deets[0]["file"]." @ line ".$deets[0]["line"];
+		$ds = " @ line ".$deets[0]["line"];
 		
 		if ($eval == "==")
 		{
 			if ($a == $b){
-				$this->log(((string)$a)." equals ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." equals ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." does not equal ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." does not equal ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -83,13 +83,13 @@ class DaveTest
 		if ($eval == "!=")
 		{
 			if ($a != $b){
-				$this->log(((string)$a)." does not equal ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." does not equal ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." equals ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." equals ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -100,13 +100,13 @@ class DaveTest
 		{
 			if ($a < $b)
 			{
-				$this->log(((string)$a)." < ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." < ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." < ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." < ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -116,13 +116,13 @@ class DaveTest
 		{
 			if ($a > $b)
 			{
-				$this->log(((string)$a)." > ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." > ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." > ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." > ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -132,13 +132,13 @@ class DaveTest
 		{
 			if ($a <= $b)
 			{
-				$this->log(((string)$a)." <= ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." <= ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." <= ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." <= ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -148,13 +148,13 @@ class DaveTest
 		{
 			if ($a <= $b)
 			{
-				$this->log(((string)$a)." >= ".((string)$b)." | ".$ds);
+				$this->log(((string)$a)." >= ".((string)$b).$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{	
-				$this->log("! ".((string)$a)." >= ".((string)$b)." | ".$ds);
+				$this->log("! ".((string)$a)." >= ".((string)$b).$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -164,13 +164,13 @@ class DaveTest
 		{
 			if (empty($a))
 			{
-				$this->log(((string)$a)." is empty"." | ".$ds);
+				$this->log(((string)$a)." is empty".$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." is not empty"." | ".$ds);
+				$this->log("! ".((string)$a)." is not empty".$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -180,13 +180,13 @@ class DaveTest
 		{
 			if (is_null($a))
 			{
-				$this->log(((string)$a)." is null"." | ".$ds);
+				$this->log(((string)$a)." is null".$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." is not null"." | ".$ds);
+				$this->log("! ".((string)$a)." is not null".$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -196,13 +196,13 @@ class DaveTest
 		{
 			if ($a)
 			{
-				$this->log(((string)$a)." is true"." | ".$ds);
+				$this->log(((string)$a)." is true".$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." is false"." | ".$ds);
+				$this->log("! ".((string)$a)." is false".$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -212,13 +212,13 @@ class DaveTest
 		{
 			if (!$a)
 			{
-				$this->log(((string)$a)." is false"." | ".$ds);
+				$this->log(((string)$a)." is false".$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." is true"." | ".$ds);
+				$this->log("! ".((string)$a)." is true".$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
@@ -228,13 +228,13 @@ class DaveTest
 		{
 			if (in_array($a,$b))
 			{
-				$this->log(((string)$a)." is within the array"." | ".$ds);
+				$this->log(((string)$a)." is within the array".$ds);
 				$this->Successes[] = $this->LastLogMessage;
 				return true;
 			}
 			else 
 			{
-				$this->log("! ".((string)$a)." is not within the array"." | ".$ds);
+				$this->log("! ".((string)$a)." is not within the array".$ds);
 				$this->Failures[] = $this->LastLogMessage;
 				return false;
 			}
