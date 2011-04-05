@@ -1,3 +1,3 @@
 <?php
-header("Location: /PHP-DAVE-API");
+header("Location: /API");
 ?>
