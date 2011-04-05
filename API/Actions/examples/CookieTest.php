@@ -9,8 +9,8 @@ I am an example of how to set cookies using the new modified functions for the D
 ***********************************************/
 $NewUpperLimit = rand();
 $NewLowerLimit = rand();
-_setcookie("UpperLimit", $NewUpperLimit, time() + 60);
-_setcookie("LowerLimit", $NewLowerLimit, time() + 60);
+_setcookie("UpperLimit", $NewUpperLimit);
+_setcookie("LowerLimit", $NewLowerLimit);
 
 $OUTPUT["COOKIE_TEST"]["OldUpperLimit"] = $PARAMS['UpperLimit'];
 $OUTPUT["COOKIE_TEST"]["NewUpperLimit"] = $NewUpperLimit;

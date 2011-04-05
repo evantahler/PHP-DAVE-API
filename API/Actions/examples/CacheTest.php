@@ -11,7 +11,7 @@ I'll store and return a user provided variable
 // I'll use HASH as the variable to log by IP address;
 if ($ERROR == 100)
 {
-	if ($CacheType == "")
+	if ($CONFIG['CacheType'] == "")
 	{
 		$ERROR = "The cache is not configured on this server";
 	}

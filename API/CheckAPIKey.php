@@ -1,3 +1,4 @@
+
 <?php
 
 /***********************************************
@@ -45,7 +46,7 @@ if ($ERROR == 100)
 
 // Check that the sequrity HASH worked out
 // the hash should be md5($DeveloperID{secret}.$APIKey.$Rand), IN THIS ORDER!!!!
-if ($SafeMode == true)
+if ($CONFIG['SafeMode'] == true)
 {
 	if ($ERROR == 100)
 	{

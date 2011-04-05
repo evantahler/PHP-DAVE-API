@@ -27,7 +27,6 @@ require("DAVE.php");
 require("CACHE.php");
 require("CommonFunctions.php");
 require("GetPostVars.php");
-date_default_timezone_set($systemTimeZone);
 
 // Get IP (if not provided)
 if (empty($IP) || $IP == "")
@@ -45,28 +44,28 @@ if (empty($IP) || $IP == "")
 }
 
 // check if this user has made too many requests this hour
-if ($RequestLimitPerHour > 0)
+if ($CONFIG['RequestLimitPerHour'] > 0)
 {
-	if ($CorrectLimitLockPass != $PARAMS["LimitLockPass"])
+	if ($CONFIG['CorrectLimitLockPass'] != $PARAMS["LimitLockPass"])
 	{
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{		
-			$SQL = 'SELECT COUNT(*) as "total" FROM `'.$LogTable.'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
+			$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
 			if ($Status === true){
 				$Results = $DBObj->GetResults();
-				if ($Results[0]['total'] > $RequestLimitPerHour)
+				if ($Results[0]['total'] > $CONFIG['RequestLimitPerHour'])
 				{
 					$DBObj->close();
-					$OUTPUT['ERROR'] = "You have exceeded your allotted ".$RequestLimitPerHour." requests this hour.";
+					$OUTPUT['ERROR'] = "You have exceeded your allotted ".$CONFIG['RequestLimitPerHour']." requests this hour.";
 					require('Output.php');
 					exit;
 				}
 				else
 				{
-					$OUTPUT['api_requests_remaining'] = $RequestLimitPerHour - $Results[0]['total'];
+					$OUTPUT['api_requests_remaining'] = $CONFIG['RequestLimitPerHour'] - $Results[0]['total'];
 				}
 			}
 			else{ $ERROR = $Status; }
@@ -130,8 +129,8 @@ $OUTPUT['Params'] = $PARAMS;
 $OUTPUT['ComputationTime'] = $ComputationElapsedTime;
 $OUTPUT['IP'] = $IP;
 $OUTPUT['ERROR'] = $ERROR;
-$OUTPUT['ServerName'] = $ServerName;
-$OUTPUT['ServerAddress'] = $ServerAddress;
+$OUTPUT['ServerName'] = $CONFIG['ServerName'];
+$OUTPUT['ServerAddress'] = $CONFIG['ServerAddress'];
 
 // output
 require('Output.php');

@@ -1,16 +1,15 @@
 <?php
-
 /***********************************************
 DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I handle formatting the $OUTPUT object into XML, JSON, etc
-
 ***********************************************/
+
 if ($PARAMS["OutputType"] == "")
 {
-	$PARAMS["OutputType"] = $DefaultOutputType;
+	$PARAMS["OutputType"] = $CONFIG['DefaultOutputType'];
 }
 
 if ($PARAMS["OutputType"] == "VAR")
@@ -66,9 +65,9 @@ elseif ($PARAMS["OutputType"] == "XML")
 	}
 	//
 	echo '<?xml version="1.0" encoding="UTF-8"?>'."\r\n";
-	echo '<'.$XML_ROOT_NODE.'>'."\r\n";
+	echo '<'.$CONFIG['XML_ROOT_NODE'].'>'."\r\n";
 	_DepthArrayPrint($OUTPUT,1);
-	echo '</'.$XML_ROOT_NODE.'>'."\r\n";
+	echo '</'.$CONFIG['XML_ROOT_NODE'].'>'."\r\n";
 }
 
 elseif ($PARAMS["OutputType"] == "JSON")
@@ -84,21 +83,9 @@ elseif ($PARAMS["OutputType"] == "JSON")
 	}
 }
 
-elseif ($PARAMS["OutputType"] == "SOAP")
-{	
-	// coming soon
-	echo "SOAP support coming soon";
-	
-	//$server = new SoapServer("tmp.wsdl"); 
-	//ini_set("soap.wsdl_cache_enabled", "0"); // disabling WSDL cache 
-	//$server->addFunction($Action); 
-	//$server->handle(); 
-
-}
-
 else
 {
-	echo 'I am sorry, but I do not regonize that OutputType.  Leave that parameter blank for the default option.';
+	echo 'I am sorry, but I do not know that OutputType.  Leave OutputType blank for the default option.';
 }
 
 flush();

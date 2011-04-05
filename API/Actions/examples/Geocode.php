@@ -33,7 +33,7 @@ if ($ERROR == 100)
 	date_default_timezone_set($localTimeZone);
 	setlocale(LC_TIME, $country_code3);
 	$LocalTime = strftime("%T %F");
-	date_default_timezone_set($systemTimeZone);
+	date_default_timezone_set($CONFIG['systemTimeZone']);
 	setlocale(LC_TIME, "C");
 	$SystemTime = strftime("%T %F");
 	
@@ -47,7 +47,7 @@ if ($ERROR == 100)
 		$OUTPUT['city'] = $city;
 		$OUTPUT['localTimeZone'] = $localTimeZone;
 		$OUTPUT['LocalTime'] = $LocalTime;
-		$OUTPUT['systemTimeZone'] = $systemTimeZone;
+		$OUTPUT['systemTimeZone'] = $CONFIG['systemTimeZone'];
 		$OUTPUT['SystemTime'] = $SystemTime;
 	}
 	else

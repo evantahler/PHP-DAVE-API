@@ -12,16 +12,16 @@ All modes should define the SetCache() and GetCache() functions for use in later
 
 ***********************************************/
 
-if($CacheType == "MemCache")
+if($CONFIG['CacheType'] == "MemCache")
 {
 	// start memcache if memcache is on
 	$memcache = new Memcache;
-	$memcache->connect('localhost', 11211);
+	$memcache->connect($CONFIG['MemCacheHost'], 11211);
 	
 	function SetCache($Key, $Value, $ThisCacheTime = null)
 	{
-		global $CacheTime;
-		if ($ThisCacheTime == null) { $ThisCacheTime = $CacheTime; }
+		global $CONFIG;
+		if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
 		
 		$memcache->set($Key, $Value, false, $ThisCacheTime);
 	}
@@ -35,19 +35,20 @@ if($CacheType == "MemCache")
 
 /***********************************************/
 
-elseif($CacheType == "DB")
+elseif($CONFIG['CacheType'] == "DB")
 {	
 	function SetCache($Key, $Value, $ThisCacheTime = null)
 	{
-		global $CacheTime, $CacheTable, $DBObj, $Connection;
-		if ($ThisCacheTime == null) { $ThisCacheTime = $CacheTime; }
+		global $CONFIG, $DBObj;
+		if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
 		
 		$ExpireTime = time() + $ThisCacheTime;
 				
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
-			$SQL = 'INSERT INTO `'.$CacheTable.'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key,$Connection).'", "'.mysql_real_escape_string(serialize($Value),$Connection).'", "'.mysql_real_escape_string($ExpireTime,$Connection).'");' ;
+			$Connection = $DBObj->GetConnection();
+			$SQL = 'INSERT INTO `'.$CONFIG['CacheTable'].'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key,$Connection).'", "'.mysql_real_escape_string(serialize($Value),$Connection).'", "'.mysql_real_escape_string($ExpireTime,$Connection).'");' ;
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
 			if ($Status === true){return true;}
@@ -58,12 +59,13 @@ elseif($CacheType == "DB")
 	
 	function GetCache($Key)
 	{	
-		global $CacheTime, $CacheTable, $DBObj, $Connection;
+		global $CONFIG, $DBObj;
 				
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{
-			$SQL = 'SELECT `Value` FROM `'.$CacheTable.'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") LIMIT 1;' ;
+			$Connection = $DBObj->GetConnection();
+			$SQL = 'SELECT `Value` FROM `'.$CONFIG['CacheTable'].'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") LIMIT 1;' ;
 			$DBObj->Query($SQL);
 			$Status = $DBObj->GetStatus();
 			if ($Status === true){
@@ -78,15 +80,15 @@ elseif($CacheType == "DB")
 
 /***********************************************/
 
-elseif($CacheType == "FlatFile")
+elseif($CONFIG['CacheType'] == "FlatFile")
 {
 	function SetCache($Key, $Value, $ThisCacheTime = null)
 	{
-		global $CacheTime, $CacheFolder;
-		if ($ThisCacheTime == null) { $ThisCacheTime = $CacheTime; }
+		global $CONFIG;
+		if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
 		
 		$COUNTAINER = array((time() + $ThisCacheTime),$Value);
-		$TheFile = $CacheFolder.$Key.".cache";
+		$TheFile = $CONFIG['CacheFolder'].$Key.".cache";
 		$fh = fopen($TheFile, 'w') or die("can't open cache file for write");
 		fwrite($fh, serialize($COUNTAINER));
 		fclose($fh);
@@ -97,9 +99,9 @@ elseif($CacheType == "FlatFile")
 	
 	function GetCache($Key)
 	{
-		global $CacheFolder;
+		global $CONFIG;
 		clearstatcache();
-		$TheFile = $CacheFolder.$Key.".cache";
+		$TheFile = $CONFIG['CacheFolder'].$Key.".cache";
 		if (!file_exists($TheFile))
 		{
 			return false;
@@ -129,8 +131,8 @@ else
 {	
 	function SetCache($Key, $Value, $ThisCacheTime = null)
 	{
-		global $CacheTime;
-		if ($ThisCacheTime == null) { $ThisCacheTime = $CacheTime; }
+		global $CONFIG;
+		if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
 		
 		return true;
 	}

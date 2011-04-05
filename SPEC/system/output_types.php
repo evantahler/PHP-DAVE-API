@@ -10,14 +10,14 @@ require("../spec_helper.php");
 $T = new DaveTest("Output Tests");
 
 // PHP
-$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CorrectLimitLockPass);
+$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $T->assert(">",count($APIDATA),0);
 $T->assert(">",strlen($APIDATA["ERROR"]),0);
 
 // JSON
-$PostArray = array("OutputType" => "JSON", "LimitLockPass" => $CorrectLimitLockPass);
+$PostArray = array("OutputType" => "JSON", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();
 $JSON_resp = json_decode($APIRequest->ShowRawResponse(), true);
@@ -25,7 +25,7 @@ $T->assert(">",count($JSON_resp),0);
 $T->assert(">",strlen($JSON_resp["ERROR"]),0);
 
 // XML
-$PostArray = array("OutputType" => "XML", "LimitLockPass" => $CorrectLimitLockPass);
+$PostArray = array("OutputType" => "XML", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();
 $XML_resp = simplexml_load_string($APIRequest->ShowRawResponse());

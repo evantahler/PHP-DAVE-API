@@ -13,7 +13,7 @@ $T = new DaveTest("Output Tests");
 $PostArray = array(
 	"OutputType" => "PHP",
 	"Action" => "DescribeActions",
-	"LimitLockPass" => $CorrectLimitLockPass
+	"LimitLockPass" => $CONFIG['CorrectLimitLockPass']
 );
 var_dump($TestURL);
 $APIRequest = new APIRequest($TestURL, $PostArray);

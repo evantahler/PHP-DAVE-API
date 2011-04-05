@@ -32,13 +32,12 @@ class DBConnection
 	
 	public function __construct($OtherDB = "")
 	{
-		global $dbhost, $dbuser, $dbpass, $DB, $MySQLLogFile;
+		global $CONFIG;
 		$this->Status = true;
 		
 		if ($OtherDB != "") { $this->DataBase = $OtherDB ; } 
-		else { $this->DataBase = $DB; }
-				
-		$this->Connection = @mysql_connect($dbhost, $dbuser, $dbpass);
+		else { $this->DataBase = $CONFIG['DB']; }
+		$this->Connection = mysql_connect($CONFIG['dbhost'], $CONFIG['dbuser'], $CONFIG['dbpass']);
 		if(!empty($this->Connection))
 		{
 			$DatabaseSelected=mysql_select_db($this->DataBase);
@@ -54,22 +53,22 @@ class DBConnection
 		}
 		else
 		{
-			$this->Status = "Connection Error (mySQL) | Connection or Access permission error";
+			$this->Status = "Connection Error (mySQL) | Connection Access or permission error";
 			return false;
 		}		
 	}
 	
 	private function mysql_log($line)
 	{
-		global $IP, $MySQLLogFile;
+		global $IP, $CONFIG;
 		
 		$host = $IP;
 		if ($host == ""){$host = "local_system";}
 		
 		$line = date("Y-m-d H:i:s")." | ".$host." | ".$line;
-		if (strlen($MySQLLogFile) > 0)
+		if (strlen($CONFIG['MySQLLogFile']) > 0)
 		{
-			$LogFileHandle = fopen($MySQLLogFile, 'a');
+			$LogFileHandle = fopen($CONFIG['MySQLLogFile'], 'a');
 			if($LogFileHandle)
 			{
 				fwrite($LogFileHandle, ($line."\r\n"));
@@ -80,8 +79,8 @@ class DBConnection
 	
 	private function CheckForSpecialStrings($string)
 	{	
-		global $SpecialStrings;
-		foreach ($SpecialStrings as $term)
+		global $CONFIG;
+		foreach ($CONFIG['SpecialStrings'] as $term)
 		{
 			$string = str_replace($term[0],$term[1],$string);
 		}

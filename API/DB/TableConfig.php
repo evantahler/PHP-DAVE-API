@@ -13,15 +13,15 @@ I inspect the state of your mySQL database and build the array descirbing all th
 $TABLES = array();
 $ToReload = false;
 
-if (!file_exists($TableConfigFile)) {
+if (!file_exists($CONFIG['TableConfigFile'])) {
 	$ToReload = true;
 }
 else
 {
-	require_once($TableConfigFile);
-	if ($TableConfigRefreshTime > 0) 
+	require_once($CONFIG['TableConfigFile']);
+	if ($CONFIG['TableConfigRefreshTime'] > 0) 
 	{
-		if ($TableBuildTime + $TableConfigRefreshTime < time()) {
+		if ($TableBuildTime + $CONFIG['TableConfigRefreshTime'] < time()) {
 			$ToReload = true;
 			$TABLES = array(); // clear it, just to be safe
 		}
@@ -31,7 +31,6 @@ else
 if ($ToReload)
 {
 	$OUTPUT["TableRelaod"] = "true";
-	$DBObj = new DBConnection();
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
@@ -40,7 +39,7 @@ if ($ToReload)
 		$out = $DBObj->GetResults();
 		$TableList = array();
 		foreach ($out as $sub){
-			$name = $sub["Tables_in_".$DB];
+			$name = $sub["Tables_in_".$CONFIG['DB']];
 			if ($name != "CACHE" && $name != "LOG") { $TableList[] = $name; }
 		}
 		foreach ($TableList as $ThisTable)
@@ -63,7 +62,7 @@ if ($ToReload)
 		}
 	}
 	$TABLES["TableBuildTime"] = time();
-	@unlink($TableConfigFile);
+	@unlink($CONFIG['TableConfigFile']);
 	$TableStringOutput = "";
 	$TableStringOutput .= "<?php \r\n";
 	$TableStringOutput .= "// TABLE DESCRIPTION GENERATED AT ".date("Y-m-d H:i:s")."\r\n";
@@ -91,10 +90,10 @@ if ($ToReload)
 	$TableStringOutput .= "// END \r\n";
 	$TableStringOutput .= "?>";
 	
-	$fh = fopen($TableConfigFile, 'w');
+	$fh = fopen($CONFIG['TableConfigFile'], 'w');
 	fwrite($fh, $TableStringOutput);
 	fclose($fh);
-	chmod($TableConfigFile,0777);
+	chmod($CONFIG['TableConfigFile'],0777);
 }
 else
 {

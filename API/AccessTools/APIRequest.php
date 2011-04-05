@@ -7,29 +7,26 @@ Evan Tahler | 2011
 
 I am an example class that can be used by another PHP application (perhaps the application that renders the consumer-facing website) to connect to the DAVE API
 
+EXAMPLE USE:
+	$PostArray = array( 
+		"Action" => "A_DUMMY_ACTION", 
+		"OutputType" => "PHP"
+	);
+
+	$API_URL = "127.0.0.1/API/"; // local host
+	$APIRequest = new APIRequest($IP, $API_URL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	if ($APIDATA != false)
+	{
+		echo "Your request came from ".$APIDATA['IP']." and took ".$APIDATA['ComputationTime']." seconds.";
+	}
+	else
+	{
+		echo 'Something is wrong with your URL or DAVE API configuration';
+	}
+	echo "\r\n\r\n";
+
 ***********************************************/
-
-// I am an example.  Uncomment me to try me out
-/*
-$PostArray = array( 
-	"Action" => "A_DUMMY_ACTION", 
-	"OutputType" => "PHP"
-);
-
-$API_URL = "127.0.0.1/API/"; // local host
-$APIRequest = new APIRequest($IP, $API_URL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-if ($APIDATA != false)
-{
-	echo "Your request came from ".$APIDATA['IP']." and took ".$APIDATA['ComputationTime']." seconds.";
-}
-else
-{
-	echo 'Something is wrong with your URL or DAVE API configuration';
-}
-echo "\r\n\r\n";
-*/
-
 class APIRequest
 {
 	protected $PostArray, $response, $API_URL;

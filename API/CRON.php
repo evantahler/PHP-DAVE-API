@@ -17,7 +17,7 @@ require("ConnectToDatabase.php");
 require("DAVE.php");
 require("CACHE.php");
 require("CommonFunctions.php");
-date_default_timezone_set($systemTimeZone);
+date_default_timezone_set($CONFIG['systemTimeZone']);
 
 $CRON_OUTPUT = "";
 
@@ -25,9 +25,9 @@ $CRON_OUTPUT .= date("m-d-Y H:i:s")." \r\n";
 
 /////////////////////////////////////////////////////////////////////////
 // Check the CACHE DB table for old entries, and remove them
-if($CacheType == "DB")
+if($CONFIG['CacheType'] == "DB")
 {
-	$SQL= 'DELETE FROM `'.$DB.'`.`'.$CacheTable.'` WHERE (`ExpireTime` < "'.(time() - $CacheTime).'") ;';
+	$SQL= 'DELETE FROM `'.$CONFIG['DB'].'`.`'.$CONFIG['CacheTable'].'` WHERE (`ExpireTime` < "'.(time() - $CONFIG['CacheTime']).'") ;';
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
@@ -37,14 +37,14 @@ if($CacheType == "DB")
 }
 /////////////////////////////////////////////////////////////////////////
 // Check the CACHE Folder table for old entries, and remove them
-if($CacheType == "FlatFile")
+if($CONFIG['CacheType'] == "FlatFile")
 {
-	$files = scandir($CacheFolder);
+	$files = scandir($CONFIG['CacheFolder']);
 	$counter = 0;
 	foreach ($files as $num => $fname)
 	{
-		$ThisFile = $CacheFolder.$fname;
-		if (file_exists($ThisFile) && ((time() - filemtime($ThisFile)) > $CacheTime) && $fname != "." && $fname != ".." && $fname != ".svn") 
+		$ThisFile = $CONFIG['CacheFolder'].$fname;
+		if (file_exists($ThisFile) && ((time() - filemtime($ThisFile)) > $CONFIG['CacheTime']) && $fname != "." && $fname != ".." && $fname != ".svn") 
 		{
 			unlink($ThisFile);
 			$counter++;
@@ -54,21 +54,21 @@ if($CacheType == "FlatFile")
 }
 
 /////////////////////////////////////////////////////////////////////////
-// Clear the LOG of old LOG entries, acording to $LogAge
+// Clear the LOG of old LOG entries, acording to $CONFIG['LogAge']
 $Status = $DBObj->GetStatus();
 if ($Status === true)
 {
-	$SQL= 'DELETE FROM `'.$LogTable.'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $LogAge)).'") ;'; 	
+	$SQL= 'DELETE FROM `'.$CONFIG['LogTable'].'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['LogAge'])).'") ;'; 	
 	$DBObj->Query($SQL);
 	$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." entries from the LOG. \r\n";
 }
 
 /////////////////////////////////////////////////////////////////////////
-// Clear the LOG of old LOG entries, acording to $SessionAge
+// Clear the LOG of old LOG entries, acording to $CONFIG['SessionAge']
 $Status = $DBObj->GetStatus();
 if ($Status === true)
 {
-	$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $SessionAge)).'") ;'; 	
+	$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;'; 	
 	$DBObj->Query($SQL);
 	$CRON_OUTPUT .= 'Deleted '.$DBObj->NumRowsEffected()." expired Sessions. \r\n";
 }
@@ -77,13 +77,13 @@ if ($Status === true)
 // Delete Big Log Files, list set in CONFIG
 clearstatcache();
 $i = 0;
-while ($i < count($LogsToCheck))
+while ($i < count($CONFIG['LogsToCheck']))
 {
-	if (filesize($LogsToCheck[$i]) > $MaxLogFileSize)
+	if (filesize($CONFIG['LogsToCheck'][$i]) > $CONFIG['MaxLogFileSize'])
 	{
-		$CRON_OUTPUT .= 'Log: '.$LogsToCheck[$i].'is too big, killing'."\r\n";
-		unlink($LogsToCheck[$i]);
-		$fh = fopen($LogsToCheck[$i], 'w');
+		$CRON_OUTPUT .= 'Log: '.$CONFIG['LogsToCheck'][$i].'is too big, killing'."\r\n";
+		unlink($CONFIG['LogsToCheck'][$i]);
+		$fh = fopen($CONFIG['LogsToCheck'][$i], 'w');
 		fclose($fh);
 		chmod($Logs[$i], 0777);
 	}
@@ -98,7 +98,7 @@ while ($i < count($LogsToCheck))
 // End the log output
 $CRON_OUTPUT .= "\r\n\r\n";
 echo $CRON_OUTPUT;
-$fh = fopen($App_dir.$CronLogFile, 'a');
+$fh = fopen($CONFIG['App_dir'].$CONFIG['CronLogFile'], 'a');
 fwrite($fh, $CRON_OUTPUT);
 fclose($fh);
 

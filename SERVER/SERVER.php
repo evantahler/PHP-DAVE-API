@@ -8,14 +8,17 @@ I am a muti-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAV
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
 
 *** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
+
+TODO: Catch Exceptions from script_runner which may cause failures and not yeild a return
 ***********************************************/
 
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 // CONFIG
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
-require("CONFIG.php");
+require("server_config.php");
+date_default_timezone_set($SERVER['systemTimeZone']);
 
 function _server_log($string)
 {
@@ -128,7 +131,7 @@ function cleanInternalInput($string)
 
 function _run($URL, $remote_ip, $client_id) 
 {
-	global $_GET, $_POST, $_COOKIE, $SERVER, $PHP_Path;
+	global $_GET, $_POST, $_COOKIE, $SERVER;
 	
 	$_SERVER = array(
 		"PHP_SELF" => $URL,
@@ -137,20 +140,20 @@ function _run($URL, $remote_ip, $client_id)
 		"SERVER_PROTOCOL" => "HTTP/1.0",
 		"REMOTE_ADDR" => $remote_ip,
 	);
-	$_FILE = getcwd()."/".$URL;
+	$_FILE = getcwd()."/".$SERVER['root_path'].$URL;
 
-	$sys = escapeshellcmd($PHP_Path." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($SERVER['internal_port'])." --PARENT_URL=".serialize($SERVER['domain']))." > /dev/null 2>&1 & ";
+	$sys = escapeshellcmd($SERVER['PHP_Path']." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($SERVER['internal_port'])." --PARENT_URL=".serialize($SERVER['domain']))." > /dev/null 2>&1 & ";
 	$sys = str_replace('"','\"',$sys);
 	$script_output = `$sys`;
 	return $script_output;
 }
 
-// INIT
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
-/* Setup */
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+// INIT
+
 $ServerStartTime = time();
 set_time_limit (0);
 ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
@@ -174,6 +177,7 @@ while (@socket_bind($sock, 0, $SERVER['public_port']) == false)
         
 // Start listening for connections
 socket_listen($sock);
+
 _server_log('..........Starting Server @ port '.$SERVER['public_port'].'..........');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,6 +190,7 @@ if (!$internal_socket) {
     echo "$errstr_internal ($errno_internal) \r\n";
 	exit;
 }
+_server_log('..........Listening internally @ port '.$SERVER['internal_port'].'..........');
 $internal_master[] = $internal_socket;
 $internal_read = $internal_master;
 
@@ -196,7 +201,7 @@ $internal_read = $internal_master;
 
 $connection_counter = 0;
 $RESPONSES = array(); // array to hold worker output from interal workers
-
+_server_log('..........SERVER Ready..........');
 while (true) {
     // Setup clients listen socket for reading
     $read[0] = $sock;
@@ -233,7 +238,9 @@ while (true) {
 
 
 
-
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
     // If a client is trying to write - handle it now
     for ($i = 0; $i < $SERVER['max_clients']; $i++) // for each client
     {
@@ -315,13 +322,16 @@ while (true) {
 				
 				
 				
-				
+				////////////////////////////////////////////////////////////////////////////////
+				////////////////////////////////////////////////////////////////////////////////
+				////////////////////////////////////////////////////////////////////////////////
 				// Return page content
+				
 				if ($URL == "/"){ $URL = "index.php"; }
 				else{ $URL = substr($URL,1); }
-				if(file_exists($URL))
+				if(file_exists($SERVER['root_path'].$URL))
 				{
-					$contents = file_get_contents($URL);
+					$contents = file_get_contents($SERVER['root_path'].$URL);
 					if ($contents === false){
 						$headers = make_headers(404, $URL);
 						SendDataToClient($client[$i], $headers);
@@ -357,7 +367,9 @@ while (true) {
 
 
 
-
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
 		// Handle data recipt and closure
 		if ($client[$i]['mode'] == 'wait')
 		{
@@ -404,7 +416,9 @@ while (true) {
 	
 	
 	
-	
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	// HANDLE INTERNAL CONNECTIONS
 	$internal_read = $internal_master;
     $mod_fd = stream_select($internal_read, $_w = NULL, $_e = NULL, 0, $SERVER['poll_timeout']);

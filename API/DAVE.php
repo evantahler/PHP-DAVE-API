@@ -474,9 +474,9 @@ function _getUniqueTableVars($Table)
 
 function _isSpecialString($string)
 {
-	global $SpecialStrings;
+	global $CONFIG;
 	$found = false;
-	foreach ($SpecialStrings as $term)
+	foreach ($CONFIG['SpecialStrings'] as $term)
 	{
 		if (stristr($string,$term[0]) !== false)
 		{

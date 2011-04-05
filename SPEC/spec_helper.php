@@ -5,17 +5,18 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I setup the testing enviorment and include handy functions for the test suite
-***********************************************/
-$path = substr(__FILE__,0,(strlen(__FILE__) - strlen($_SERVER['SCRIPT_NAME'])));
 
-require_once("../../AccessTools/APIRequest.php");
-require_once("../../helper_functions/colors.php");
-require_once("../../ConnectToDatabase.php");
-require_once("../../CONFIG.php");
-date_default_timezone_set($systemTimeZone);
+TODO: Handle errrors in testing elegantly so next tests continue
+TODO: Aggregate testing scores for whole suite
+***********************************************/
+require_once("../../API/AccessTools/APIRequest.php");
+require_once("../../API/helper_functions/colors.php");
+require_once("../../API/ConnectToDatabase.php");
+require_once("../../API/CONFIG.php");
 
 $TestLog = "LOG/test_log.txt"; // from project root
-$TestURL = $SERVER['domain'].":".$SERVER['public_port']
+@mkdir("LOG");
+$TestURL = "localhost:3000";  // be sure to include the proper port (default for using included SERVER.php)
 
 if (!class_exists(DaveTest))
 {

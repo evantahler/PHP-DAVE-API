@@ -15,7 +15,40 @@ Here's an example of the collection of params how I might be called from SERVER:
 /usr/bin/php /PROJECTS/php-dave-api/PHP-DAVE-API/script_runner.php --FILE=s:45:\"/PROJECTS/php-dave-api/PHP-DAVE-API/index.php\"\; --SERVER=a:5:\{s:8:\"PHP_SELF\"\;s:9:\"index.php\"\;s:11:\"SERVER_ADDR\"\;s:9:\"localhost\"\;s:11:\"SERVER_NAME\"\;s:9:\"localhost\"\;s:15:\"SERVER_PROTOCOL\"\;s:8:\"HTTP/1.0\"\;s:11:\"REMOTE_ADDR\"\;s:9:\"127.0.0.1\"\;\} --GET=a:0:\{\} --POST=a:3:\{s:13:\"LimitLockPass\"\;s:6:\"Sekret\"\;s:10:\"OutputType\"\;s:3:\"XML\"\;s:6:\"Action\"\;s:0:\"\"\;\} --COOKIE=a:0:\{\} --CLIENT_ID=i:0\; --PARENT_PORT=i:3001\; --PARENT_URL=s:9:\"localhost\"\;
 
 ***********************************************/
-require("helper_functions/parseArgs.php");
+
+// FROM PHP.NET
+function __parseArgs(){
+	global $argv;
+    array_shift($argv);
+    $out = array();
+    foreach ($argv as $arg){
+        if (substr($arg,0,2) == '--'){
+            $eqPos = strpos($arg,'=');
+            if ($eqPos === false){
+                $key = substr($arg,2);
+                $out[$key] = isset($out[$key]) ? $out[$key] : true;
+            } else {
+                $key = substr($arg,2,$eqPos-2);
+                $out[$key] = substr($arg,$eqPos+1);
+            }
+        } else if (substr($arg,0,1) == '-'){
+            if (substr($arg,2,1) == '='){
+                $key = substr($arg,1,1);
+                $out[$key] = substr($arg,3);
+            } else {
+                $chars = str_split(substr($arg,1));
+                foreach ($chars as $char){
+                    $key = $char;
+                    $out[$key] = isset($out[$key]) ? $out[$key] : true;
+                }
+            }
+        } else {
+            $out[] = $arg;
+        }
+    }
+    return $out;
+}
+
 function __ErrorHandler($errno, $errstr, $errfile, $errline)
 {
     if (!(error_reporting() & $errno)) {
@@ -65,8 +98,6 @@ $__CLIENT_ID = @unserialize($__input["CLIENT_ID"]);
 $__PARENT_URL = @unserialize($__input["PARENT_URL"]);
 $__PARENT_PORT = @unserialize($__input["PARENT_PORT"]);
 
-echo "-->".$__PARENT_URL."\r\n\r\n";
-
 foreach ($_GET as $k => $v){ $_REQUEST[$k] = $v; }
 foreach ($_POST as $k => $v){ $_REQUEST[$k] = $v; }
 foreach ($_COOKIE as $k => $v){ $_REQUEST[$k] = $v; }
@@ -93,8 +124,8 @@ function _setcookie($name, $value = null, $expire = null, $path = null, $domain 
 	{
 		// TODO: Handle $domain, $secure and $httponly
 		
-		if (!($expire > 0)){$expire = time() + 60*60;} // 1 hour default cookie duration
-		$datetime = new DateTime(date("Y-m-d H:i:s",$expire), new DateTimeZone('GMT'));
+		if (!($expire > 0)){$expire = time() + 60*60*24;} // 1 day default cookie duration
+		$datetime = new DateTime(date("Y-m-d H:i:s",$expire));
 		$cookie_time = $datetime->format(DATE_COOKIE);
 		// $cookie_time = date("D, d-M-Y H:i:s T",$expire);
 		if ($path == null){$path = "/";}

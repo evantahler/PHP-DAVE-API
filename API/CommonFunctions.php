@@ -25,13 +25,13 @@ function humanize_actions()
 
 function reload_tables()
 {
-	global $ERROR, $DBObj, $TableConfigFile, $TABLES;
+	global $ERROR, $DBObj, $CONFIG, $TABLES;
 	
 	$Status = $DBObj->GetStatus();
 	if ($Status === true)
 	{
 		$TABLES = array();
-		@unlik($TableConfigFile);
+		@unlik($CONFIG['TableConfigFile']);
 		require("DB/TableConfig.php");
 	}
 	else
