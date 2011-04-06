@@ -101,11 +101,11 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
   * Browser: `http://localhost:3000&OutputType=XML`
   * CURL + time: `time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"`
 
-That's it!  You should see JSON output that describes all of the actions that the server could preform, and an Error asking you to supply an action.  Give ?OutputType=XML&Action=ObjectTest or ?OutputType=PHP&Action=SlowAction a try to see some basic examples.
+That's it!  You should see JSON output that describes all of the actions that the server could preform, and an Error asking you to supply an action.  Give `http://localhost:3000/?OutputType=XML&Action=ObjectTest` or `http://localhost:3000/?OutputType=PHP&Action=SlowAction` a try to see some basic examples.
 
 Note on MaxMind GeoLocation
 ---------------------------
-You will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder.
+To use the GeoCode Action, you will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder. This action will attempt to locate you geographically based on your IP address.
 
 TODO for V1
 -----------
