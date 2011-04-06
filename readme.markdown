@@ -75,21 +75,21 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
 * Git clone this project
 * Rename /API/CONFIG.example.php to /API/CONFIG.php
 * Configure CONFIG.php.  Assuming we will be running mySQL locally as root with no password, all you should need to change is:
-** $CONFIG['systemTimeZone']  (check http://www.php.net/manual/en/timezones.php for how to define your timezone)
-** $CONFIG['App_dir']  (this is where the /API folder is)
+    * $CONFIG['systemTimeZone']  (check http://www.php.net/manual/en/timezones.php for how to define your timezone)
+    * $CONFIG['App_dir']  (this is where the /API folder is)
 * setup mySQL for DAVE
-** create a mysql database called "daveapi"
-*** (from the command line)
-*** mysql -u root
-*** create database `daveapi`;
-*** exit
-** load in the default tables
-*** mysql -u root daveapi < BaseDBs/API_WITH_USER_TABLE.sql
+    * create a mysql database called "daveapi"
+        * (from the command line)
+        * mysql -u root
+        * create database `daveapi`;
+        * exit
+    * load in the default tables
+        * mysql -u root daveapi < BaseDBs/API_WITH_USER_TABLE.sql
 * start up the webserver 
-** php /SERVER/SERVER.php
+    * php /SERVER/SERVER.php
 * Visit Dave
-** Browser: http://localhost:3000&OutputType=XML
-** CURL + time: time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"
+    * Browser: http://localhost:3000&OutputType=XML
+    * CURL + time: time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"
 
 That's it!
 
