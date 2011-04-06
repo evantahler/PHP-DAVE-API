@@ -8,8 +8,6 @@ I am a muti-client-at-a-time basic PHP webserver.  I can be used to test PHP-DAV
 How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/some/page/php
 
 *** Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  You can see below that they will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate thier behavior in other ways. ***
-
-TODO: Catch Exceptions from script_runner which may cause failures and not yeild a return
 ***********************************************/
 
 /////////////////////////////////////////////////////////////////////////
@@ -210,6 +208,19 @@ while (true) {
     for ($i = 0; $i < $SERVER['max_clients']; $i++)
     {
         if ($client[$i]['sock']  != null) { $read[$i + 1] = $client[$i]['sock']; }
+		
+		// handle timeouts
+		if($client[$i] != null)
+		{
+			if ($client[$i]['JoinTime'] + $SERVER['timeout'] < time())
+			{
+				$headers = make_headers(500, $URL);
+				SendDataToClient($client[$i], $headers);
+				SendDataToClient($client[$i], "Error: 500.  There was an error rendering this PHP script (timeout of ".$SERVER['timeout']." seconds reached)");
+				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."500 [".(time() - $client[$i]['JoinTime'])."s]");
+				EndTransfer($i);
+			}
+		}
     }
     // Set up a blocking call to socket_select(), but have it end fast
     $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = $SERVER['poll_timeout']);
@@ -442,8 +453,21 @@ while (true) {
 		        unset($internal_master[$key_to_del]);
 		    } else {
 				$tmp = explode("<<CLIENT_ID_BREAK>>", unserialize(cleanInternalInput($internal_sock_data)));
-				$RESPONSES[$tmp[1]] = $tmp[0];
-				_server_log(">> Response complete for connection ID #".$tmp[1]);
+				$response_to_return = $tmp[0];
+				$request_id = $tmp[1];
+					$tmp = explode("<<PHP_ERROR>>",$response_to_return);
+					$response_to_return = $tmp[0];
+					$error_resp = @$tmp[1];
+					if (strlen($error_resp) > 0)
+					{
+						$response_to_return = $error_resp;
+						$error_resp = str_replace("<br />","",$error_resp);
+						$error_resp = str_replace("\r","",$error_resp);
+						$error_resp = str_replace("\n","",$error_resp);
+						_server_log("PHP ERROR @ #".$request_id." => ".$error_resp);
+					}
+				$RESPONSES[$request_id] = $response_to_return;
+				_server_log(">> Response complete for connection ID #".$request_id);
 				
 				// always DC when done
 				$key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);

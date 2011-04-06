@@ -49,36 +49,53 @@ function __parseArgs(){
     return $out;
 }
 
+function __SendToParent($string)
+{
+	global $__PARENT_URL, $__PARENT_PORT, $__CLIENT_ID;
+	$string = $string."<<CLIENT_ID_BREAK>>".$__CLIENT_ID;
+	if (strlen($__PARENT_URL) > 0)
+	{
+		$socket = stream_socket_client("tcp://".$__PARENT_URL.":".$__PARENT_PORT, $errno, $errstr);
+		if ($socket)
+		{
+			fwrite($socket, serialize($string));
+		}
+		@fclose($socket);
+	}
+}
+
 function __ErrorHandler($errno, $errstr, $errfile, $errline)
 {
+	$error_string = "<<PHP_ERROR>>";
+	
     if (!(error_reporting() & $errno)) {
-        // This error code is not included in error_reporting
         return;
     }
 
     switch ($errno) {
     case E_USER_ERROR:
-        echo "<b>My ERROR</b> [$errno] $errstr<br />\r\n";
-        echo "  Fatal error on line $errline in file $errfile";
-        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\r\n";
-        echo "Aborting...<br />\r\n";
-        exit(1);
+        $error_string .= "<b>ERROR</b> [$errno] $errstr<br />\r\n";
+        $error_string .= "  Fatal error on line $errline in file $errfile";
+        $error_string .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\r\n";
+        $error_string .= "Aborting...<br />\r\n";
         break;
 
     case E_USER_WARNING:
-        echo "<b>My WARNING</b> [$errno] $errstr<br />\r\n";
+        $error_string .= "<b>WARNING</b> [$errno] $errstr<br />\r\n";
         break;
 
     case E_USER_NOTICE:
-        echo "<b>My NOTICE</b> [$errno] $errstr<br />\r\n";
+        $error_string .= "<b>NOTICE</b> [$errno] $errstr<br />\r\n";
         break;
 
     default:
-        echo "Unknown error type: [$errno] $errstr<br />\r\n";
+        $error_string .= "Unknown error type: [$errno] $errstr<br />\r\n";
         break;
     }
+	
+	echo $error_string;
+	__SendToParent($error_string);
 
-    /* Don't execute PHP internal error handler */
     return true;
 }
 $old_error_handler = set_error_handler("__ErrorHandler");
@@ -147,19 +164,9 @@ foreach($_HEADER as $header)
 {
 	echo $header."<<HEADER_LINE_BREAK>>";
 }
-echo "<<CLIENT_ID_BREAK>>".$__CLIENT_ID;
 $__OUT = ob_get_contents(); 
 ob_end_flush();
 
-// send data to parent
-if (strlen($__PARENT_URL) > 0)
-{
-	$socket = stream_socket_client("tcp://".$__PARENT_URL.":".$__PARENT_PORT, $errno, $errstr);
-	if ($socket)
-	{
-		fwrite($socket, serialize($__OUT));
-	}
-	fclose($socket);
-}
+__SendToParent($__OUT);
 
 ?>
