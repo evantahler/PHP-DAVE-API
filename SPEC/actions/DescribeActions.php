@@ -15,7 +15,7 @@ $PostArray = array(
 	"Action" => "DescribeActions",
 	"LimitLockPass" => $CONFIG['CorrectLimitLockPass']
 );
-var_dump($TestURL);
+
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 
