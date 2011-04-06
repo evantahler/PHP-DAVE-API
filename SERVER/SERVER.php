@@ -17,6 +17,8 @@ How to test post: curl -d "param1=value1&param2=value2" http://localhost:3000/so
 
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
+$path = substr(__FILE__,0,(strlen(__FILE__) - strlen("SERVER.php")));
+chdir($path); unset($path); @mkdir("LOG");
 require("server_config.php");
 date_default_timezone_set($SERVER['systemTimeZone']);
 
