@@ -70,6 +70,7 @@ Example Site: http://dave.evantahler.com
 QuickStart
 ----------
 You can get started on your local machine in 5 minutes!  This tutorial is for Unix-like machines (OSX OK!).  We'll be using the included stand-alone server for development. 
+
 * Instal PHP (OSX users already have it, Linux folks yum/apt install php5)
 * Install mySQL 5 [OSX: http://www.mysql.com/] [Linux: yum/apt install mysql-server and mysql-client)
 * Git clone this project
