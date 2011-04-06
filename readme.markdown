@@ -15,6 +15,7 @@ Philosophical Questions
 -----------------------
 
 If you have ever asked these questions of other web-frameworks, then DAVE might be the right fit for you:
+
 * Why do we really need a controller?
 * Why are linear actions so hidden in object abstraction?
 * Why can't I de-couple my M's, V's and C's?
