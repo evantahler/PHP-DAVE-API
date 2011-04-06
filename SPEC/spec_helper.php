@@ -9,13 +9,18 @@ I setup the testing enviorment and include handy functions for the test suite
 TODO: Handle errrors in testing elegantly so next tests continue
 TODO: Aggregate testing scores for whole suite
 ***********************************************/
+
+// show errors on scrern
+ini_set("display_errors","1");
+error_reporting (E_ALL ^ E_NOTICE);
+
 require_once("../../API/AccessTools/APIRequest.php");
 require_once("../../API/helper_functions/colors.php");
-require_once("../../API/ConnectToDatabase.php");
 require_once("../../API/CONFIG.php");
 
-$TestLog = "LOG/test_log.txt"; // from project root
-@mkdir("LOG");
+// working directory
+chdir("../../API/");
+
 $TestURL = $CONFIG['ServerAddress'];  // be sure to include the proper port (default for using included SERVER.php)
 
 if (!class_exists(DaveTest))
@@ -271,26 +276,16 @@ class DaveTest
 	
 	private function log($line)
 	{	
-		if (strlen($this->TestLog) > 0)
-		{	
-			$this->LastLogMessage = $line;
-			if ($line[0] === "\\")
-			{
-				$line = $line."\r\n";
-			}
-			else
-			{
-				$line = date("Y-m-d H:i:s")." | ".$line."\r\n";
-			}
-			echo $line;
-		
-			// $LogFileHandle = fopen($this->TestLog, 'a');
-			// if($LogFileHandle)
-			// {
-			// 	fwrite($LogFileHandle, ($line));
-			// }
-			// fclose($LogFileHandle);
+		$this->LastLogMessage = $line;
+		if ($line[0] === "\\")
+		{
+			$line = $line."\r\n";
 		}
+		else
+		{
+			$line = date("Y-m-d H:i:s")." | ".$line."\r\n";
+		}
+		echo $line;
 	}
 	
 	private function secondsToWords($seconds)

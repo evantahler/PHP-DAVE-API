@@ -11,9 +11,17 @@ The output of this page will be added to the CRON_LOG.txt file
 ***********************************************/
 // Cron example: */1 * * * * /usr/bin/php /path/to/CRON.php > /path/to/CRON_LOG.txt
 
+// show errors on scrern
+ini_set("display_errors","1");
+error_reporting (E_ALL ^ E_NOTICE);
+
+// working directory
+$path = substr(__FILE__,0,(strlen(__FILE__) - strlen("CRON.php")));
+chdir($path); unset($path);
+
 // setup
-require("CONFIG.php");
 require("ConnectToDatabase.php");
+require("CONFIG.php");
 require("DAVE.php");
 require("CACHE.php");
 require("CommonFunctions.php");
@@ -79,7 +87,7 @@ clearstatcache();
 $i = 0;
 while ($i < count($CONFIG['LogsToCheck']))
 {
-	if (filesize($CONFIG['LogsToCheck'][$i]) > $CONFIG['MaxLogFileSize'])
+	if (@filesize($CONFIG['LogsToCheck'][$i]) > $CONFIG['MaxLogFileSize'])
 	{
 		$CRON_OUTPUT .= 'Log: '.$CONFIG['LogsToCheck'][$i].'is too big, killing'."\r\n";
 		unlink($CONFIG['LogsToCheck'][$i]);

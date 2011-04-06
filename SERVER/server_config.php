@@ -17,6 +17,7 @@ $SERVER['root_path'] = "../API/"; // from location of SERVER.php
 $SERVER['PHP_Path'] = "/usr/bin/php";
 $SERVER['systemTimeZone'] = "America/Los_Angeles";
 $SERVER['log_file'] = "LOG/SERVER_LOG.txt";
+
 @mkdir("LOG");
 
 ?>

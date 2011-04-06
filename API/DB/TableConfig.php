@@ -13,12 +13,12 @@ I inspect the state of your mySQL database and build the array descirbing all th
 $TABLES = array();
 $ToReload = false;
 
-if (!file_exists($CONFIG['TableConfigFile'])) {
+if (!file_exists($CONFIG['App_dir'].$CONFIG['TableConfigFile'])) {
 	$ToReload = true;
 }
 else
 {
-	require_once($CONFIG['TableConfigFile']);
+	require_once($CONFIG['App_dir'].$CONFIG['TableConfigFile']);
 	if ($CONFIG['TableConfigRefreshTime'] > 0) 
 	{
 		if ($TableBuildTime + $CONFIG['TableConfigRefreshTime'] < time()) {
@@ -65,9 +65,11 @@ if ($ToReload)
 	@unlink($CONFIG['TableConfigFile']);
 	$TableStringOutput = "";
 	$TableStringOutput .= "<?php \r\n";
-	$TableStringOutput .= "// TABLE DESCRIPTION GENERATED AT ".date("Y-m-d H:i:s")."\r\n";
-	$TableStringOutput .= "// the KEY meta param is used to define which table is used to look up and edit information with.  This should be a unique column \r\n";
-	$TableStringOutput .= "// every column in a table (that you care to access) is defined as [[ array( ColName, Unique? (true or false), Required? (true or false)) ]].  Any and all unique variables will be used to sort/select SQL lookups \r\n\r\n";
+	
+	// $TableStringOutput .= "// TABLE DESCRIPTION GENERATED AT ".date("Y-m-d H:i:s")."\r\n";
+	// $TableStringOutput .= "// the KEY meta param is used to define which table is used to look up and edit information with.  This should be a unique column \r\n";
+	// $TableStringOutput .= "// every column in a table (that you care to access) is defined as [[ array( ColName, Unique? (true or false), Required? (true or false)) ]].  Any and all unique variables will be used to sort/select SQL lookups \r\n\r\n";
+	
 	$TableStringOutput .= '$TableBuildTime = "'.$TABLES['TableBuildTime']."\"; \r\n\r\n";
 	foreach ($TableList as $ThisTable)
 	{
@@ -90,10 +92,10 @@ if ($ToReload)
 	$TableStringOutput .= "// END \r\n";
 	$TableStringOutput .= "?>";
 	
-	$fh = fopen($CONFIG['TableConfigFile'], 'w');
+	$fh = fopen($CONFIG['App_dir'].$CONFIG['TableConfigFile'], 'w');
 	fwrite($fh, $TableStringOutput);
 	fclose($fh);
-	chmod($CONFIG['TableConfigFile'],0777);
+	chmod($CONFIG['App_dir'].$CONFIG['TableConfigFile'],0777);
 }
 else
 {

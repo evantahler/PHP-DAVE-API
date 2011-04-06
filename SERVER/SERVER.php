@@ -17,6 +17,8 @@ TODO: Catch Exceptions from script_runner which may cause failures and not yeild
 /////////////////////////////////////////////////////////////////////////
 // CONFIG
 
+ini_set("display_errors","1");
+error_reporting (E_ALL ^ E_NOTICE);
 require("server_config.php");
 date_default_timezone_set($SERVER['systemTimeZone']);
 
@@ -158,7 +160,6 @@ $ServerStartTime = time();
 set_time_limit (0);
 ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
 
-$client = array();
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 socket_set_nonblock($sock);
 socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
@@ -199,6 +200,7 @@ $internal_read = $internal_master;
 ////////////////////////////////////////////////////////////////////////////////
 /* LOOP FOREVER! */
 
+$client = array();
 $connection_counter = 0;
 $RESPONSES = array(); // array to hold worker output from interal workers
 _server_log('..........SERVER Ready..........');
@@ -207,8 +209,7 @@ while (true) {
     $read[0] = $sock;
     for ($i = 0; $i < $SERVER['max_clients']; $i++)
     {
-        if ($client[$i]['sock']  != null)
-            $read[$i + 1] = $client[$i]['sock'] ;
+        if ($client[$i]['sock']  != null) { $read[$i + 1] = $client[$i]['sock']; }
     }
     // Set up a blocking call to socket_select(), but have it end fast
     $ready = @socket_select($read, $write = NULL, $except = NULL, $tv_sec = 0, $tv_usec = $SERVER['poll_timeout']);
@@ -244,7 +245,7 @@ while (true) {
     // If a client is trying to write - handle it now
     for ($i = 0; $i < $SERVER['max_clients']; $i++) // for each client
     {
-        if (in_array($client[$i]['sock'] , $read))
+         if (in_array($client[$i]['sock'] , $read))
         {
             $input = @socket_read($client[$i]['sock'] , 1024*1024, PHP_BINARY_READ);
 			$input = trim($input);
