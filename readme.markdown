@@ -3,7 +3,7 @@ Who is _DAVE_?
 
 DAVE is a minimalist, multi-node, transactional API framework written in PHP
 
-![System Picture](https://github.com/evantahler/PHP-DAVE-API/blob/master/Documentation/DAVE_Archetecture.png)
+![System Picture](https://github.com/evantahler/PHP-DAVE-API/raw/master/Documentation/DAVE_Archetecture.png)
 
 DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.  DAVE does the work for you, and he's not CRUD.  Dave was built to be both easy to use, but to be as simple as possible.  I was tiered of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.
 
