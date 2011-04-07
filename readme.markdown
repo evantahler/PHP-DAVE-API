@@ -58,7 +58,6 @@ Actions you can try [[&Action=..]] which are included in the framework:
 -----------------------------------------------------------------------
 * DescribeActions: I will list all the actions available to the API
 * DescribeTables: I am an introspection method that will show the results of the auto-described available tables and cols.  I will show weather or not a col is required and if it is unique
-* Geocode: I will use your IP address and return geographic information about you
 * CacheTest: Send a Hash [[ &Hash=MyString ]] and I will first store it in the cache, and on subsequent calls retrieve the vale from the cache until expired.  Change the value of the Hash and note the old value will be displayed until it expires
 * LogIn: Example user system.  Follow returned error messages.
 * UserAdd: Example user system.  Follow returned error messages.
@@ -102,10 +101,6 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
   * CURL + time: `time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"`
 
 That's it!  You should see JSON output that describes all of the actions that the server could preform, and an Error asking you to supply an action.  Give `http://localhost:3000/?OutputType=XML&Action=ObjectTest` or `http://localhost:3000/?OutputType=PHP&Action=SlowAction` a try to see some basic examples.
-
-Note on MaxMind GeoLocation
----------------------------
-To use the GeoCode Action, you will need the MaxMind? "GeoLiteCity?" database file for this to work. It's free! Get it here http://www.maxmind.com/app/geolitecity and put it in the /MaxMind? folder. This action will attempt to locate you geographically based on your IP address.
 
 TODO for V1
 -----------
