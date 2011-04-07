@@ -12,7 +12,7 @@ Due to the implamention of this server captuing all script output in a buffer, s
 
 Here's an example of the collection of params how I might be called from SERVER:
 
-/usr/bin/php /PROJECTS/php-dave-api/PHP-DAVE-API/script_runner.php --FILE=s:45:\"/PROJECTS/php-dave-api/PHP-DAVE-API/index.php\"\; --SERVER=a:5:\{s:8:\"PHP_SELF\"\;s:9:\"index.php\"\;s:11:\"SERVER_ADDR\"\;s:9:\"localhost\"\;s:11:\"SERVER_NAME\"\;s:9:\"localhost\"\;s:15:\"SERVER_PROTOCOL\"\;s:8:\"HTTP/1.0\"\;s:11:\"REMOTE_ADDR\"\;s:9:\"127.0.0.1\"\;\} --GET=a:0:\{\} --POST=a:3:\{s:13:\"LimitLockPass\"\;s:6:\"Sekret\"\;s:10:\"OutputType\"\;s:3:\"XML\"\;s:6:\"Action\"\;s:0:\"\"\;\} --COOKIE=a:0:\{\} --CLIENT_ID=i:0\; --PARENT_PORT=i:3001\; --PARENT_URL=s:9:\"localhost\"\;
+/usr/bin/php /PROJECTS/php-dave-api/SERVER/script_runner.php --FILE=s:45:\"/PROJECTS/php-dave-api/API/index.php\"\; --SERVER=a:5:\{s:8:\"PHP_SELF\"\;s:9:\"index.php\"\;s:11:\"SERVER_ADDR\"\;s:9:\"localhost\"\;s:11:\"SERVER_NAME\"\;s:9:\"localhost\"\;s:15:\"SERVER_PROTOCOL\"\;s:8:\"HTTP/1.0\"\;s:11:\"REMOTE_ADDR\"\;s:9:\"127.0.0.1\"\;\} --GET=a:0:\{\} --POST=a:3:\{s:13:\"LimitLockPass\"\;s:6:\"Sekret\"\;s:10:\"OutputType\"\;s:3:\"XML\"\;s:6:\"Action\"\;s:0:\"\"\;\} --COOKIE=a:0:\{\} --CLIENT_ID=i:0\; --PARENT_PORT=i:3001\; --PARENT_URL=s:9:\"localhost\"\;
 
 ***********************************************/
 
@@ -66,7 +66,9 @@ function __SendToParent($string)
 
 function __ErrorHandler($errno, $errstr, $errfile, $errline)
 {
-	$error_string = "<<PHP_ERROR>>";
+	$error_string = "<<PHP_ERROR>>ERROR @ ";
+	$deets = debug_backtrace();
+	$error_string .= "line ".$deets[1]["line"]." > ";
 	
     if (!(error_reporting() & $errno)) {
         return;

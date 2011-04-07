@@ -120,9 +120,11 @@ if (file_exists("CONFIG.php"))
 	// Check to make sure the action happened... 
 	if ($ActionPreformed == 0 || $PARAMS["Action"] == "" || strlen($PARAMS["Action"]) == 0)
 	{
-		if ($ERROR == 100) { $ERROR = "That Action cannot be found.  Did you send the 'Action' parameter?"; }
-		$Action = "Unknown Action";
-		$OUTPUT["KnownActions"] = humanize_actions();
+		if ($ERROR == 100) { 
+			$ERROR = "That Action cannot be found.  Did you send the 'Action' parameter?"; 
+			$Action = "Unknown Action";
+			$OUTPUT["KnownActions"] = humanize_actions();
+		}
 	}
 
 	if ($ERROR == 100)

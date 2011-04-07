@@ -92,10 +92,17 @@ if ($ToReload)
 	$TableStringOutput .= "// END \r\n";
 	$TableStringOutput .= "?>";
 	
-	$fh = fopen($CONFIG['App_dir'].$CONFIG['TableConfigFile'], 'w');
-	fwrite($fh, $TableStringOutput);
-	fclose($fh);
-	chmod($CONFIG['App_dir'].$CONFIG['TableConfigFile'],0777);
+	if (is_dir($CONFIG['App_dir']))
+	{
+		$fh = fopen($CONFIG['App_dir'].$CONFIG['TableConfigFile'], 'w');
+		fwrite($fh, $TableStringOutput);
+		fclose($fh);
+		chmod($CONFIG['App_dir'].$CONFIG['TableConfigFile'],0777);
+	}
+	else
+	{
+		$ERROR = "CONFIGURATION ERROR: ".$CONFIG['App_dir']." doesn't seem to be a directory.  Please check your CONFIG.";
+	}
 }
 else
 {
