@@ -141,7 +141,6 @@ if (class_exists("DBConnection")) {
 	$ACTIONS[] = array('DescribeTables', 'Actions/examples/DescribeTables.php', 'Public');
 
 	// some basic actions
-	$ACTIONS[] = array('GeoCode', 'Actions/examples/Geocode.php', 'Public');
 	$ACTIONS[] = array('CacheTest', 'Actions/examples/CacheTest.php', 'Public');
 	$ACTIONS[] = array('ObjectTest', 'Actions/examples/ObjectTest.php', 'Public');
 
