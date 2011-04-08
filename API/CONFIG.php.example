@@ -179,6 +179,7 @@ if (class_exists("DBConnection")) {
 	$POST_VARIABLES[] = "Callback";
 	$POST_VARIABLES[] = "LimitLockPass";
 	$POST_VARIABLES[] = "Password";
+	$POST_VARIABLES[] = "NewPassword";
 
 	/*********************************************************/
 	require('config_cleaner.php');

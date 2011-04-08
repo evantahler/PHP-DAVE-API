@@ -18,9 +18,9 @@ if ($ERROR == 100)
 {
 	if (strlen($PARAMS["Password"]) > 0)
 	{
-		$PasswordHash = md5($PARAMS["Password"].$result[0]['Salt']);
+		$PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']);
 	}
-	if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
+	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 	{
 		$OUTPUT['LOGIN'] = "TRUE";
 		$OUTPUT['SessionKey'] = create_session();

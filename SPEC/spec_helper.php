@@ -5,9 +5,6 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I setup the testing enviorment and include handy functions for the test suite
-
-TODO: Handle errrors in testing elegantly so next tests continue
-TODO: Aggregate testing scores for whole suite
 ***********************************************/
 
 // show errors on scrern
@@ -226,6 +223,20 @@ class DaveTest
 			}
 		}
 		
+		elseif (strtolower($eval) == "not_in_array")
+		{
+			if (!in_array($a,$b))
+			{
+				$this->log(((string)$a)." is not within the array".$ds);
+				return $this->do_success();
+			}
+			else 
+			{
+				$this->log("! ".((string)$a)." is within the array".$ds);
+				return $this->do_failure();
+			}
+		}
+		
 		else 
 		{
 			return false;
@@ -234,10 +245,10 @@ class DaveTest
 
 	private function do_success()
 	{
-		global $TEST_SUITE_RESULTS;
-		if (isset($TEST_SUITE_RESULTS)){
-			$TEST_SUITE_RESULTS["Successes"]++;
-			$TEST_SUITE_RESULTS["Successes_List"][] = array("title" => $title, "message" => $this->LastLogMessage);
+		global $__TEST_SUITE_RESULTS;
+		if (isset($__TEST_SUITE_RESULTS)){
+			$__TEST_SUITE_RESULTS["Successes"]++;
+			$__TEST_SUITE_RESULTS["Successes_List"][] = array("title" => $title, "message" => $this->LastLogMessage);
 		}
 		$this->Successes[] = $this->LastLogMessage;
 		return true;
@@ -245,10 +256,10 @@ class DaveTest
 	
 	private function do_failure()
 	{
-		global $TEST_SUITE_RESULTS;
-		if (isset($TEST_SUITE_RESULTS)){
-			$TEST_SUITE_RESULTS["Failures"]++;
-			$TEST_SUITE_RESULTS["Failures_List"][] = array("title" => $title, "message" => $this->LastLogMessage);
+		global $__TEST_SUITE_RESULTS;
+		if (isset($__TEST_SUITE_RESULTS)){
+			$__TEST_SUITE_RESULTS["Failures"]++;
+			$__TEST_SUITE_RESULTS["Failures_List"][] = array("title" => $title, "message" => $this->LastLogMessage);
 		}
 		$this->Failures[] = $this->LastLogMessage;
 		return false;
@@ -316,6 +327,7 @@ class DaveTest
 	{
 		$this->MessageDepth = $depth;
 		$this->log($this->colors->getColoredString("Context: ".$contect_message,"purple"));
+		$this->MessageDepth = $depth + 1;
 	}
 	
 	private function secondsToWords($seconds)

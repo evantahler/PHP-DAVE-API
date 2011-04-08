@@ -6,43 +6,61 @@ Evan Tahler | 2011
 
 I check general API functionality
 ***********************************************/
-require("../spec_helper.php");
+require_once("../spec_helper.php");
 $T = new DaveTest("General API Tests");
 
 $T->context("api_requests_remaining should decrement on subsequent loads");
-$PostArray = array("OutputType" => "PHP");
-$APIRequest = new APIRequest($TestURL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-$first = $APIDATA["api_requests_remaining"];
-$T->assert(">",$first,0);
-$APIRequest = new APIRequest($TestURL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-$second = $APIDATA["api_requests_remaining"];
-$T->assert(">",$second,0);
-$T->assert("<",$second,$first);
+	$PostArray = array("OutputType" => "PHP");
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$first = $APIDATA["api_requests_remaining"];
+	$T->assert(">",$first,0);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$second = $APIDATA["api_requests_remaining"];
+	$T->assert(">",$second,0);
+	$T->assert("<",$second,$first);
 
 $T->context("computation time should be > 0s but less than 10s for rendering no Action");
-$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
-$APIRequest = new APIRequest($TestURL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-$ComputationTime = $APIDATA["ComputationTime"];
-$T->assert(">",$ComputationTime,0);
-$T->assert("<",$ComputationTime,10);
+	$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$ComputationTime = $APIDATA["ComputationTime"];
+	$T->assert(">",$ComputationTime,0);
+	$T->assert("<",$ComputationTime,10);
 
 $T->context("I should have an IP address");
-$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
-$APIRequest = new APIRequest($TestURL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-$IP = $APIDATA["IP"];
-$T->assert("true",IP_check($IP));
+	$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$IP = $APIDATA["IP"];
+	$T->assert("true",IP_check($IP));
 
 $T->context("The sever should have an IP address and a ServerName");
-$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
-$APIRequest = new APIRequest($TestURL, $PostArray);
-$APIDATA = $APIRequest->DoRequest();
-$ServerAddress = $APIDATA["IP"];
-$T->assert("true",IP_check($ServerAddress));
-$T->assert(">",strlen($APIDATA["ServerName"]),0);
+	$PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$ServerAddress = $APIDATA["IP"];
+	$T->assert("true",IP_check($ServerAddress));
+	$T->assert(">",strlen($APIDATA["ServerName"]),0);
+	
+$T->context("The name of the Action should be returned if a correct action is passed, and not otherwise");
+	$PostArray = array("OutputType" => "PHP", "Action" => "DescribeActions", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$T->assert("==",$APIDATA["Action"],"DescribeActions");
+	$PostArray = array("OutputType" => "PHP", "Action" => "NOT_AN_ACTION", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$T->assert("==",$APIDATA["Action"],"Unknown Action");
+
+$T->context("Only meaningful PARAMS that are passed should be returned");
+	$PostArray = array("OutputType" => "PHP", "Action" => "TheAction", "ADumbParam" => "Dumb", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
+	$APIRequest = new APIRequest($TestURL, $PostArray);
+	$APIDATA = $APIRequest->DoRequest();
+	$Params = $APIDATA["Params"];
+	$T->assert("in_array",'TheAction',$Params);
+	$T->assert("not_in_array",'Dumb',$Params);
 
 
 $T->end();

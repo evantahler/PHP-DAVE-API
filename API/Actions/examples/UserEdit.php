@@ -29,18 +29,23 @@ if ($ERROR == 100)
 {
 	if (count($result) == 1)
 	{
-		if ($PasswordHash == $result[0]['PasswordHash']) // THIS user
+		// convert supplied password to PasswordHash if set
+		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
+		
+		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 		{
-			if(strlen($PARAMS["Password"]) > 0) // user is trying to change password
+			if(strlen($PARAMS["NewPassword"]) > 0) // user is trying to change password
 			{
-				$Salt = md5(rand(1,999).(microtime()/rand(1,999)).rand(1,999));
-				$PasswordHash = md5($PARAMS["Password"].$Salt);
+				$NewPasswordHash = md5($PARAMS["NewPassword"].$result[0]['Salt']);
+			}
+			else
+			{
+				$NewPasswordHash = $PARAMS["PasswordHash"]; // no change
 			}
 			if (count($result) == 1)
 			{
 				$UserData = $PARAMS;
-				$UserData["PasswordHash"] = $PasswordHash;
-				$UserData["Salt"] = $Salt;
+				$UserData["PasswordHash"] = $NewPasswordHash;
 				
 				list($pass,$result) = _EDIT("Users", $UserData);
 				if (!$pass){ $ERROR = $result; }
@@ -53,7 +58,7 @@ if ($ERROR == 100)
 				}
 			}
 		}
-		else // another user
+		else
 		{
 			$ERROR = "Passwords do not match or PasswordHash was not provided";
 		}

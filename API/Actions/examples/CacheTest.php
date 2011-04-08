@@ -26,21 +26,10 @@ if ($ERROR == 100)
 	else
 	{
 		$CacheKey = $IP."_CacheTest";
+		SetCache($CacheKey,$PARAMS["Hash"]);
 		$result = GetCache($CacheKey);
-		if ($result != false)
-		{
-			$OUTPUT['CacheAction'] = "Found in Cache";
-			$OUTPUT['CacheKey'] = $CacheKey;
-			$OUTPUT['CachedResult'] = $result;
-		}
-		else
-		{
-			$OUTPUT['CacheAction'] = "Added to Cache";
-			SetCache($CacheKey,$Hash);
-			$result = GetCache($CacheKey);
-			$OUTPUT['CacheKey'] = $CacheKey;
-			$OUTPUT['CachedResult'] = $result;
-		}
+		$OUTPUT['CacheKey'] = $CacheKey;
+		$OUTPUT['CachedResult'] = $result;
 	}
 }
 

@@ -15,6 +15,9 @@ if ($ERROR == 100)
 
 if ($ERROR == 100)
 {
+	// convert supplied password to PasswordHash if set
+	if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
+	
 	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 	{
 		if (count($result) == 1)
@@ -30,7 +33,11 @@ if ($ERROR == 100)
 			$ERROR = "That User cannot be found";
 		}
 	}
-	else // another user
+	elseif(!empty($PARAMS["Password"]) || !empty($PARAMS["PasswordHash"]))
+	{
+		$ERROR = "Passwords do not match or PasswordHash was not provided";
+	}
+	else // Public Data Request
 	{
 		$OUTPUT["User"]['InformationType'] = "Public";
 		$OUTPUT["User"]['ScreenName'] = $result[0]['ScreenName'];
