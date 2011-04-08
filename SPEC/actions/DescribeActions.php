@@ -7,9 +7,8 @@ Evan Tahler | 2011
 I check an API Action
 ***********************************************/
 require("../spec_helper.php");
-$T = new DaveTest("Output Tests");
+$T = new DaveTest("Describe Actions");
 
-// I should return an array of actions
 $PostArray = array(
 	"OutputType" => "PHP",
 	"Action" => "DescribeActions",
@@ -31,12 +30,16 @@ $ExpectedActions = array(
 	"UserEdit", 
 	"LogIn"
 );
+
+$T->context("There should be at least one Action returned");
 $T->assert(">",count($APIDATA["Actions"]),0);
 $Actions = array();
 foreach($APIDATA["Actions"] as $Action)
 {
 	$Actions[] = $Action["Name"];
 }
+
+$T->context("Certain Actions should be in the server results");
 foreach($ExpectedActions as $Action)
 {
 	$T->assert("in_array",$Action,$Actions);

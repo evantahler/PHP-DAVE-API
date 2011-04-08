@@ -7,16 +7,17 @@ Evan Tahler | 2011
 I ensure that the various output types of the daveAPI work
 ***********************************************/
 require("../spec_helper.php");
-$T = new DaveTest("Output Tests");
+$T = new DaveTest("Output Types");
+$T->context("The API should return various OutputTypes");
 
-// PHP
+$T->context("PHP",2);
 $PostArray = array("OutputType" => "PHP", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIDATA = $APIRequest->DoRequest();
 $T->assert(">",count($APIDATA),0);
 $T->assert(">",strlen($APIDATA["ERROR"]),0);
 
-// JSON
+$T->context("JSON",2);
 $PostArray = array("OutputType" => "JSON", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();
@@ -24,7 +25,7 @@ $JSON_resp = json_decode($APIRequest->ShowRawResponse(), true);
 $T->assert(">",count($JSON_resp),0);
 $T->assert(">",strlen($JSON_resp["ERROR"]),0);
 
-// XML
+$T->context("XML",2);
 $PostArray = array("OutputType" => "XML", "LimitLockPass" => $CONFIG['CorrectLimitLockPass']);
 $APIRequest = new APIRequest($TestURL, $PostArray);
 $APIRequest->DoRequest();

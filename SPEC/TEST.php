@@ -6,8 +6,10 @@ Evan Tahler | 2011
 
 I will run all tests within these spec folders.  Add to your folder list
 ***********************************************/
+$TEST_SUITE_RESULTS = array();
+$TEST_SUITE_RESULTS["StartTime"] = time();
 
-$sub_folders = array();
+$sub_folders = array(); // list of folders
 $sub_folders[] = "system/";
 $sub_folders[] = "actions/";
 
@@ -20,7 +22,6 @@ foreach ($sub_folders as $folder)
 	
 	foreach (glob($folder."*.php") as $filename) 
 	{
-	    echo "\r\nTest File: $filename \r\n";
 		$parts = explode("/",$filename);
 		$num_parts = count($parts);
 		$just_name = $parts[($num_parts - 1)];
@@ -29,5 +30,11 @@ foreach ($sub_folders as $folder)
 		require($filename);
 	}
 }
+
+$T = new DaveTest("Test Suite Results");
+$T->log("------------ TEST SUITE RESLTS ------------");
+$T->log(($TEST_SUITE_RESULTS["Successes"] + $TEST_SUITE_RESULTS["Failures"])." total tests in ".(time() - $TEST_SUITE_RESULTS["StartTime"])." seconds");
+$T->log($TEST_SUITE_RESULTS["Successes"]." passing tests");
+$T->log($TEST_SUITE_RESULTS["Failures"]." failing tests");
 
 ?>
