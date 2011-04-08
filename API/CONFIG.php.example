@@ -53,6 +53,7 @@ $CONFIG['App_dir'] = "/var/www/html/API/"; // the location of this application
 /*********************************************************/
 // Tests and Specs
 $CONFIG['ServerAddressForTests'] = "127.0.0.1:3000"; //port 3000 is the default for SERVER
+$CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
 $CONFIG['TestLog'] = $CONFIG['App_dir']."../SPEC/LOG/test_log.txt";
 @mkdir("../SPEC/LOG/");
 

@@ -6,20 +6,29 @@ Evan Tahler | 2011
 
 I will run all tests within these spec folders.  Add to your folder list
 ***********************************************/
+
 $TEST_SUITE_RESULTS = array();
 $TEST_SUITE_RESULTS["StartTime"] = time();
 
-$sub_folders = array(); // list of folders
-$sub_folders[] = "system/";
-$sub_folders[] = "actions/";
-
 ///////////////////////////////////////////////////////////
+
+$sub_folders = array(); // list of folders
+$path = substr(__FILE__.$folder,0,(strlen(__FILE__) - strlen("TEST.php")));
+chdir($path);
+$dir = scandir(".");
+foreach($dir as $path)
+{
+	$bad_paths = array("LOG", ".", "..");
+	if (!in_array($path,$bad_paths) && strpos($path,".") === false)
+	{
+		$sub_folders[] = $path."/";
+	}
+}
 
 foreach ($sub_folders as $folder)
 {
 	$path = substr(__FILE__.$folder,0,(strlen(__FILE__) - strlen("TEST.php")));
 	chdir($path);
-	
 	foreach (glob($folder."*.php") as $filename) 
 	{
 		$parts = explode("/",$filename);
@@ -30,6 +39,8 @@ foreach ($sub_folders as $folder)
 		require($filename);
 	}
 }
+
+///////////////////////////////////////////////////////////
 
 $T = new DaveTest("Test Suite Results");
 $T->log("------------ TEST SUITE RESLTS ------------");
