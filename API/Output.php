@@ -73,9 +73,9 @@ elseif ($PARAMS["OutputType"] == "XML")
 elseif ($PARAMS["OutputType"] == "JSON")
 {
 	$JSON = json_encode($OUTPUT);
-	if (strlen($Callback) > 0)
+	if (strlen($PARAMS['Callback']) > 0)
 	{
-		echo $Callback."(".$JSON.");";
+		echo $PARAMS['Callback']."(".$JSON.");";
 	}
 	else
 	{

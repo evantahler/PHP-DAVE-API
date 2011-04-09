@@ -13,7 +13,7 @@ $__TEST_SUITE_RESULTS["StartTime"] = time();
 ///////////////////////////////////////////////////////////
 
 $sub_folders = array();
-$path = substr(__FILE__.$folder,0,(strlen(__FILE__) - strlen("TEST.php")));
+$path = substr(__FILE__,0,(strlen(__FILE__) - strlen("TEST.php")));
 chdir($path);
 $dir = scandir(".");
 
