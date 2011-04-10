@@ -47,7 +47,8 @@ Run "php SERVER.php" from within the project directory to get started.  Point yo
 
 Requirements
 ------------
-* PHP 5.2+  (that's it!)
+* PHP 5.2+
+* mySQL 5+
 
 However, for production deployment, your traditional LAMP stack is best.
 
