@@ -66,9 +66,7 @@ Actions you can try [[&Action=..]] which are included in the framework:
 * CookieTest: Will set cookies in your browser.  Use this to test SERVER's implementation of _setcookie()
 * SlowAction: A simple action that will sleep for a number of seconds.  Use this to test SERVER's non-blocking implementation by making a slow request, and then other requests to ensure that a slow request will not block other actions from processing.
 	
-Example Site: 
-http://dave.evantahler.com
-----------------------------------------
+Example Site: http://dave.evantahler.com
 
 QuickStart
 ----------
