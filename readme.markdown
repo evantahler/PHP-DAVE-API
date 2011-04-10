@@ -37,7 +37,7 @@ Features
 * XML, JSON, Serialized PHP output types built in
 * End-to-end spec testing framework for the API including custom assertions
 
-Stand-Alone Development Webserver written in PHP [ SERVER.php & script_runner.php ]
+Stand-Alone Development Webserver written in PHP
 -----------------------------------------------------------------------------------
 To help with development, a single-threaded multi-request webserver is a part of this project.  This will allow you to locally run this framework in "development mode".  This webserver is written entirely in PHP and has support for basic static file-types (css, js, images, html) along with the sand-boxed execution of PHP scripts (including all of those required for this framework.).  The server currently provides the normal $_GET, $_POST, $_COOKIE, $_REQUEST arrays and a basic emulation of $SERVER.  Due to metaprogramming limitations in the default PHP installs on most servers/machines, it is impossible to modify the behavior of header() and setcookie().  To remedy this, please use _header() and _setcookie() in your DAVE projects.  These functions will first attempt to use the default versions of these functions, and if they fail (AKA when using the StandAlone server), will emulate their behavior in other ways.  This server implementation was inspired by nginx and rails unicorns, and makes use of spawning OS-level processes to do the heavy lifting for each request.
 
@@ -47,10 +47,10 @@ Run "php SERVER.php" from within the project directory to get started.  Point yo
 
 Requirements
 ------------
-* PHP 5.2+
-* mySQL server 5.1+
-* Web-server (tested with Apache 2.0+)
-* root access to web-server with CRON
+* PHP 5.2+  (that's it!)
+
+However, for production deployment, your traditional LAMP stack is best.
+
 
 Actions you can try [[&Action=..]] which are included in the framework:
 -----------------------------------------------------------------------
