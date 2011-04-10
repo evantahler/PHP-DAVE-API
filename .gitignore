@@ -2,7 +2,6 @@ favicon.gif
 favicon.ico
 API/CONFIG.php
 API/DB/TABLES.php
-API/MaxMind/GeoLiteCity.dat
 API/LOG/*
 SPEC/LOG/*
 SERVER/LOG/*
