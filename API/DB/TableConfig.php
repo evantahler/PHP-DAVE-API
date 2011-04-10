@@ -103,6 +103,8 @@ if ($ToReload)
 	{
 		$ERROR = "CONFIGURATION ERROR: ".$CONFIG['App_dir']." doesn't seem to be a directory.  Please check your CONFIG.";
 	}
+	
+	unset($TABLES["TableBuildTime"]);
 }
 else
 {
