@@ -132,7 +132,7 @@ function _header($string)
 		$_HEADER[] = $string;
 		return true;
 	}
-	elsle {return true;}
+	else {return true;}
 }
 
 // cookie
@@ -153,7 +153,7 @@ function _setcookie($name, $value = null, $expire = null, $path = null, $domain 
 		_header($ret);
 		return true;
 	}
-	elsle {return true;}
+	else {return true;}
 }
 
 // send the empty buffer to force all header and cookie functions to fail
