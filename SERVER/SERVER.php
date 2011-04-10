@@ -22,7 +22,10 @@ chdir($path); unset($path); @mkdir("LOG");
 require("server_config.php");
 date_default_timezone_set($SERVER['systemTimeZone']);
 
-function _server_log($string)
+$verbose = false;
+if ($ARGS["v"] || $ARGS["verbose"]) {$verbose = true;} 
+
+function server_log($string)
 {
 	global $SERVER;
 	$string = date("m-d-Y H:i:s")." | ".$string."\r\n";
@@ -133,7 +136,7 @@ function cleanInternalInput($string)
 
 function _run($URL, $remote_ip, $client_id) 
 {
-	global $_GET, $_POST, $_COOKIE, $SERVER;
+	global $_GET, $_POST, $_COOKIE, $SERVER, $verbose;
 	
 	$_SERVER = array(
 		"PHP_SELF" => $URL,
@@ -146,6 +149,9 @@ function _run($URL, $remote_ip, $client_id)
 
 	$sys = escapeshellcmd($SERVER['PHP_Path']." ".getcwd()."/script_runner.php --FILE=".serialize($_FILE)." --SERVER=".serialize($_SERVER)." --GET=".serialize($_GET)." --POST=".serialize($_POST)." --COOKIE=".serialize($_COOKIE)." --CLIENT_ID=".serialize($client_id)." --PARENT_PORT=".serialize($SERVER['internal_port'])." --PARENT_URL=".serialize($SERVER['domain']))." > /dev/null 2>&1 & ";
 	$sys = str_replace('"','\"',$sys);
+	if ($verbose){
+		server_log($sys);
+	}
 	$script_output = `$sys`;
 	return $script_output;
 }
@@ -170,7 +176,7 @@ while (@socket_bind($sock, 0, $SERVER['public_port']) == false)
         $j++;
         if ($j > 3)
         {
-                _server_log('Server already running on port '.$SERVER['public_port']);
+                server_log('Server already running on port '.$SERVER['public_port']);
                 exit;
                 break;
         }
@@ -179,7 +185,7 @@ while (@socket_bind($sock, 0, $SERVER['public_port']) == false)
 // Start listening for connections
 socket_listen($sock);
 
-_server_log('..........Starting Server @ port '.$SERVER['public_port'].'..........');
+server_log('..........Starting Server @ port '.$SERVER['public_port'].'..........');
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +197,7 @@ if (!$internal_socket) {
     echo "$errstr_internal ($errno_internal) \r\n";
 	exit;
 }
-_server_log('..........Listening internally @ port '.$SERVER['internal_port'].'..........');
+server_log('..........Listening internally @ port '.$SERVER['internal_port'].'..........');
 $internal_master[] = $internal_socket;
 $internal_read = $internal_master;
 
@@ -203,7 +209,7 @@ $internal_read = $internal_master;
 $client = array();
 $connection_counter = 0;
 $RESPONSES = array(); // array to hold worker output from interal workers
-_server_log('..........SERVER Ready..........');
+server_log('..........SERVER Ready..........');
 while (true) {
     // Setup clients listen socket for reading
     $read[0] = $sock;
@@ -219,7 +225,7 @@ while (true) {
 				$headers = make_headers(500, $URL);
 				SendDataToClient($client[$i], $headers);
 				SendDataToClient($client[$i], "Error: 500.  There was an error rendering this PHP script (timeout of ".$SERVER['timeout']." seconds reached)");
-				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."500 [".(time() - $client[$i]['JoinTime'])."s]");
+				server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."500 [".(time() - $client[$i]['JoinTime'])."s]");
 				EndTransfer($i);
 			}
 		}
@@ -243,7 +249,7 @@ while (true) {
 				$connection_counter++;
                 break;
             }
-            elseif ($i == $SERVER['max_clients'] - 1) { _server_log(("too many clients"), $LogFile); }
+            elseif ($i == $SERVER['max_clients'] - 1) { server_log(("too many clients"), $LogFile); }
         }
         if (--$ready <= 0) 
             continue;
@@ -332,7 +338,7 @@ while (true) {
 				
 				
 				
-				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
+				server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
 				
 				
 				
@@ -350,7 +356,7 @@ while (true) {
 						$headers = make_headers(404, $URL);
 						SendDataToClient($client[$i], $headers);
 						SendDataToClient($client[$i], "Error: 404");
-						_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
+						server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
 					}
 					else
 					{
@@ -364,7 +370,7 @@ while (true) {
 							$headers = make_headers(200, $URL);
 							SendDataToClient($client[$i], $headers);
 							SendDataToClient($client[$i], $contents);
-							_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $client[$i]['JoinTime'])."s]");
+							server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $client[$i]['JoinTime'])."s]");
 						}
 					}
 				}
@@ -373,7 +379,7 @@ while (true) {
 					$headers = make_headers(404, $URL);
 					SendDataToClient($client[$i], $headers);
 					SendDataToClient($client[$i], "Error: 404");
-					_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
+					server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
 				}
 			}
         }
@@ -412,7 +418,7 @@ while (true) {
 				{
 					SendDataToClient($client[$i], clean_body_output($script_output));
 				}
-				_server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $client[$i]['JoinTime'])."s]");
+				server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (php) [".(time() - $client[$i]['JoinTime'])."s]");
 				unset($RESPONSES[$i]);
 				$client[$i]['mode'] = "close";
 			}
@@ -466,10 +472,10 @@ while (true) {
 						$error_resp = str_replace("<br />","",$error_resp);
 						$error_resp = str_replace("\r","",$error_resp);
 						$error_resp = str_replace("\n","",$error_resp);
-						_server_log("PHP ERROR @ #".$request_id." => ".$error_resp);
+						server_log("PHP ERROR @ #".$request_id." => ".$error_resp);
 					}
 				$RESPONSES[$request_id] = $response_to_return;
-				_server_log(">> Response complete for connection ID #".$request_id);
+				server_log(">> Response complete for connection ID #".$request_id);
 				
 				// always DC when done
 				$key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);
