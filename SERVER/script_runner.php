@@ -132,6 +132,7 @@ function _header($string)
 		$_HEADER[] = $string;
 		return true;
 	}
+	elsle {return true;}
 }
 
 // cookie
@@ -146,13 +147,13 @@ function _setcookie($name, $value = null, $expire = null, $path = null, $domain 
 		if (!($expire > 0)){$expire = time() + 60*60*24;} // 1 day default cookie duration
 		$datetime = new DateTime(date("Y-m-d H:i:s",$expire));
 		$cookie_time = $datetime->format(DATE_COOKIE);
-		// $cookie_time = date("D, d-M-Y H:i:s T",$expire);
 		if ($path == null){$path = "/";}
 		if ($domain == null){$domain = $SERVER['domain'];}
 		$ret .= "Set-Cookie: ".urlencode($name)."=".urlencode($value)."; expires=".$cookie_time."; path=".$path."; domain=".$domain.";";
 		_header($ret);
 		return true;
 	}
+	elsle {return true;}
 }
 
 // send the empty buffer to force all header and cookie functions to fail
