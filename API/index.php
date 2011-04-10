@@ -15,8 +15,7 @@ This is the main page that does all the work
 /////////////////////////////////////////////////////////////////////////
 
 // show errors on scrern
-ini_set("display_errors","1");
-error_reporting (E_ALL ^ E_NOTICE);
+ini_set("display_errors","0");
 
 // Start the timer
 require("helper_functions/microtime_float.php");
