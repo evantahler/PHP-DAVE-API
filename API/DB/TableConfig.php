@@ -44,7 +44,7 @@ if ($ToReload)
 		}
 		foreach ($TableList as $ThisTable)
 		{
-			$SQL= 'DESCRIBE '.$DB.'.'.$ThisTable.';';
+			$SQL= 'DESCRIBE '.$CONFIG['DB'].'.'.$ThisTable.';';
 			$DBObj->Query($SQL);
 			$Response = $DBObj->GetResults();
 			foreach ($Response as $col)

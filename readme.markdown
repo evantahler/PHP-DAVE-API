@@ -98,9 +98,3 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
   * CURL + time: `time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"`
 
 That's it!  You should see JSON and XML output that describes all of the actions that the server could preform, and an Error asking you to supply an action.  Give `http://localhost:3000/?OutputType=XML&Action=ObjectTest` or `http://localhost:3000/?OutputType=PHP&Action=SlowAction` a try to see some basic examples.
-
-TODO for V1
------------
-* Create a way to test an action with ROLLBACK off of the 'production' API
-  * Create a top-level param RollBack=RollBackPassword which will place the entire action within a mySQL transaction
-  * Allow the test suite to access this resource

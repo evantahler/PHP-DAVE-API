@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `CACHE` (
   `Key` text NOT NULL,
   `Value` text NOT NULL,
   `ExpireTime` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `CACHE`
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `Developers` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `DeveloperID` (`DeveloperID`),
   UNIQUE KEY `APIKey` (`APIKey`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `Developers`
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `LOG` (
   `DeveloperID` text NOT NULL,
   `Params` text NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `LOG`
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   UNIQUE KEY `EMail` (`EMail`),
   UNIQUE KEY `PasswordHash` (`PasswordHash`),
   UNIQUE KEY `PhoneNumber` (`PhoneNumber`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `Users`
@@ -125,4 +125,4 @@ CREATE TABLE  `SESSIONS` (
 UNIQUE (
 `KEY`
 )
-) ENGINE = MYISAM ;
+) ENGINE = InnoDB ;

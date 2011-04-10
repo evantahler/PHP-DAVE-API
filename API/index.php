@@ -83,14 +83,30 @@ if (file_exists("CONFIG.php"))
 			else { $ERROR = $Status; } 
 		}
 	}
-
-	$ActionPreformed = 0;
+	
+	// start transaction for connection if needed
+	if (isset($PARAMS['Rollback']))
+		{
+		if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBObj instanceof DBConnection) == true)
+		{
+			if ($DBObj->GetStatus() == true)
+			{
+				$DBObj->Query("START TRANSACTION;");
+			}
+		}
+		else
+		{
+			$Action = "HALTED";
+			$ERROR = "That is not the correct RollbackPhrase";
+		}
+	}
 
 	// functional Steps
 	/////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
+	$ActionPreformed = 0;
 	$_ActionCounter = 0;
 	while ($_ActionCounter < count($ACTIONS))
 	{
@@ -143,6 +159,16 @@ if (file_exists("CONFIG.php"))
 	$OUTPUT['ERROR'] = $ERROR;
 	$OUTPUT['ServerName'] = $CONFIG['ServerName'];
 	$OUTPUT['ServerAddress'] = $CONFIG['ServerAddress'];
+
+	// end transaction for connection if needed
+	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBObj instanceof DBConnection) == true)
+	{
+		if ($DBObj->GetStatus() == true)
+		{
+			$DBObj->Query("ROLLBACK;");
+			$OUTPUT["Rollback"] = "true";
+		}
+	}
 
 	// output
 	require('Output.php');

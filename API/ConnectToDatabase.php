@@ -114,7 +114,8 @@ class DBConnection
 			{
 				$this->OUT = array();
 				$tmp = array();
-				$NumRows=@mysql_num_rows($Query);
+				$NumRows = 0;
+				if(is_resource($Query)){ $NumRows = mysql_num_rows($Query); }
 				
 				if ($NumRows > 0){ $LogLine .= " | RowsFond -> ".$NumRows; }
 				elseif($this->NumRowsEffected > 0){ $LogLine .= " | RowsEffected -> ".$this->NumRowsEffected; } 

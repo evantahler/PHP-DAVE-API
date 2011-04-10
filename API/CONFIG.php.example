@@ -33,6 +33,7 @@ $CONFIG['DefaultOutputType'] = "JSON" ;  // XML, PHP, VAR, SOAP, or JSON
 $CONFIG['XML_ROOT_NODE'] = "XML"; // what is the root node of your XML output called?
 $CONFIG['RequestLimitPerHour'] = 1000; // limit how many times a specific IP can use the API per hour.  Set it to 0 to have no limit
 $CONFIG['CorrectLimitLockPass'] = "Sekret"; // If a user provides the phrase as the param "LimitLockPass", even with a request limit per hour set above, they will not be limited on the requests that they can make.
+$CONFIG['RollbackPhrase'] = "Sekret"; // A user can send send the &Rollback param with a request.  This will place the entire request in a mySQL tansaction that will be rolled back uppon completion.  This requset will still get logger however.
 
 //define some things about this API node
 $CONFIG['ServerAddress'] = "127.0.0.1";
@@ -43,7 +44,7 @@ $CONFIG['DB'] = "daveapi";  // the name of the database in use
 $CONFIG['dbhost'] = "127.0.0.1";
 $CONFIG['dbuser'] = "root";
 $CONFIG['dbpass'] = "";
-$CONFIG['MySQLLogFile'] = "LOG/SQL.txt";
+$CONFIG['MySQLLogFile'] = "LOG/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
 // Files and Folders
@@ -166,6 +167,7 @@ if (class_exists("DBConnection")) {
 	$POST_VARIABLES = array();
 
 	$POST_VARIABLES[] = "Action";
+	$POST_VARIABLES[] = "Rollback";
 	$POST_VARIABLES[] = "APIKey";
 	$POST_VARIABLES[] = "IP";
 	$POST_VARIABLES[] = "UpperLimit";

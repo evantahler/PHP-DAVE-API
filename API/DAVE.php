@@ -45,12 +45,12 @@ function _ADD($Table, $VARS = null)
 			{
 				if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 				{
-					$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'") ;';
+					$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'") ;';
 					$DBObj->Query($SQL);
 					$Status = $DBObj->GetStatus();
 					if ($Status === true){
 						$results = $DBObj->GetResults();
-						if ($results[0]['COUNT(*)'] > 0)
+						if ($results[0]['COUNT(1)'] > 0)
 						{
 							return array(false,"There is already an entry of '".$val."' for ".$var);
 						}
@@ -175,12 +175,12 @@ function _EDIT($Table, $VARS = null)
 				{
 					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 					{
-						$SQL = 'SELECT COUNT(*) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
+						$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
 						$DBObj->Query($SQL);
 						$Status = $DBObj->GetStatus();
 						if ($Status === true){
 							$results = $DBObj->GetResults();
-							if ($results[0]['COUNT(*)'] > 0)
+							if ($results[0]['COUNT(1)'] > 0)
 							{
 								return array(false,"There is already an entry of '".$val."' for ".$var);
 							}
@@ -354,7 +354,7 @@ function _DELETE($Table, $VARS = null)
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
-		$SQL2 = "SELECT COUNT(*) FROM `".$Table."` WHERE ( ";
+		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
 		foreach($VARS as $var => $val)
 		{ 
@@ -386,7 +386,7 @@ function _DELETE($Table, $VARS = null)
 			if ($Status === true)
 			{
 				$results = $DBObj->GetResults();
-				if ($results[0]['COUNT(*)'] < 1)
+				if ($results[0]['COUNT(1)'] < 1)
 				{
 					return array(false,"The item you are requesting to delete is not found");
 				}
