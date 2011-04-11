@@ -18,6 +18,9 @@ This is the main page that does all the work
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
+// don't cache these API pages
+if (!headers_sent()) { header("Cache-Control: no-cache, must-revalidate"); }
+
 // Start the timer
 require("helper_functions/microtime_float.php");
 $ComputationStartTime = microtime_float();
