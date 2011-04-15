@@ -451,7 +451,7 @@ while (true) {
 		} 
 		else 
 		{
-			$internal_sock_data = fread($internal_read[$int_i], 10240);
+			$internal_sock_data = fread($internal_read[$int_i], 1024000);
 		    if (strlen($internal_sock_data) === 0) { // connection closed
 		        $key_to_del = array_search($internal_read[$int_i], $internal_master, TRUE);
 		        fclose($internal_read[$int_i]);
