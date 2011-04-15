@@ -73,7 +73,10 @@ if ($ToReload)
 	$TableStringOutput .= '$TableBuildTime = "'.$TABLES['TableBuildTime']."\"; \r\n\r\n";
 	foreach ($TableList as $ThisTable)
 	{
-		$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = '.$TABLES[$ThisTable]['META']['KEY']."; \r\n";
+		if ($TABLES[$ThisTable]['META']['KEY'] != null)
+		{
+			$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = '.$TABLES[$ThisTable]['META']['KEY']."; \r\n";
+		}
 		foreach($TABLES[$ThisTable] as $col)
 		{
 			if ($col["KEY"] == null)
