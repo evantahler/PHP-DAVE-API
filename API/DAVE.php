@@ -302,6 +302,7 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		{
 			if ($NeedAnd) { $SQL .= " AND "; } 
 			$SQL .= " ".$where_additions." ";
+                        $NeedAnd = true;
 		}
 		if($NeedAnd == false && $SQL_Override != true)
 		{
