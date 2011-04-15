@@ -53,6 +53,7 @@ function __SendToParent($string)
 {
 	global $__PARENT_URL, $__PARENT_PORT, $__CLIENT_ID;
 	$string = $string."<<CLIENT_ID_BREAK>>".$__CLIENT_ID;
+        echo "\r\nSending to client #".$__CLIENT_ID."\r\n";
 	if (strlen($__PARENT_URL) > 0)
 	{
 		$socket = stream_socket_client("tcp://".$__PARENT_URL.":".$__PARENT_PORT, $errno, $errstr);
