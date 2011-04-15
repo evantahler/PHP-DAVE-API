@@ -66,6 +66,46 @@ class DaveTableObject
 		if (!$this->Status){return false;}
 		return $this->find(null, $Conditions);
 	}
+
+	public function maximum($col)
+	{
+		if(strlen($col) == 0){return false;}
+		else
+		{
+			$Conditions["SQL_Override"] = true;
+			$Conditions["where_additions"] = " `".$col."` = (SELECT MAX(`".$col."`) from `".$this->Table."` ) ";
+
+			$results = _VIEW($this->Table, array(), $Conditions);
+			if (count($results[1][0]) > 0){
+				$this_obj = new DaveRowObject($this, $results[1][0]);
+				return $this_obj;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	
+	public function minimum($col)
+	{
+		if(strlen($col) == 0){return false;}
+		else
+		{
+			$Conditions["SQL_Override"] = true;
+			$Conditions["where_additions"] = " `".$col."` = (SELECT MIN(`".$col."`) from `".$this->Table."` ) ";
+
+			$results = _VIEW($this->Table, array(), $Conditions);
+			if (count($results[1][0]) > 0){
+				$this_obj = new DaveRowObject($this, $results[1][0]);
+				return $this_obj;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 	
 	public function count($Conditions = null)
 	{
