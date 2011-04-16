@@ -27,7 +27,7 @@ $ComputationStartTime = microtime_float();
 
 // working directory
 $path = substr(__FILE__,0,(strlen(__FILE__) - strlen("index.php")));
-chdir($path); unset($path); @mkdir("LOG");
+chdir($path); unset($path);
 
 // Start the Output
 $OUTPUT = array();

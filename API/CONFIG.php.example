@@ -36,22 +36,8 @@ $CONFIG['CorrectLimitLockPass'] = "Sekret"; // If a user provides the phrase as 
 $CONFIG['RollbackPhrase'] = "Sekret"; // A user can send send the &Rollback param with a request.  This will place the entire request in a mySQL tansaction that will be rolled back uppon completion.  This requset will still get logger however.
 
 //define some things about this API node
-$CONFIG['ServerAddress'] = "127.0.0.1";
+$CONFIG['ServerAddress'] = "127.0.0.1"; //include the port.  80 is the web's default
 $CONFIG['ServerName'] = "DAVE_API_SERVER";
-
-// mySQL database
-$CONFIG['DB'] = "daveapi";  // the name of the database in use
-$CONFIG['dbhost'] = "127.0.0.1";
-$CONFIG['dbuser'] = "root";
-$CONFIG['dbpass'] = "";
-
-// There can be seperate DBs in use for logging.
-$CONFIG['LOG_DB'] = $CONFIG['DB'];
-$CONFIG['LOG_dbhost'] = $CONFIG['dbhost'];
-$CONFIG['LOG_dbuser'] = $CONFIG['dbuser'];
-$CONFIG['LOG_dbpass'] = $CONFIG['dbpass'];
-
-$CONFIG['MySQLLogFile'] = "log/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
 // Files and Folders
@@ -59,15 +45,29 @@ $CONFIG['PHP_Path'] = "/usr/bin/php"; // where is the PHP excecutable?
 $CONFIG['App_dir'] = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/
-// Tests and Specs
-$CONFIG['ServerAddressForTests'] = "127.0.0.1:3000"; //port 3000 is the default for SERVER
-$CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
-$CONFIG['TestLog'] = $CONFIG['App_dir']."../SPEC/log/test_log.txt";
-@mkdir("../SPEC/log/");
+// Log
+$CONFIG['LogFolder'] = $CONFIG['App_dir']."log/";
+$CONFIG['LogAge'] = 60*60*24; // time to keep log entries in the DB (in seconds)
+// If you want to ignore certain Actions, list them here (For logging purposes)
+$CONFIG['NoLogActions'] = array();
+$CONFIG['NoLogActions'][] = "A_Blocked_Action";
+//If you want to ignore certain APIKeys, list them here (For logging purposes)
+$CONFIG['NoLogAPIKeys'] = array();
+$CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
+$CONFIG['LogTable'] = "LOG";
+$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
+
+/*********************************************************/
+// mySQL database
+$CONFIG['DB'] = "daveapi";  // the name of the database in use
+$CONFIG['dbhost'] = "127.0.0.1";
+$CONFIG['dbuser'] = "root";
+$CONFIG['dbpass'] = "";
+
+$CONFIG['MySQLLogFile'] = $CONFIG['LogFolder']."SQL.txt"; // comment me out for no logging of mySQL commands
 
 /*********************************************************/
 // CRON
-@mkdir("LOG");
 $CONFIG['CronLogFile'] = "log/CRON_LOG.txt";
 $CONFIG['MaxLogFileSize'] = 1048576 * 1;  // 1MB
 
@@ -80,21 +80,8 @@ $CONFIG['LogsToCheck'][] = $CONFIG['App_dir'].$CONFIG['MySQLLogFile'];
 $CONFIG['CacheType'] = "DB"; // Options are "", "MemCache", "FlatFile", or "DB";
 $CONFIG['CacheTime'] = 10; // time to keep a cached value (in seconds)
 $CONFIG['CacheTable'] = "CACHE"; // if using the DB method
-$CONFIG['CacheFolder'] = "CACHE/"; // chmod 777, if using FlatFile mode
+$CONFIG['CacheFolder'] = $CONFIG['App_dir']."cache/"; // chmod 777, if using FlatFile mode
 $CONFIG['MemCacheHost'] = '127.0.0.1'; // The Server name or IP address of the memcache host, if CacheType = MemCache
-
-/*********************************************************/
-// Log
-$CONFIG['LogAge'] = 60*60*24; // time to keep log entries in the DB (in seconds)
-// If you want to ignore certain Actions, list them here (For logging purposes)
-$CONFIG['NoLogActions'] = array();
-$CONFIG['NoLogActions'][] = "A_Blocked_Action";
-//If you want to ignore certain APIKeys, list them here (For logging purposes)
-$CONFIG['NoLogAPIKeys'] = array();
-$CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
-// There can be seperate DBs in use for logging.  The LogTable table is expected to be within this database.
-$CONFIG['LogTable'] = "LOG";
-$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
 
 /*********************************************************/
 // Sessions
@@ -104,6 +91,19 @@ $CONFIG['SessionAge'] = 60*60*24; // how long to keep session information in the
 // Safe Mode: Use this to force the MD5 Checks to occur
 // md5($DeveloperID{secret}.$APIKey.$Rand).
 $CONFIG['SafeMode'] = true; //can be "true" or "false"
+
+/*********************************************************/
+// Tests and Specs
+$CONFIG['ServerAddressForTests'] = "127.0.0.1:3000"; //port 3000 is the default for SERVER
+$CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
+$CONFIG['TestLogFodler'] = $CONFIG['App_dir']."../SPEC/log/";
+$CONFIG['TestLog'] = $CONFIG['TestLogFodler']."test_log.txt";
+
+/*********************************************************/
+// Create needed folders
+@mkdir($CONFIG['TestLogFodler']);
+@mkdir($CONFIG['LogFolder']);
+@mkdir($CONFIG['CacheFolder']);
 
 /*********************************************************/
 // Special Strings
