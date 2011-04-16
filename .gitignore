@@ -2,6 +2,6 @@ favicon.gif
 favicon.ico
 API/CONFIG.php
 API/DB/TABLES.php
-API/LOG/*
-SPEC/LOG/*
-SERVER/LOG/*
+API/log/*
+SPEC/log/*
+SERVER/log/*

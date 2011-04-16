@@ -50,7 +50,8 @@ $CONFIG['LOG_DB'] = $CONFIG['DB'];
 $CONFIG['LOG_dbhost'] = $CONFIG['dbhost'];
 $CONFIG['LOG_dbuser'] = $CONFIG['dbuser'];
 $CONFIG['LOG_dbpass'] = $CONFIG['dbpass'];
-$CONFIG['MySQLLogFile'] = "LOG/SQL.txt"; // comment me out not to log
+
+$CONFIG['MySQLLogFile'] = "log/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
 // Files and Folders
@@ -61,13 +62,13 @@ $CONFIG['App_dir'] = "/var/www/html/API/"; // the location of this application
 // Tests and Specs
 $CONFIG['ServerAddressForTests'] = "127.0.0.1:3000"; //port 3000 is the default for SERVER
 $CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
-$CONFIG['TestLog'] = $CONFIG['App_dir']."../SPEC/LOG/test_log.txt";
-@mkdir("../SPEC/LOG/");
+$CONFIG['TestLog'] = $CONFIG['App_dir']."../SPEC/log/test_log.txt";
+@mkdir("../SPEC/log/");
 
 /*********************************************************/
 // CRON
 @mkdir("LOG");
-$CONFIG['CronLogFile'] = "LOG/CRON_LOG.txt";
+$CONFIG['CronLogFile'] = "log/CRON_LOG.txt";
 $CONFIG['MaxLogFileSize'] = 1048576 * 1;  // 1MB
 
 $CONFIG['LogsToCheck'] = array(); // log files that might get big that you want to automatically truncate
@@ -94,7 +95,6 @@ $CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
 // There can be seperate DBs in use for logging.  The LogTable table is expected to be within this database.
 $CONFIG['LogTable'] = "LOG";
 $CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
-$CONFIG['MySQLLogFile'] = "LOG/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
 // Sessions

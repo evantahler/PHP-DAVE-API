@@ -16,10 +16,10 @@ $SERVER['domain'] = "localhost";
 $SERVER['root_path'] = "../API/"; // from location of SERVER.php
 $SERVER['PHP_Path'] = "/usr/bin/php";
 $SERVER['systemTimeZone'] = "America/Los_Angeles";
-$SERVER['log_file'] = "LOG/SERVER_LOG.txt";
+$SERVER['log_file'] = "log/SERVER_LOG.txt";
 $SERVER['timeout'] = 10; //how long to wait (seconds) before returning to the client with a 500 error
 
-@mkdir("LOG");
+@mkdir("log");
 
 function parseArgs(){
 	global $argv;
