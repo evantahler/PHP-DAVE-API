@@ -35,6 +35,7 @@ Features
 * CRON processing of delayed events
 * Simple error handling and input sanitization
 * XML, JSON, Serialized PHP output types built in
+* Task Classes to automate periodic management and to ease development
 * End-to-end spec testing framework for the API including custom assertions
 
 Stand-Alone Development Webserver written in PHP
