@@ -1,12 +1,10 @@
 <?php
-
 /***********************************************
 DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I am a collection of common API functions that will be re-used, such as special-case input validation.  
-
 /*************************************************************/
 
 function humanize_actions()
@@ -38,6 +36,25 @@ function reload_tables()
 	{
 		$ERROR = "DB Cannot be reached: ".$Status;
 	}
+}
+
+function load_tasks()
+{
+	global $CONFIG;
+	require_once($CONFIG['App_dir']."Tasks/_BASE.php");
+	$TaskFiles = glob($CONFIG['App_dir']."Tasks/*.php");
+	foreach($TaskFiles as $task_file){require_once($task_file); }
+	
+	return $TaskFiles;
+}
+
+function run_task($TaskName, $PARAMS = array())
+{
+	// assumes that tasks have been properly loaded in with load_tasks()
+	$TaskLog = "Running Task: ".$TaskName."\r\n\r\n";
+	$_TASK = new $TaskName(true, $PARAMS);
+	$TaskLog .= $_TASK->get_task_log();
+	return $TaskLog."\r\n";
 }
 
 function create_session()

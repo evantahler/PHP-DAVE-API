@@ -55,7 +55,6 @@ $CONFIG['NoLogActions'][] = "A_Blocked_Action";
 $CONFIG['NoLogAPIKeys'] = array();
 $CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
 $CONFIG['LogTable'] = "LOG";
-$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
 
 /*********************************************************/
 // mySQL database
@@ -64,16 +63,18 @@ $CONFIG['dbhost'] = "127.0.0.1";
 $CONFIG['dbuser'] = "root";
 $CONFIG['dbpass'] = "";
 
+$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
+
 $CONFIG['MySQLLogFile'] = $CONFIG['LogFolder']."SQL.txt"; // comment me out for no logging of mySQL commands
 
 /*********************************************************/
 // CRON
-$CONFIG['CronLogFile'] = "log/CRON_LOG.txt";
+$CONFIG['CronLogFile'] = $CONFIG['LogFolder']."CRON_LOG.txt";
 $CONFIG['MaxLogFileSize'] = 1048576 * 1;  // 1MB
 
 $CONFIG['LogsToCheck'] = array(); // log files that might get big that you want to automatically truncate
-$CONFIG['LogsToCheck'][] = $CONFIG['App_dir'].$CONFIG['CronLogFile'];
-$CONFIG['LogsToCheck'][] = $CONFIG['App_dir'].$CONFIG['MySQLLogFile'];
+$CONFIG['LogsToCheck'][] = $CONFIG['CronLogFile'];
+$CONFIG['LogsToCheck'][] = $CONFIG['MySQLLogFile'];
 
 /*********************************************************/
 // CACHE
