@@ -22,10 +22,10 @@ $CRON_OUTPUT = "STARTING CRON @ ".date("m-d-Y H:i:s")."\r\n\r\n";
 /////////////////////////////////////////////////////////////////////////
 // Do Tasks
 
-$CRON_OUTPUT .= run_task("CleanCache", $ARGS);
-$CRON_OUTPUT .= run_task("CleanLog", $ARGS);
-$CRON_OUTPUT .= run_task("CleanSessions", $ARGS);
-$CRON_OUTPUT .= run_task("RemoveLargeLogs", $ARGS);
+$CRON_OUTPUT .= run_task("CleanCache");
+$CRON_OUTPUT .= run_task("CleanLog");
+$CRON_OUTPUT .= run_task("CleanSessions");
+$CRON_OUTPUT .= run_task("RemoveLargeLogs");
 
 /////////////////////////////////////////////////////////////////////////
 // End the log output

@@ -22,6 +22,8 @@ if (file_exists("CONFIG.php"))
 	require_once("CACHE.php");
 	require_once("CommonFunctions.php");
 	require_once("GetPostVars.php");
+	
+	date_default_timezone_set($CONFIG['systemTimeZone']);
 }
 else 
 {
