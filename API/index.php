@@ -64,7 +64,7 @@ if (file_exists("CONFIG.php"))
 			$Status = $DBObj->GetStatus();
 			if ($Status === true)
 			{		
-				$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
+				$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
 				$DBObj->Query($SQL);
 				$Status = $DBObj->GetStatus();
 				if ($Status === true){

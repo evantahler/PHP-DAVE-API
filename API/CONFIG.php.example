@@ -44,6 +44,12 @@ $CONFIG['DB'] = "daveapi";  // the name of the database in use
 $CONFIG['dbhost'] = "127.0.0.1";
 $CONFIG['dbuser'] = "root";
 $CONFIG['dbpass'] = "";
+
+// There can be seperate DBs in use for logging.
+$CONFIG['LOG_DB'] = $CONFIG['DB'];
+$CONFIG['LOG_dbhost'] = $CONFIG['dbhost'];
+$CONFIG['LOG_dbuser'] = $CONFIG['dbuser'];
+$CONFIG['LOG_dbpass'] = $CONFIG['dbpass'];
 $CONFIG['MySQLLogFile'] = "LOG/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
@@ -78,7 +84,6 @@ $CONFIG['MemCacheHost'] = '127.0.0.1'; // The Server name or IP address of the m
 
 /*********************************************************/
 // Log
-$CONFIG['LogTable'] = "LOG";
 $CONFIG['LogAge'] = 60*60*24; // time to keep log entries in the DB (in seconds)
 // If you want to ignore certain Actions, list them here (For logging purposes)
 $CONFIG['NoLogActions'] = array();
@@ -86,6 +91,10 @@ $CONFIG['NoLogActions'][] = "A_Blocked_Action";
 //If you want to ignore certain APIKeys, list them here (For logging purposes)
 $CONFIG['NoLogAPIKeys'] = array();
 $CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
+// There can be seperate DBs in use for logging.  The LogTable table is expected to be within this database.
+$CONFIG['LogTable'] = "LOG";
+$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
+$CONFIG['MySQLLogFile'] = "LOG/SQL.txt"; // comment me out not to log
 
 /*********************************************************/
 // Sessions
