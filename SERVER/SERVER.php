@@ -45,11 +45,21 @@ function server_log($string)
 
 function SendDataToClient($ClientData, $Message)
 {
-        if (isset($ClientData['sock']))
-        {
-                @socket_write($ClientData['sock'], $Message."\r\n");
-                ob_end_clean();
-        }
+	if (isset($ClientData['sock']))
+	{
+		$total_bytes = strlen($Message);
+		$bytes_sent = 0;
+		while($bytes_sent < $total_bytes)
+		{
+			$resp = @socket_write($ClientData['sock'], $Message."\r\n");
+			if (is_int($resp))
+			{
+				$bytes_sent = $bytes_sent + $resp;
+			}
+			else{ echo "Send Error -> ".socket_strerror(socket_last_error($ClientData['sock']))."\r\n"; break; }
+		}
+   		ob_end_clean();
+     }
 }
 
 function EndTransfer($i)
@@ -168,7 +178,7 @@ set_time_limit (0);
 ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
 
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-socket_set_nonblock($sock);
+// socket_set_nonblock($sock);
 socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
 $j = 0;
 while (@socket_bind($sock, 0, $SERVER['public_port']) == false)
