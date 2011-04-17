@@ -16,21 +16,9 @@ require_once("load_enviorment.php"); unset($parts); unset($ThisFile);
 
 require_once("helper_functions/parseArgs.php");
 
-$TaskFiles = load_tasks();
-
 $ARGS = __parseArgs();
 
-$TaskNames = array();
-foreach($TaskFiles as $class_name)
-{
-	$parts = explode("/",$class_name);
-	$parts = explode(".",$parts[(count($parts) - 1)]);
-	$class_name = $parts[0];
-	if ($class_name != "task" && class_exists($class_name))
-	{
-	    $TaskNames[] = $class_name;
-	}
-}
+$TaskNames = load_tasks();
 
 // help / List
 if ($ARGS["h"] == true || $ARGS["help"] == true || $ARGS["l"] == true || $ARGS["list"] == true)

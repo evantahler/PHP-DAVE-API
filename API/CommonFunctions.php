@@ -45,7 +45,19 @@ function load_tasks()
 	$TaskFiles = glob($CONFIG['App_dir']."Tasks/*.php");
 	foreach($TaskFiles as $task_file){require_once($task_file); }
 	
-	return $TaskFiles;
+	$TaskNames = array();
+	foreach($TaskFiles as $class_name)
+	{
+		$parts = explode("/",$class_name);
+		$parts = explode(".",$parts[(count($parts) - 1)]);
+		$class_name = $parts[0];
+		if ($class_name != "task" && class_exists($class_name))
+		{
+		    $TaskNames[] = $class_name;
+		}
+	}
+	
+	return $TaskNames;
 }
 
 function run_task($TaskName, $PARAMS = array())

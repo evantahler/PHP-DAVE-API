@@ -148,54 +148,6 @@ if (class_exists("DBConnection")) {
 	{
 		$ERROR = "DB Cannot be reached: ".$Status;
 	}
-
-	/*********************************************************/
-	// Actions, defined as "verb",  then "page location", then "Public" or "Private" indicatiing if an APIKey is needed to access the function
-
-	$ACTIONS = array();
-
-	// default actions
-	$ACTIONS[] = array('DescribeActions', 'Actions/examples/DescribeActions.php', 'Public');
-	$ACTIONS[] = array('DescribeTables', 'Actions/examples/DescribeTables.php', 'Public');
-
-	// some basic actions
-	$ACTIONS[] = array('CacheTest', 'Actions/examples/CacheTest.php', 'Public');
-	$ACTIONS[] = array('ObjectTest', 'Actions/examples/ObjectTest.php', 'Public');
-
-	// Demo actions for building a user system
-	$ACTIONS[] = array('UserAdd', 'Actions/examples/UserAdd.php', 'Public');
-	$ACTIONS[] = array('UserView', 'Actions/examples/UserView.php', 'Public');
-	$ACTIONS[] = array('UserEdit', 'Actions/examples/UserEdit.php', 'Public');
-	$ACTIONS[] = array('UserDelete', 'Actions/examples/UserDelete.php', 'Public');
-	$ACTIONS[] = array('LogIn', 'Actions/examples/LogIn.php', 'Public');
-	$ACTIONS[] = array('CookieTest', 'Actions/examples/CookieTest.php', 'Public');
-	$ACTIONS[] = array('SlowAction', 'Actions/examples/SlowAction.php', 'Public');
-
-	/*********************************************************/
-
-	// Variables that might not be in the TABLLES.  List any extra parameters your application might need
-	$POST_VARIABLES = array();
-
-	$POST_VARIABLES[] = "Action";
-	$POST_VARIABLES[] = "Rollback";
-	$POST_VARIABLES[] = "APIKey";
-	$POST_VARIABLES[] = "IP";
-	$POST_VARIABLES[] = "UpperLimit";
-	$POST_VARIABLES[] = "LowerLimit";
-	$POST_VARIABLES[] = "Date";
-	$POST_VARIABLES[] = "TimeStamp";
-	$POST_VARIABLES[] = "Rand";
-	$POST_VARIABLES[] = "Hash";
-	$POST_VARIABLES[] = "DeveloperID";
-	$POST_VARIABLES[] = "OutputType";
-	$POST_VARIABLES[] = "Callback";
-	$POST_VARIABLES[] = "LimitLockPass";
-	$POST_VARIABLES[] = "Password";
-	$POST_VARIABLES[] = "NewPassword";
-
-	/*********************************************************/
-	require('config_cleaner.php');
-	
 }
 
 ?>

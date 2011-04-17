@@ -5,6 +5,26 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I am the base class for API Tasks.  I will create the basic task object which can be extended.  Tasks can be run at the end of certain actions, by CRON, or even manually.
+
+The basic layout of a task class is:
+
+---------------------------------------------------------------------------------------
+
+class CleanCache extends task
+{		
+	protected static $description = "Use me to clean both the DB and file-based cache";
+	
+	public function run($PARAMS = array())
+	{
+		global $CONFIG, $DBObj;
+		
+		// PUT YOUR ACTION CODE HERE
+		
+		// collect output with the task_log method
+		// $this->task_log('Task Complete!');
+	}
+}
+
 ***********************************************/
 
 if (empty($TASKS)) { $TASKS = array(); } // a list of tasks to be populated by name
