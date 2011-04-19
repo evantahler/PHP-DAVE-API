@@ -100,5 +100,6 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
 * Visit Dave
   * Browser: `http://localhost:3000&OutputType=XML`
   * CURL + time: `time curl -v http://127.0.0.1:3000/ -d "OutputType=XML"`
+  * Use the API console `script/api --Action=DescribeActions`
 
 That's it!  You should see JSON and XML output that describes all of the actions that the server could preform, and an Error asking you to supply an action.  Give `http://localhost:3000/?OutputType=XML&Action=ObjectTest` or `http://localhost:3000/?OutputType=PHP&Action=SlowAction` a try to see some basic examples.
