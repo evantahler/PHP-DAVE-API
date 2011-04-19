@@ -29,6 +29,23 @@ $POST_VARIABLES[] = "LimitLockPass";
 $POST_VARIABLES[] = "Password";
 $POST_VARIABLES[] = "NewPassword";
 
+// Add Table columns as POST_VARIABLES
+$i = 0;
+if (count($TABLES) > 0)
+{
+	$TableNames = array_keys($TABLES);
+	while ($i < count($TABLES))
+	{
+		$j = 0;
+		while ($j < count($TABLES[$TableNames[$i]]))
+		{
+			$POST_VARIABLES[] = $TABLES[$TableNames[$i]][$j][0];
+			$j++;
+		}
+		$i++;
+	}
+}
+
 // Use "REQUEST" so that both POST and GET will work, along with cookie data
 foreach($POST_VARIABLES as $var)
 {
@@ -50,23 +67,6 @@ if ($PARAMS["Hash"] == "" && $PARAMS["DeveloperID"] != "" && $PARAMS["Rand"] != 
 }
 if ($PARAMS["Rand"] == ""){unset($PARAMS["Rand"]);}
 if ($PARAMS["Hash"] == ""){unset($PARAMS["Hash"]);}
-
-// Add Table columns as POST_VARIABLES
-$i = 0;
-if (count($TABLES) > 0)
-{
-	$TableNames = array_keys($TABLES);
-	while ($i < count($TABLES))
-	{
-		$j = 0;
-		while ($j < count($TABLES[$TableNames[$i]]))
-		{
-			$POST_VARIABLES[] = $TABLES[$TableNames[$i]][$j][0];
-			$j++;
-		}
-		$i++;
-	}
-}
 
 // do a doubles check on the uniqueness of POST_VARIABLES 
 $POST_VARIABLES = array_unique($POST_VARIABLES);
