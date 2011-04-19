@@ -29,7 +29,7 @@ $ERROR = 100;
 
 $CONFIG['systemTimeZone'] = "America/Los_Angeles";
 date_default_timezone_set($CONFIG['systemTimeZone']);
-$CONFIG['DefaultOutputType'] = "JSON" ;  // XML, PHP, VAR, SOAP, or JSON
+$CONFIG['DefaultOutputType'] = "JSON" ;  // XML, PHP, VAR, SOAP, LINE, CONSOLE, or JSON
 $CONFIG['XML_ROOT_NODE'] = "XML"; // what is the root node of your XML output called?
 $CONFIG['RequestLimitPerHour'] = 1000; // limit how many times a specific IP can use the API per hour.  Set it to 0 to have no limit
 $CONFIG['CorrectLimitLockPass'] = "Sekret"; // If a user provides the phrase as the param "LimitLockPass", even with a request limit per hour set above, they will not be limited on the requests that they can make.
