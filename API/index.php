@@ -29,7 +29,7 @@ $ComputationStartTime = microtime_float();
 $OUTPUT = array();
 
 // Get IP (if not provided)
-if (empty($IP) || $IP == "")
+if (empty($PARAMS["IP"]) || $PARAMS["IP"] == "")
 {
 	if (getenv(HTTP_X_FORWARDED_FOR)) {							
    		$IPList = getenv(HTTP_X_FORWARDED_FOR); 
@@ -42,6 +42,7 @@ if (empty($IP) || $IP == "")
 		$IP = $_SERVER["REMOTE_ADDR"];
 	}
 }
+else {$IP = $PARAMS["IP"];}
 
 // check if this user has made too many requests this hour
 if ($CONFIG['RequestLimitPerHour'] > 0)
