@@ -128,9 +128,8 @@ while ($_ActionCounter < count($ACTIONS))
 if ($ActionPreformed == 0 || $PARAMS["Action"] == "" || strlen($PARAMS["Action"]) == 0)
 {
 	if ($ERROR == 100) { 
-		$ERROR = "That Action cannot be found.  Did you send the 'Action' parameter?"; 
+		$ERROR = "That Action cannot be found.  Did you send the 'Action' parameter?  List Actions with Action=DescribeActions"; 
 		$Action = "Unknown Action";
-		$OUTPUT["KnownActions"] = humanize_actions();
 	}
 }
 
