@@ -60,7 +60,7 @@ elseif ($PARAMS["OutputType"] == "CONSOLE")
 
 else
 {
-	echo 'I am sorry, but I do not know that OutputType.  Leave OutputType blank for the default option.';
+	echo "I am sorry, but I do not know that OutputType.  Leave OutputType blank for the default option.  Options include: XML, JSON, PHP, LINE, CONSOLE, VAR\r\n";
 }
 
 flush();
