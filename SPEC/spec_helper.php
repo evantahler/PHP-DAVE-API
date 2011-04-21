@@ -38,8 +38,16 @@ class DaveTest
 		$this->Failures = array();
 		
 		load_tasks();
-		$this->log(" * Saving DB state");
-		run_task("CreateDBSaveState");
+		$this->log_task_output(run_task("CreateDBSaveState"));
+	}
+	
+	private function log_task_output($string)
+	{
+		$this->log("");
+		$string = str_replace("\r\n\r\n","\r\n",$string);
+		$string = substr($string,0,-4);
+		$this->log($string);
+		$this->log("");
 	}
 	
 	public function __set($key, $value) 
@@ -312,10 +320,8 @@ class DaveTest
 		{
 			$this->log($this->colors->getColoredString("Failure: ".$fail,"red"));
 		}
-		$this->log("");	
-		
-		$this->log(" * Restoring DB state");
-		run_task("RestoreDBSaveState");
+
+		$this->log_task_output(run_task("RestoreDBSaveState"));
 	}
 	
 	public function log($line)
