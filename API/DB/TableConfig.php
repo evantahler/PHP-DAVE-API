@@ -97,10 +97,10 @@ if ($ToReload)
 	
 	if (is_dir($CONFIG['App_dir']))
 	{
-		$fh = fopen($CONFIG['App_dir'].$CONFIG['TableConfigFile'], 'w');
+		$fh = fopen($CONFIG['TableConfigFile'], 'w');
 		fwrite($fh, $TableStringOutput);
 		fclose($fh);
-		chmod($CONFIG['App_dir'].$CONFIG['TableConfigFile'],0777);
+		chmod($CONFIG['TableConfigFile'],0777);
 	}
 	else
 	{

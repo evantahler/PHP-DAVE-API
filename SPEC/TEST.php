@@ -57,4 +57,6 @@ else { $T->log("0 passing tests"); }
 if ($__TEST_SUITE_RESULTS["Failures"] > 0){ $T->log($__TEST_SUITE_RESULTS["Failures"]." failing tests"); }
 else { $T->log("0 failing tests"); }
 
+$T->end();
+
 ?>

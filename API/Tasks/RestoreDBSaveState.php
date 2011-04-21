@@ -15,6 +15,8 @@ class RestoreDBSaveState extends task
 	{
 		global $CONFIG, $TABLES, $DBObj;
 		
+		reload_tables();
+		
 		$TablesToRestore = array();
 		if (strlen($PARAMS['table']) > 0)
 		{
@@ -30,7 +32,7 @@ class RestoreDBSaveState extends task
 				}
 			}
 		}
-		
+				
 		foreach($TablesToRestore as $table)
 		{
 			$Status = $DBObj->GetStatus();

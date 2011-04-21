@@ -15,6 +15,8 @@ class CreateDBSaveState extends task
 	{
 		global $CONFIG, $TABLES, $DBObj;
 		
+		reload_tables();
+		
 		$TablesToSave = array();
 		if (strlen($PARAMS['table']) > 0)
 		{

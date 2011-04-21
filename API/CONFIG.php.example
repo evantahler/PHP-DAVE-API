@@ -133,7 +133,7 @@ if (class_exists("DBConnection")) {
 
 	/*********************************************************/
 	// Table information
-	$CONFIG['TableConfigFile'] = "DB/TABLES.php";
+	$CONFIG['TableConfigFile'] = $CONFIG['App_dir']."DB/TABLES.php";
 	$CONFIG['TableConfigRefreshTime'] = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
 
 	$DBObj = new DBConnection();

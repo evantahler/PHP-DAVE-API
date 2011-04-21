@@ -11,13 +11,9 @@ I setup the testing enviorment and include handy functions for the test suite
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
-require_once("../../API/helper_functions/colors.php");
-require_once("../../API/CONFIG.php");
-
-// working directory
-chdir($CONFIG['App_dir']);
-
-// $TestURL = $CONFIG['ServerAddressForTests'];
+chdir("../../API/");
+require_once("load_enviorment.php");
+require_once("helper_functions/colors.php");
 
 if (!class_exists(DaveTest))
 {
@@ -40,6 +36,10 @@ class DaveTest
 		
 		$this->Successes = array();
 		$this->Failures = array();
+		
+		load_tasks();
+		$this->log(" * Saving DB state");
+		run_task("CreateDBSaveState");
 	}
 	
 	public function __set($key, $value) 
@@ -313,6 +313,9 @@ class DaveTest
 			$this->log($this->colors->getColoredString("Failure: ".$fail,"red"));
 		}
 		$this->log("");	
+		
+		$this->log(" * Restoring DB state");
+		run_task("RestoreDBSaveState");
 	}
 	
 	public function log($line)
