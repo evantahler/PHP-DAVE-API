@@ -27,8 +27,7 @@ $T->context("I should be able to create a user");
 		"EMail" => $TestValues['EMail']
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert(">",$APIDATA["UserID"],0);
 	
@@ -42,8 +41,7 @@ $T->context("I should be able to View a user publicly");
 		"ScreenName" => $TestValues['ScreenName'],
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert("==",$APIDATA["User"]["InformationType"],"Public");
 	$T->assert("==",$APIDATA["User"]["ScreenName"],$TestValues['ScreenName']);
@@ -58,8 +56,7 @@ $T->context("I should be able to View a user privately");
 		"Password" => "password",
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert("==",$APIDATA["User"]["InformationType"],"Private");
 	$T->assert("==",$APIDATA["User"]["ScreenName"],$TestValues['ScreenName']);
@@ -77,8 +74,7 @@ $T->context("I should be able to Log In");
 		"Password" => "password",
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert("==",$APIDATA["LOGIN"],"TRUE");
 	$T->assert(">",strlen($APIDATA["SessionKey"]),0);
@@ -95,8 +91,7 @@ $T->context("I should be able to Edit a user");
 		"EMail" => "NewEmail@fake.com"
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert("==",$APIDATA["User"]["EMail"],"NewEmail@fake.com");
 
@@ -109,8 +104,7 @@ $T->context("I should be able to Delete a user");
 		"Password" => "password"
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	
 $T->context("Deleted users should not be found");
@@ -121,8 +115,7 @@ $T->context("Deleted users should not be found");
 		"ScreenName" => $TestValues['ScreenName'],
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"That User cannot be found");
 
 $T->end();

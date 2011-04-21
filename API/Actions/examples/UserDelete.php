@@ -9,7 +9,7 @@ I am an example function to Delete a user
 if ($ERROR == 100)
 {
 	// look up the user info
-	list($pass,$result) = _VIEW("Users");
+	list($pass,$result) = _VIEW("users");
 	if (!$pass){ $ERROR = $result; }
 }
 if ($ERROR == 100)
@@ -21,7 +21,7 @@ if ($ERROR == 100)
 		
 		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 		{
-			_DELETE("Users", $PARAMS);
+			_DELETE("users", $PARAMS);
 		}
 		else
 		{

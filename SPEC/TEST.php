@@ -20,7 +20,7 @@ $dir = scandir(".");
 function find_folders($path)
 {
 	global $sub_folders;
-	$bad_paths = array("LOG", ".", "..");
+	$bad_paths = array("log", ".", "..");
 	if (!in_array($path,$bad_paths) && strpos($path,".") === false)
 	{
 		$sub_folders[] = $path."/";

@@ -11,20 +11,19 @@ I setup the testing enviorment and include handy functions for the test suite
 ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
-require_once("../../API/AccessTools/APIRequest.php");
 require_once("../../API/helper_functions/colors.php");
 require_once("../../API/CONFIG.php");
 
 // working directory
 chdir($CONFIG['App_dir']);
 
-$TestURL = $CONFIG['ServerAddressForTests'];
+// $TestURL = $CONFIG['ServerAddressForTests'];
 
 if (!class_exists(DaveTest))
 {
 class DaveTest
 {
-	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage, $colors, $MessageDepth;
+	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage, $colors, $MessageDepth, $LastAPIResponse;
 	
 	public function __construct($title = null)
 	{
@@ -59,6 +58,33 @@ class DaveTest
 			return false;
 		}
     }
+
+	////////////////////////////////////////////
+	
+	public function api_request($PARAMS)
+	{
+		global $CONFIG;
+		
+		$exec = "eval \" cd ".$CONFIG['App_dir']."../;";
+		$exec .= " script/api ";
+		foreach ($PARAMS as $k => $v)
+		{
+			$exec .= " --".$k."=".$v." ";
+		}
+		if (!in_array("OutputType",array_keys($PARAMS)))
+		{
+			$exec .= " --OutputType=PHP ";
+		}
+		$exec .= " ; \"";
+		$resp = `$exec`;
+		$this->LastAPIResponse = $resp;
+		return unserialize($resp);
+	}
+	
+	public function get_raw_api_respnse()
+	{
+		return $this->LastAPIResponse;
+	}
 
 	////////////////////////////////////////////
 	

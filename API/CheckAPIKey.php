@@ -19,7 +19,7 @@ if ($ERROR == 100)
 	$result = GetCache($CacheKey);
 	if ($result === false)
 	{
-		$SQL = 'SELECT * FROM `Developers` WHERE (`APIKey` = "'.$PARAMS["APIKey"].'") LIMIT 1;';
+		$SQL = 'SELECT * FROM `developers` WHERE (`APIKey` = "'.$PARAMS["APIKey"].'") LIMIT 1;';
 		$Status = $DBObj->GetStatus();
 		if ($Status === true)
 		{

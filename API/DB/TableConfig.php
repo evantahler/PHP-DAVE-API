@@ -40,7 +40,7 @@ if ($ToReload)
 		$TableList = array();
 		foreach ($out as $sub){
 			$name = $sub["Tables_in_".$CONFIG['DB']];
-			if ($name != "CACHE" && $name != "LOG") { $TableList[] = $name; }
+			if ($name != "cache" && $name != "log") { $TableList[] = $name; }
 		}
 		foreach ($TableList as $ThisTable)
 		{

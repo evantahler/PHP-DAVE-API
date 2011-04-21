@@ -10,7 +10,7 @@ I contain example useage of the session functions
 ***********************************************/
 if ($ERROR == 100)
 {
-	list($pass,$result) = _VIEW("Users");
+	list($pass,$result) = _VIEW("users");
 	if (!$pass){ $ERROR = $result; }
 }
 

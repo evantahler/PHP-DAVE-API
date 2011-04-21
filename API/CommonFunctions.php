@@ -64,6 +64,7 @@ function run_task($TaskName, $PARAMS = array())
 {
 	// assumes that tasks have been properly loaded in with load_tasks()
 	$TaskLog = "Running Task: ".$TaskName."\r\n\r\n";
+	if (!(is_string($TaskName)) || strlen($TaskName) == 0){return "No task provided.\r\n";}
 	$_TASK = new $TaskName(true, $PARAMS);
 	$TaskLog .= $_TASK->get_task_log();
 	return $TaskLog."\r\n";
@@ -72,7 +73,7 @@ function run_task($TaskName, $PARAMS = array())
 function create_session()
 {
 	$key = md5( uniqid() );
-	_ADD("SESSIONS", array(
+	_ADD("sessions", array(
 		"KEY" => $key,
 		"DATA" => serialize(array()),
 		"created_at" => date("Y-m-d H:i:s"),
@@ -84,7 +85,7 @@ function create_session()
 function update_session($SessionKey, $SessionData)
 {
 	// this function is destructive and will replace the entire array of session data previously stored
-	_EDIT("SESSIONS",array(
+	_EDIT("sessions",array(
 		"KEY" => $SessionKey,
 		"updated_at" => date("Y-m-d H:i:s"),
 		"DATA" => serialize($SessionData)
@@ -94,7 +95,7 @@ function update_session($SessionKey, $SessionData)
 function get_session_data($SessionKey)
 {
 	global $OUTPUT;
-	$results = _VIEW("SESSIONS", 
+	$results = _VIEW("sessions", 
 		array('KEY' => $SessionKey)
 	);
 	if ($results[0] != 1)

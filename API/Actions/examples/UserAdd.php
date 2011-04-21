@@ -39,14 +39,14 @@ if ($ERROR == 100)
 	$UserData["PasswordHash"] = $PasswordHash;
 	$UserData["Salt"] = $Salt;
 	
-	list($pass,$result) = _ADD("Users", $UserData);
+	list($pass,$result) = _ADD("users", $UserData);
 	if (!$pass)
 	{
 		$ERROR = $result; 
 	}
 	else
 	{
-		$OUTPUT[$TABLES['Users']['META']['KEY']] = $result[$TABLES['Users']['META']['KEY']];
+		$OUTPUT[$TABLES['users']['META']['KEY']] = $result[$TABLES['users']['META']['KEY']];
 	}
 }
 

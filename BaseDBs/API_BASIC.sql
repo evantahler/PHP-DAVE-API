@@ -25,7 +25,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `CACHE`
 --
 
-CREATE TABLE IF NOT EXISTS `CACHE` (
+CREATE TABLE IF NOT EXISTS `cache` (
   `Key` text NOT NULL,
   `Value` text NOT NULL,
   `ExpireTime` int(11) NOT NULL
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `CACHE` (
 -- Table structure for table `Developers`
 --
 
-CREATE TABLE IF NOT EXISTS `Developers` (
+CREATE TABLE IF NOT EXISTS `developers` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `DeveloperID` varchar(32) NOT NULL,
   `APIKey` varchar(32) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `Developers` (
 -- Table structure for table `LOG`
 --
 
-CREATE TABLE IF NOT EXISTS `LOG` (
+CREATE TABLE IF NOT EXISTS `log` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `IP` text NOT NULL,
   `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

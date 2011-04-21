@@ -16,8 +16,7 @@ $T->context("The Action will error properly when no Hash is provided");
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass']
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"You need to provide a Hash");
 	
 $T->context("The Action will store the provided value in the cache");
@@ -28,8 +27,7 @@ $T->context("The Action will store the provided value in the cache");
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass']
 	);
 
-	$APIRequest = new APIRequest($TestURL, $PostArray);
-	$APIDATA = $APIRequest->DoRequest();
+	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
 	$T->assert("==",$APIDATA["CachedResult"],"abc123");
 

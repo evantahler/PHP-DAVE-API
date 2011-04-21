@@ -9,7 +9,7 @@ If "this" user is viewing (indicated by propper password hash along with another
 ***********************************************/
 if ($ERROR == 100)
 {
-	list($pass,$result) = _VIEW("Users");
+	list($pass,$result) = _VIEW("users");
 	if (!$pass){ $ERROR = $result; }
 }
 

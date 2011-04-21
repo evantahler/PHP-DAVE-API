@@ -54,7 +54,7 @@ $CONFIG['NoLogActions'][] = "A_Blocked_Action";
 //If you want to ignore certain APIKeys, list them here (For logging purposes)
 $CONFIG['NoLogAPIKeys'] = array();
 $CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
-$CONFIG['LogTable'] = "LOG";
+$CONFIG['LogTable'] = "log";
 
 /*********************************************************/
 // mySQL database
@@ -80,7 +80,7 @@ $CONFIG['LogsToCheck'][] = $CONFIG['MySQLLogFile'];
 // CACHE
 $CONFIG['CacheType'] = "DB"; // Options are "", "MemCache", "FlatFile", or "DB";
 $CONFIG['CacheTime'] = 10; // time to keep a cached value (in seconds)
-$CONFIG['CacheTable'] = "CACHE"; // if using the DB method
+$CONFIG['CacheTable'] = "cache"; // if using the DB method
 $CONFIG['CacheFolder'] = $CONFIG['App_dir']."cache/"; // chmod 777, if using FlatFile mode
 $CONFIG['MemCacheHost'] = '127.0.0.1'; // The Server name or IP address of the memcache host, if CacheType = MemCache
 
@@ -95,7 +95,6 @@ $CONFIG['SafeMode'] = true; //can be "true" or "false"
 
 /*********************************************************/
 // Tests and Specs
-$CONFIG['ServerAddressForTests'] = "127.0.0.1:3000"; //port 3000 is the default for SERVER
 $CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
 $CONFIG['TestLogFodler'] = $CONFIG['App_dir']."../SPEC/log/";
 $CONFIG['TestLog'] = $CONFIG['TestLogFodler']."test_log.txt";

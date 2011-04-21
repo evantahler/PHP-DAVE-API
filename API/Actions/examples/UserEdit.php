@@ -22,7 +22,7 @@ if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 if ($ERROR == 100)
 {
 	// look up the user info
-	list($pass,$result) = _VIEW("Users");
+	list($pass,$result) = _VIEW("users");
 	if (!$pass){ $ERROR = $result; }
 }
 if ($ERROR == 100)
@@ -47,7 +47,7 @@ if ($ERROR == 100)
 				$UserData = $PARAMS;
 				$UserData["PasswordHash"] = $NewPasswordHash;
 				
-				list($pass,$result) = _EDIT("Users", $UserData);
+				list($pass,$result) = _EDIT("users", $UserData);
 				if (!$pass){ $ERROR = $result; }
 				elseif (count($result) == 1)
 				{

@@ -11,7 +11,7 @@ if ($ERROR == 100)
 {
 	// init
 	$TestResults = array();
-	$UsersTable = new DaveTableObject("Users");
+	$UsersTable = new DaveTableObject("users");
 	
 	// how many users are there now?
 	$TestResults["A_How_Many_Initial_Users"] = $UsersTable->count();
