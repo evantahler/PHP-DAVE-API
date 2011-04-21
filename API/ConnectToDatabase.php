@@ -37,7 +37,7 @@ class DBConnection
 		
 		if ($OtherDB != "") { $this->DataBase = $OtherDB ; } 
 		else { $this->DataBase = $CONFIG['DB']; }
-		$this->Connection = mysql_connect($CONFIG['dbhost'], $CONFIG['dbuser'], $CONFIG['dbpass']);
+		$this->Connection = @mysql_connect($CONFIG['dbhost'], $CONFIG['dbuser'], $CONFIG['dbpass']);
 		if(!empty($this->Connection))
 		{
 			$DatabaseSelected=mysql_select_db($this->DataBase);
