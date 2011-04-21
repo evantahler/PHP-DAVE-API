@@ -36,7 +36,7 @@ if ($ARGS["h"] == true || $ARGS["help"] == true || $ARGS["l"] == true || $ARGS["
 		
 	foreach($TaskNames as $class_name)
 	{
-		echo $class_name::class_name();
+		echo "- ".$class_name::class_name();
 		$i = strlen($class_name);
 		while ($i < ($max_name_length + 4)) { echo " "; $i++; }
 		echo $class_name::get_description();
