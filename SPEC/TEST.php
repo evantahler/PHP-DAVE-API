@@ -48,7 +48,7 @@ foreach ($sub_folders as $folder)
 
 ///////////////////////////////////////////////////////////
 
-$T = new DaveTest("Test Suite Results");
+$T = new DaveTest("Test Suite Results", false);
 $T->log("------------ TEST SUITE RESLTS ------------");
 $T->log((($__TEST_SUITE_RESULTS["Successes"] + $__TEST_SUITE_RESULTS["Failures"]))." total tests in ".(time() - $__TEST_SUITE_RESULTS["StartTime"])." seconds");
 if ($__TEST_SUITE_RESULTS["Successes"] > 0){ $T->log($__TEST_SUITE_RESULTS["Successes"]." passing tests"); }
@@ -56,6 +56,9 @@ else { $T->log("0 passing tests"); }
 
 if ($__TEST_SUITE_RESULTS["Failures"] > 0){ $T->log($__TEST_SUITE_RESULTS["Failures"]." failing tests"); }
 else { $T->log("0 failing tests"); }
+
+echo ((int)($__TEST_SUITE_RESULTS["Successes"] + $__TEST_SUITE_RESULTS["Failures"])).",".((int)$__TEST_SUITE_RESULTS["Successes"]).",".((int)$__TEST_SUITE_RESULTS["Failures"]);
+echo "\r\n";
 
 $T->end();
 

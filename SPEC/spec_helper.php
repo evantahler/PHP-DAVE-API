@@ -19,13 +19,14 @@ if (!class_exists(DaveTest))
 {
 class DaveTest
 {
-	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage, $colors, $MessageDepth, $LastAPIResponse;
+	protected $StartTime, $TestLog, $title, $Successes, $Failures, $LastLogMessage, $colors, $MessageDepth, $LastAPIResponse, $ToDBSave;
 	
-	public function __construct($title = null)
+	public function __construct($title = null, $ToDBSave = true)
 	{
 		$this->StartTime = time();
 		$this->colors = new Colors();
 		$this->MessageDepth = 0;
+		$this->ToDBSave = $ToDBSave;
 		
 		global $TestLog;
 		
@@ -38,7 +39,7 @@ class DaveTest
 		$this->Failures = array();
 		
 		load_tasks();
-		$this->log_task_output(run_task("CreateDBSaveState"));
+		if ($this->ToDBSave) { $this->log_task_output(run_task("CreateDBSaveState")); }
 	}
 	
 	private function log_task_output($string)
@@ -302,26 +303,30 @@ class DaveTest
 	public function end()
 	{
 		$this->MessageDepth = 0;
-		$this->log("");
-		$this->log($this->colors->getColoredString("Summary: ", "cyan"));
-		$duration = (time() - $this->StartTime);
-		$timeString = $this->secondsToWords($duration);
-		$this->log("Test suite [".(count($this->Successes) + count($this->Failures))."] complete in ".$timeString);
-		$this->log($this->colors->getColoredString(count($this->Successes)." successes","green", null));
-		if (count($this->Failures) == 0)
+		
+		if (count($this->Successes) + count($this->Failures) > 0)
 		{
-			$this->log($this->colors->getColoredString(count($this->Failures)." failures","green", null));
-		}
-		else
-		{
-			$this->log($this->colors->getColoredString(count($this->Failures)." failures","red"));
-		}
-		foreach($this->Failures as $fail)
-		{
-			$this->log($this->colors->getColoredString("Failure: ".$fail,"red"));
+			$this->log("");
+			$this->log($this->colors->getColoredString("Summary: ", "cyan"));
+			$duration = (time() - $this->StartTime);
+			$timeString = $this->secondsToWords($duration);
+			$this->log("Test suite [".(count($this->Successes) + count($this->Failures))."] complete in ".$timeString);
+			$this->log($this->colors->getColoredString(count($this->Successes)." successes","green", null));
+			if (count($this->Failures) == 0)
+			{
+				$this->log($this->colors->getColoredString(count($this->Failures)." failures","green", null));
+			}
+			else
+			{
+				$this->log($this->colors->getColoredString(count($this->Failures)." failures","red"));
+			}
+			foreach($this->Failures as $fail)
+			{
+				$this->log($this->colors->getColoredString("Failure: ".$fail,"red"));
+			}
 		}
 
-		$this->log_task_output(run_task("RestoreDBSaveState"));
+		if ($this->ToDBSave) { $this->log_task_output(run_task("RestoreDBSaveState")); }
 	}
 	
 	public function log($line)
