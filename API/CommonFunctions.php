@@ -21,23 +21,6 @@ function humanize_actions()
 	return $HumanActions;
 }
 
-function reload_tables()
-{
-	global $ERROR, $DBObj, $CONFIG, $TABLES;
-		
-	$Status = $DBObj->GetStatus();
-	if ($Status === true)
-	{
-		$TABLES = array();
-		@unlink($CONFIG['TableConfigFile']);
-		require($CONFIG['App_dir']."DB/TableConfig.php");
-	}
-	else
-	{
-		$ERROR = "DB Cannot be reached: ".$Status;
-	}
-}
-
 function load_tasks()
 {
 	global $CONFIG;

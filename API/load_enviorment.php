@@ -16,9 +16,7 @@ error_reporting (E_ALL ^ E_NOTICE);
 
 if (file_exists("CONFIG.php")) 
 {
-	require_once("ConnectToDatabase.php");
 	require_once("CONFIG.php"); 
-	require_once("DAVE.php");
 	require_once("CACHE.php");
 	require_once("CommonFunctions.php");
 	require_once("GetPostVars.php");

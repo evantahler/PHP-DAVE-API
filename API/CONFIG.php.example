@@ -57,7 +57,9 @@ $CONFIG['NoLogAPIKeys'][] = "A_Blocked_APIKey";
 $CONFIG['LogTable'] = "log";
 
 /*********************************************************/
-// mySQL database
+// database
+$CONFIG["DBType"] = "MYSQL";
+
 $CONFIG['DB'] = "daveapi";  // the name of the database in use
 $CONFIG['dbhost'] = "127.0.0.1";
 $CONFIG['dbuser'] = "root";
@@ -94,6 +96,14 @@ $CONFIG['SessionAge'] = 60*60*24; // how long to keep session information in the
 $CONFIG['SafeMode'] = true; //can be "true" or "false"
 
 /*********************************************************/
+// load object classes.  Assumes each file in the /Objects directory contains object classes
+require_once("Objects/_BASE.php");
+foreach (glob("Objects/*.php") as $filename)
+{
+	require_once($filename);
+}
+
+/*********************************************************/
 // Tests and Specs
 $CONFIG['TestRootFolder'] = $CONFIG['App_dir']."../SPEC/";
 $CONFIG['TestLogFodler'] = $CONFIG['App_dir']."../SPEC/log/";
@@ -120,33 +130,7 @@ $CONFIG['SpecialStrings'][] = array('{ZERO}',"0");
 $CONFIG['SpecialStrings'][] = array('%%ZERO%%',"0");
 $CONFIG['SpecialStrings'][] = array('%%zero%%',"0");
 
-// go no further if we don't know about databases
-if (class_exists("DBConnection")) {
-	
-	/*********************************************************/
-	// load object classes.  Assumes each file in the /Objects directory contains object classes
-	require_once("Objects/_BASE.php");
-	foreach (glob("Objects/*.php") as $filename)
-	{
-		require_once($filename);
-	}
-
-	/*********************************************************/
-	// Table information
-	$CONFIG['TableConfigFile'] = $CONFIG['App_dir']."DB/TABLES.php";
-	$CONFIG['TableConfigRefreshTime'] = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
-
-	$DBObj = new DBConnection();
-	$Status = $DBObj->GetStatus();
-	if ($Status === true)
-	{
-		$Connection = $DBObj->GetConnection();
-		require("DB/TableConfig.php");
-	}
-	else
-	{
-		$ERROR = "DB Cannot be reached: ".$Status;
-	}
-}
+// move on to DB config from the Driver
+require($CONFIG['App_dir']."DB/DRIVERS/".$CONFIG["DBType"]."/init.php");
 
 ?>

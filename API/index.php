@@ -48,30 +48,17 @@ else {$IP = $PARAMS["IP"];}
 if ($CONFIG['RequestLimitPerHour'] > 0)
 {
 	if ($CONFIG['CorrectLimitLockPass'] != $PARAMS["LimitLockPass"])
-	{
-		$Status = $DBObj->GetStatus();
-		if ($Status === true)
-		{		
-			$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
-			if ($Status === true){
-				$Results = $DBObj->GetResults();
-				if ($Results[0]['total'] > $CONFIG['RequestLimitPerHour'])
-				{
-					$DBObj->close();
-					$OUTPUT['ERROR'] = "You have exceeded your allotted ".$CONFIG['RequestLimitPerHour']." requests this hour.";
-					require('Output.php');
-					exit;
-				}
-				else
-				{
-					$OUTPUT['api_requests_remaining'] = $CONFIG['RequestLimitPerHour'] - $Results[0]['total'];
-				}
-			}
-			else{ $ERROR = $Status; }
+	{ 
+		$_api_requests_so_far = get_api_requests_count();
+		if (!is_int($_api_requests_so_far)){ $ERROR = $_api_requests_so_far; exit;}
+		$OUTPUT['api_requests_remaining'] = $CONFIG['RequestLimitPerHour'] - $_api_requests_so_far;
+		if ($OUTPUT['api_requests_remaining'] <= 0)
+		{
+			$DBObj->close();
+			$OUTPUT['ERROR'] = "You have exceeded your allotted ".$CONFIG['RequestLimitPerHour']." requests this hour.";
+			require('Output.php');
+			exit;
 		}
-		else { $ERROR = $Status; } 
 	}
 }
 
@@ -160,16 +147,9 @@ if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBObj instanceof DBCon
 	}
 }
 
-// output
+// output and cleanup
 require('Output.php');
-
-// Write to the LOG
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-require("WriteToLog.php");
-
-// close the DB connection (created in CONFIG.php)
+log_api_request();
 @$DBObj->close();
 
 ?>
