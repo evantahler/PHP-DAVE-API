@@ -13,42 +13,8 @@ class CreateDBSaveState extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $TABLES, $DBObj;
-		
-		reload_tables();
-		
-		$TablesToSave = array();
-		if (strlen($PARAMS['table']) > 0)
-		{
-			$TablesToSave[] = $PARAMS['table'];
-		}
-		else
-		{
-			foreach($TABLES as $table => $data)
-			{
-				if (substr($table,0,2) != "~~")
-				{
-					$TablesToSave[] = $table;
-				}
-			}
-		}
-		
-		foreach($TablesToSave as $table)
-		{
-			$Status = $DBObj->GetStatus();
-			if ($Status === true)
-			{
-				$this->task_log("saving `".$table."` to `~~".$table."`");
-				$DBObj->Query("DROP TABLE IF EXISTS `~~".$table."`;");
-				$DBObj->Query("CREATE TABLE `~~".$table."` LIKE `".$table."`;");
-				$DBObj->Query("INSERT INTO `~~".$table."` SELECT * FROM `".$table."`;");
-			}
-			else
-			{
-				$this->task_log("DB Error: ".$Status);
-				break;
-			}
-		}
+		$resp = CreateDBSaveState($PARAMS); // Defined by DB Driver
+		foreach($resp as $line){ $this->task_log($line); }
 	}
 }
 

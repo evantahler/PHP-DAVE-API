@@ -15,7 +15,7 @@ $SERVER['max_clients'] = 100;
 $SERVER['domain'] = "localhost";
 $SERVER['root_path'] = "../API/"; // from location of SERVER.php.  Ensure that php user has permissions on this path.
 $SERVER['PHP_Path'] = "/usr/bin/php";
-$SERVER['systemTimeZone'] = "America/Los_Angeles";
+$SERVER['SystemTimeZone'] = "America/Los_Angeles";
 $SERVER['log_file'] = "log/SERVER_LOG.txt";
 $SERVER['timeout'] = 10; //how long to wait (seconds) before returning to the client with a 500 error
 

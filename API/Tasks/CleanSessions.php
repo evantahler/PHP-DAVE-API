@@ -13,13 +13,13 @@ class CleanSessions extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 		
 		if (self::check_DBObj())
 		{
 			$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;';
-			$DBObj->Query($SQL);
-			$this->task_log('Deleted '.$DBObj->NumRowsEffected()." entries from the SESSIONS Table in the DB");
+			$DBOBJ->Query($SQL);
+			$this->task_log('Deleted '.$DBOBJ->NumRowsEffected()." entries from the SESSIONS Table in the DB");
 		}
 	}
 }

@@ -37,44 +37,16 @@ if($CONFIG['CacheType'] == "MemCache")
 
 elseif($CONFIG['CacheType'] == "DB")
 {	
+	// Look in DirectDBFunctions for this DB Driver
 	function SetCache($Key, $Value, $ThisCacheTime = null)
 	{
-		global $CONFIG, $DBObj;
-		if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
-		
-		$ExpireTime = time() + $ThisCacheTime;
-				
-		$Status = $DBObj->GetStatus();
-		if ($Status === true)
-		{
-			$Connection = $DBObj->GetConnection();
-			$SQL = 'INSERT INTO `'.$CONFIG['CacheTable'].'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key,$Connection).'", "'.mysql_real_escape_string(serialize($Value),$Connection).'", "'.mysql_real_escape_string($ExpireTime,$Connection).'");' ;
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
-			if ($Status === true){return true;}
-			else { return false; }
-		}
-		else { return false; } 
+		return _DBSetCache($Key, $Value, $ThisCacheTime);
 	}
 	
+	// Look in DirectDBFunctions for this DB Driver
 	function GetCache($Key)
 	{	
-		global $CONFIG, $DBObj;
-				
-		$Status = $DBObj->GetStatus();
-		if ($Status === true)
-		{
-			$Connection = $DBObj->GetConnection();
-			$SQL = 'SELECT `Value` FROM `'.$CONFIG['CacheTable'].'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") LIMIT 1;' ;
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
-			if ($Status === true){
-				$Results = $DBObj->GetResults();
-				return unserialize($Results[0]['Value']);
-			}
-			else { return false; }
-		}
-		else { return false; } 
+		return _DBGetCache($Key);
 	}
 }
 

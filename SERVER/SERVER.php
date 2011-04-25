@@ -21,7 +21,7 @@ $path = substr(__FILE__,0,(strlen(__FILE__) - strlen("SERVER.php")));
 chdir($path); unset($path);
 
 require("server_config.php");
-date_default_timezone_set($SERVER['systemTimeZone']);
+date_default_timezone_set($SERVER['SystemTimeZone']);
 
 $verbose = false;
 if ($ARGS["v"] || $ARGS["verbose"]) {$verbose = true;} 

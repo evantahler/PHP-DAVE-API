@@ -16,7 +16,7 @@ This is the main page that does all the work
 $parts = explode("/",__FILE__);
 $ThisFile = $parts[count($parts) - 1];
 chdir(substr(__FILE__,0,(strlen(__FILE__) - strlen($ThisFile))));
-require_once("load_enviorment.php"); unset($parts); unset($ThisFile);
+require_once("LoadEnv.php"); unset($parts); unset($ThisFile);
 
 // don't cache these API pages
 if (!headers_sent()) { header("Cache-Control: no-cache, must-revalidate"); }
@@ -49,12 +49,12 @@ if ($CONFIG['RequestLimitPerHour'] > 0)
 {
 	if ($CONFIG['CorrectLimitLockPass'] != $PARAMS["LimitLockPass"])
 	{ 
-		$_api_requests_so_far = get_api_requests_count();
-		if (!is_int($_api_requests_so_far)){ $ERROR = $_api_requests_so_far; exit;}
+		$_api_requests_so_far = GetAPIRequestsCount();
+		if (!is_int($_api_requests_so_far)){ $OUTPUT['ERROR'] = $_api_requests_so_far; require('Output.php'); exit;}
 		$OUTPUT['api_requests_remaining'] = $CONFIG['RequestLimitPerHour'] - $_api_requests_so_far;
 		if ($OUTPUT['api_requests_remaining'] <= 0)
 		{
-			$DBObj->close();
+			$DBOBJ->close();
 			$OUTPUT['ERROR'] = "You have exceeded your allotted ".$CONFIG['RequestLimitPerHour']." requests this hour.";
 			require('Output.php');
 			exit;
@@ -65,11 +65,11 @@ if ($CONFIG['RequestLimitPerHour'] > 0)
 // start transaction for connection if needed
 if (isset($PARAMS['Rollback']))
 	{
-	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBObj instanceof DBConnection) == true)
+	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBOBJ instanceof DBConnection) == true)
 	{
-		if ($DBObj->GetStatus() == true)
+		if ($DBOBJ->GetStatus() == true)
 		{
-			$DBObj->Query("START TRANSACTION;");
+			$DBOBJ->Query("START TRANSACTION;");
 		}
 	}
 	else
@@ -138,18 +138,18 @@ $OUTPUT['ServerName'] = $CONFIG['ServerName'];
 $OUTPUT['ServerAddress'] = $CONFIG['ServerAddress'];
 
 // end transaction for connection if needed
-if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBObj instanceof DBConnection) == true)
+if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBOBJ instanceof DBConnection) == true)
 {
-	if ($DBObj->GetStatus() == true)
+	if ($DBOBJ->GetStatus() == true)
 	{
-		$DBObj->Query("ROLLBACK;");
+		$DBOBJ->Query("ROLLBACK;");
 		$OUTPUT["Rollback"] = "true";
 	}
 }
 
 // output and cleanup
 require('Output.php');
-log_api_request();
-@$DBObj->close();
+LogAPIRequest();
+@$DBOBJ->close();
 
 ?>

@@ -13,18 +13,18 @@ class CleanCache extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 		
 		if (self::check_DBObj())
 		{
 			/////////////////////////////////////////////////////////////////////////
 			// Check the CACHE DB table for old entries, and remove them
 			$SQL= 'DELETE FROM `'.$CONFIG['DB'].'`.`'.$CONFIG['CacheTable'].'` WHERE (`ExpireTime` < "'.(time() - $CONFIG['CacheTime']).'") ;';
-			$Status = $DBObj->GetStatus();
+			$Status = $DBOBJ->GetStatus();
 			if ($Status === true)
 			{
-				$DBObj->Query($SQL);
-				$this->task_log('Deleted '.$DBObj->NumRowsEffected()." entries from the CACHE DB");
+				$DBOBJ->Query($SQL);
+				$this->task_log('Deleted '.$DBOBJ->NumRowsEffected()." entries from the CACHE DB");
 			}
 		
 			/////////////////////////////////////////////////////////////////////////

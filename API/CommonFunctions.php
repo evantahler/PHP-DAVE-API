@@ -53,6 +53,23 @@ function run_task($TaskName, $PARAMS = array())
 	return $TaskLog."\r\n";
 }
 
+function reload_tables()
+{
+	global $ERROR, $DBOBJ, $CONFIG, $TABLES;
+		
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true)
+	{
+		$TABLES = array();
+		@unlink($CONFIG['TableConfigFile']);
+		require($CONFIG['App_dir']."DB/DRIVERS/".$CONFIG["DBType"]."/TableConfig.php"); // requiring again will force a re-load
+	}
+	else
+	{
+		$ERROR = "DB Cannot be reached: ".$Status;
+	}
+}
+
 function create_session()
 {
 	$key = md5( uniqid() );

@@ -20,12 +20,12 @@ if ($ERROR == 100)
 	if ($result === false)
 	{
 		$SQL = 'SELECT * FROM `developers` WHERE (`APIKey` = "'.$PARAMS["APIKey"].'") LIMIT 1;';
-		$Status = $DBObj->GetStatus();
+		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
-			if ($Status === true){ $Results = $DBObj->GetResults();}
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
+			if ($Status === true){ $Results = $DBOBJ->GetResults();}
 			else{ $ERROR = $Status; }
 		}
 		else { $ERROR = $Status; } 

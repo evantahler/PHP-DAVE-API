@@ -13,13 +13,13 @@ class CleanLog extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 		
 		if (self::check_DBObj())
 		{
 			$SQL= 'DELETE FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['LogAge'])).'") ;'; 	
-			$DBObj->Query($SQL);
-			$this->task_log('Deleted '.$DBObj->NumRowsEffected()." entries from the LOG Table in the ".$CONFIG['LOG_DB']." DB");
+			$DBOBJ->Query($SQL);
+			$this->task_log('Deleted '.$DBOBJ->NumRowsEffected()." entries from the LOG Table in the ".$CONFIG['LOG_DB']." DB");
 		}
 	}
 }

@@ -5,7 +5,7 @@ DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
-I inspect the state of your mySQL database and build the array descirbing all the colums and thier attributes.  I will also log this to a file for quicked access next time.  If /API/DB/TABLES.php doesn't exist, I'll create it for other parts of the API to use.
+I inspect the state of your mySQL database and build the array descirbing all the colums and thier attributes.  I will also log this to a file for quicked access next time.  If /API/DB/SCHEMA.php doesn't exist, I'll create it for other parts of the API to use.
 
 ***********************************************/
 
@@ -31,12 +31,12 @@ else
 if ($ToReload)
 {
 	$OUTPUT["TableRelaod"] = "true";
-	$Status = $DBObj->GetStatus();
+	$Status = $DBOBJ->GetStatus();
 	if ($Status === true)
 	{
 		$SQL= 'SHOW TABLES;';
-		$DBObj->Query($SQL);
-		$out = $DBObj->GetResults();
+		$DBOBJ->Query($SQL);
+		$out = $DBOBJ->GetResults();
 		$TableList = array();
 		foreach ($out as $sub){
 			$name = $sub["Tables_in_".$CONFIG['DB']];
@@ -45,8 +45,8 @@ if ($ToReload)
 		foreach ($TableList as $ThisTable)
 		{
 			$SQL= 'DESCRIBE `'.$CONFIG['DB'].'`.`'.$ThisTable.'`;';
-			$DBObj->Query($SQL);
-			$Response = $DBObj->GetResults();
+			$DBOBJ->Query($SQL);
+			$Response = $DBOBJ->GetResults();
 			foreach ($Response as $col)
 			{
 				if ($col['Key'] == "PRI")

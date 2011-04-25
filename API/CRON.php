@@ -13,7 +13,7 @@ The output of this page will be added to the CRON_LOG.txt file
 $parts = explode("/",__FILE__);
 $ThisFile = $parts[count($parts) - 1];
 chdir(substr(__FILE__,0,(strlen(__FILE__) - strlen($ThisFile))));
-require_once("load_enviorment.php"); unset($parts); unset($ThisFile);
+require_once("LoadEnv.php"); unset($parts); unset($ThisFile);
 
 load_tasks();
 

@@ -8,11 +8,16 @@ Evan Tahler | 2011
 I define the functions and classes to handle the general-case database actions of Delete, Add, View, and Edit (DAVE). 
 The 4 major functions will return an array.  The first value is true or false indicating if the SQL action worked.  The second object is either an array of results, or an error message.
 
+See additional notes below.
 ***********************************************/
 
+/*
+Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  If unspecified, $PARAMS is used by default)
+*/
 function _ADD($Table, $VARS = null)
 {
-	Global $TABLES, $DBObj, $Connection, $PARAMS; 
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
 	
 	if ($VARS == null){$VARS = $PARAMS;}
 	
@@ -25,7 +30,7 @@ function _ADD($Table, $VARS = null)
 		$SQLKeys = array();
 		$SQLValues= array();
 		
-		$Status = $DBObj->GetStatus();
+		$Status = $DBOBJ->GetStatus();
 		if ($Status !== true)
 		{
 			return array(false,$Status);
@@ -46,10 +51,10 @@ function _ADD($Table, $VARS = null)
 				if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 				{
 					$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'") ;';
-					$DBObj->Query($SQL);
-					$Status = $DBObj->GetStatus();
+					$DBOBJ->Query($SQL);
+					$Status = $DBOBJ->GetStatus();
 					if ($Status === true){
-						$results = $DBObj->GetResults();
+						$results = $DBOBJ->GetResults();
 						if ($results[0]['COUNT(1)'] > 0)
 						{
 							return array(false,"There is already an entry of '".$val."' for ".$var);
@@ -91,11 +96,11 @@ function _ADD($Table, $VARS = null)
 		}
 		$SQL .= " ); ";
 
-		$DBObj->Query($SQL);
-		$Status = $DBObj->GetStatus();
+		$DBOBJ->Query($SQL);
+		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
-			$NewKey = $DBObj->GetLastInsert();
+			$NewKey = $DBOBJ->GetLastInsert();
 			return array(true,array( $TABLES[$Table]['META']['KEY'] => $NewKey)); 
 		}
 		else{return array(false,$Status); }
@@ -108,9 +113,13 @@ function _ADD($Table, $VARS = null)
 
 /***********************************************/
 
+/*
+Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  VARS should include a key/value pair which includes the primary key for the DB.  If unspecified, $PARAMS is used by default)
+*/
 function _EDIT($Table, $VARS = null)
 {
-	Global $TABLES, $DBObj, $Connection, $PARAMS;
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS;
 	
 	if ($VARS == null){$VARS = $PARAMS;}
 	
@@ -123,7 +132,7 @@ function _EDIT($Table, $VARS = null)
 		$SQLKeys = array();
 		$SQLValues= array();
 		
-		$Status = $DBObj->GetStatus();
+		$Status = $DBOBJ->GetStatus();
 		if ($Status !== true)
 		{
 			return array(false,$Status);
@@ -143,11 +152,11 @@ function _EDIT($Table, $VARS = null)
 				}
 			}
 			$SQL .= ' ) ;';
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
 			if ($Status === true)
 			{
-				$results = $DBObj->GetResults();
+				$results = $DBOBJ->GetResults();
 				if (count($results) == 1)
 				{
 					$VARS[$TABLES[$Table]['META']['KEY']] = $results[0][$TABLES[$Table]['META']['KEY']];
@@ -176,10 +185,10 @@ function _EDIT($Table, $VARS = null)
 					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
 					{
 						$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
-						$DBObj->Query($SQL);
-						$Status = $DBObj->GetStatus();
+						$DBOBJ->Query($SQL);
+						$Status = $DBOBJ->GetStatus();
 						if ($Status === true){
-							$results = $DBObj->GetResults();
+							$results = $DBOBJ->GetResults();
 							if ($results[0]['COUNT(1)'] > 0)
 							{
 								return array(false,"There is already an entry of '".$val."' for ".$var);
@@ -216,11 +225,11 @@ function _EDIT($Table, $VARS = null)
 				}
 				
 				$SQL .= ' WHERE ( `'.$TABLES[$Table]['META']['KEY'].'` = "'.$VARS[$TABLES[$Table]['META']['KEY']].'" ); ';
-				$DBObj->Query($SQL);
-				$Status = $DBObj->GetStatus();
+				$DBOBJ->Query($SQL);
+				$Status = $DBOBJ->GetStatus();
 				if ($Status === true)
 				{
-					$NewKey = $DBObj->GetLastInsert();
+					$NewKey = $DBOBJ->GetLastInsert();
 					return _VIEW($Table, $VARS); // do a view again to return fresh data
 				}
 				else{ return array(false,$Status); }
@@ -243,10 +252,22 @@ function _EDIT($Table, $VARS = null)
 
 /***********************************************/
 
-//function _VIEW($Table, $select = null, $join = null, $where_additions = null, $sort = null, $SQL_Override = false)
+/*
+Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  VARS should include a key/value pair which includes either the primary key for the DB or one of the unique cols for the table.  If unspecified, $PARAMS is used by default)
+Settins is an array that can contain:
+- $Settings["select"]: a replacement select statement (rather than "*").  Example: "FirstName as Name, Address as Addy".  Only Name and Addy will be returned.
+- $Settings["join"]: Join statement (first "JOIN" is added automatically).
+- $Settings["where_additions"]: Specific where statement.  Example: Birtday = "1984-08-27"
+- $Settings["sort"]: sort statment. Example: "Order by Date DESC"
+- $Settings["UpperLimit"]: used for LIMIT statement.  Defaults to 100
+- $Settings["LowerLimit"]: used for LIMIT statement.  Defaults to 0
+- $Settings["SQL_Override"]: normally, DAVE wants to only view a single row, and will error unless that row can be defined properly with unique values.  set this true to bypass these checks, and view many rows at once
+
+*/
 function _VIEW($Table, $VARS = null, $Settings = null )
 {
-	Global $TABLES, $DBObj, $Connection, $PARAMS; 
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
 	if ($VARS == null){$VARS = $PARAMS;}
 	
 	// Additonal _VIEW Options and Configurations
@@ -327,12 +348,12 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		if ($UpperLimit == "") {$UpperLimit = 100; }
 		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
 		//
-		$Status = $DBObj->GetStatus();
+		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
-			if ($Status === true){ return array(true, $DBObj->GetResults()); }
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
+			if ($Status === true){ return array(true, $DBOBJ->GetResults()); }
 			else{ return array(false,$Status); }
 		}
 		else { return array(false,$Status); } 
@@ -345,9 +366,13 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 
 /***********************************************/
 
+/*
+Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  If unspecified, $PARAMS is used by default)
+*/
 function _DELETE($Table, $VARS = null)
 {
-	Global $TABLES, $DBObj, $Connection, $PARAMS; 
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
 	
 	if ($VARS == null){$VARS = $PARAMS;}
 	
@@ -379,23 +404,23 @@ function _DELETE($Table, $VARS = null)
 		$SQL .= " ) ;"; // There is no limit to allow more than one removal
 		$SQL2 .= " ) ;";
 		//
-		$Status = $DBObj->GetStatus();
+		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
-			$DBObj->Query($SQL2);
-			$Status = $DBObj->GetStatus();
+			$DBOBJ->Query($SQL2);
+			$Status = $DBOBJ->GetStatus();
 			if ($Status === true)
 			{
-				$results = $DBObj->GetResults();
+				$results = $DBOBJ->GetResults();
 				if ($results[0]['COUNT(1)'] < 1)
 				{
-					return array(false,"The item you are requesting to delete is not found");
+					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
 				}
 			}
 			else{ return array(false,"The item you are requesting to delete is not found"); }
 			
-			$DBObj->Query($SQL);
-			$Status = $DBObj->GetStatus();
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
 			if ($Status === true){ return array(true, true); }
 			else{ return array(false,$Status); }
 		}

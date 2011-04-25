@@ -12,7 +12,7 @@ ini_set("display_errors","1");
 error_reporting (E_ALL ^ E_NOTICE);
 
 chdir("../../API/");
-require_once("load_enviorment.php");
+require_once("LoadEnv.php");
 require_once("helper_functions/colors.php");
 
 if (!class_exists(DaveTest))

@@ -12,7 +12,7 @@ Tasks can be run with the following syntax: php API/TASK.php --task=name_of_task
 $parts = explode("/",__FILE__);
 $ThisFile = $parts[count($parts) - 1];
 chdir(substr(__FILE__,0,(strlen(__FILE__) - strlen($ThisFile))));
-require_once("load_enviorment.php"); unset($parts); unset($ThisFile);
+require_once("LoadEnv.php"); unset($parts); unset($ThisFile);
 
 require_once("helper_functions/parseArgs.php");
 

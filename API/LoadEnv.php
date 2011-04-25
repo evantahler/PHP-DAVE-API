@@ -22,7 +22,7 @@ if (file_exists("CONFIG.php"))
 	require_once("GetPostVars.php");
 	require_once("Actions.php");
 	
-	date_default_timezone_set($CONFIG['systemTimeZone']);
+	date_default_timezone_set($CONFIG['SystemTimeZone']);
 }
 else 
 {

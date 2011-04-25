@@ -5,22 +5,42 @@ DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
-I am the mySQL connection class
+I am the mySQL connection class.  To create a simmilar class for other DB types, please note the functions that that DBConnection class should contain and thier implamentation:
 
-Here's an example:
+- __construct(): 
+  - Can be passsed an additional $DB than the default.  
+  - Returns true on sucess
+  - Returns false on failure, logs error to $This->Status
+- mysql_log(): Will log "queries" to file
+- CheckForSpecialStrings(): Will inspect queries for special strings ($CONFIG['SpecialStrings']) and replace.  This is to fix situations where user might post "0" as input, etc
+- query(): preforms the DB operation
+  - Returns true on sucess
+  - Returns false on failure, logs error to $This->Status
+- GetLastInsert(): returns the auto incramanet ID of the row added
+- NumRowsEffected(): returns a count of the rows effected by the "Edit" command
+- GetConnection(): returns the connction object if applicable 
+- GetStatus(): returns the last status message
+- GetResults(): returns the result of the last query()
+- close(): closes the DB connection
 
-	$DBObj = new DBConnection();
-	$Status = $DBObj->GetStatus();
+//////////////
+
+Example useage:
+
+	$DBOBJ = new DBConnection();
+	$Status = $DBOBJ->GetStatus();
 	if ($Status === true)
 	{
-		$DBObj->Query($SQL);
-		$Status = $DBObj->GetStatus();
-		if ($Status === true){ $Results = $DBObj->GetResults();}
-		// Do stuff with the $Results array
+		$DBOBJ->Query($SQL);
+		$Status = $DBOBJ->GetStatus();
+		if ($Status === true){ 
+			$Results = $DBOBJ->GetResults();
+			// Do stuff with the $Results array
+		}
 		else{ $ERROR = $Status; }
 	}
 	else { $ERROR = $Status; } 
-	$DBObj->close();
+	$DBOBJ->close();
 
 use the GetLastInsert() function to get the deatils of an entry you just added.
 
@@ -66,9 +86,9 @@ class DBConnection
 		if ($host == ""){$host = "local_system";}
 		
 		$line = date("Y-m-d H:i:s")." | ".$host." | ".$line;
-		if (strlen($CONFIG['MySQLLogFile']) > 0)
+		if (strlen($CONFIG['DBLogFile']) > 0)
 		{
-			$LogFileHandle = fopen($CONFIG['MySQLLogFile'], 'a');
+			$LogFileHandle = fopen($CONFIG['DBLogFile'], 'a');
 			if($LogFileHandle)
 			{
 				fwrite($LogFileHandle, ($line."\r\n"));

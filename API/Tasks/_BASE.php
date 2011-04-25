@@ -16,7 +16,7 @@ class CleanCache extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 		
 		// PUT YOUR ACTION CODE HERE
 		
@@ -66,8 +66,8 @@ class task
 	
 	public function check_DBObj()
 	{
-		global $DBObj;
-		$Status = $DBObj->GetStatus();
+		global $DBOBJ;
+		$Status = $DBOBJ->GetStatus();
 		if (!($Status === true))
 		{
 			$this->task_log("DB Error: ".$Status);

@@ -13,7 +13,7 @@ class TruncateTable extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 		
 		$stop = false;
 		if (strlen($PARAMS['table']) == 0)
@@ -34,8 +34,8 @@ class TruncateTable extends task
 		if (self::check_DBObj() && $stop == false)
 		{
 			$SQL= 'TRUNCATE TABLE `'.$ThisDB.'`.`'.$PARAMS['table'].'`;'; 	
-			$DBObj->Query($SQL);
-			if ($DBObj->NumRowsEffected() == 0)
+			$DBOBJ->Query($SQL);
+			if ($DBOBJ->NumRowsEffected() == 0)
 			{
 				$this->task_log($PARAMS['table']." table truncated from the ".$ThisDB." DB");
 			}

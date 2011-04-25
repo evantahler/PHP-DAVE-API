@@ -12,7 +12,7 @@ RESERVERD VARIABLES THAT ARE SET BY THIS CONFIG FILE OR IN OTHER PARTS OF THE AP
 - $POST_VARIABLES : Collection of names of variables the API should ingest
 - $ACTIONS : Hash of API's Actions
 - $ERROR : The globabl state variable (100 is the OK state)
-- $DBObj : The database connection object
+- $DBOBJ : The database connection object
 - $OUTPUT : The array to be formatted and returned to the user
 - $TABLES : The table description object
 ***********************************************/
@@ -27,8 +27,8 @@ unset($path);
 // Set the ERROR.  This is used by all steps to ensure that nothing has perviously gone awry, and allows the next step to excecute.  All steps will first check to make sure that ERROR == 100.
 $ERROR = 100; 
 
-$CONFIG['systemTimeZone'] = "America/Los_Angeles";
-date_default_timezone_set($CONFIG['systemTimeZone']);
+$CONFIG['SystemTimeZone'] = "America/Los_Angeles";
+date_default_timezone_set($CONFIG['SystemTimeZone']);
 $CONFIG['DefaultOutputType'] = "JSON" ;  // XML, PHP, VAR, SOAP, LINE, CONSOLE, or JSON
 $CONFIG['XML_ROOT_NODE'] = "XML"; // what is the root node of your XML output called?
 $CONFIG['RequestLimitPerHour'] = 1000; // limit how many times a specific IP can use the API per hour.  Set it to 0 to have no limit
@@ -58,16 +58,16 @@ $CONFIG['LogTable'] = "log";
 
 /*********************************************************/
 // database
-$CONFIG["DBType"] = "MYSQL";
+$CONFIG["DBType"] = "MYSQL"; // DB types require a 'driver' to be defined within DB/DRIVERS.  Check the MYSQL folder for examples.
+$CONFIG['TableConfigFile'] = $CONFIG['App_dir']."DB/SCHEMA.php";  // The DB is periodically read and schema is written here for faster subsequent access
+$CONFIG['TableConfigRefreshTime'] = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
+$CONFIG['DBLogFile'] = $CONFIG['LogFolder']."SQL.txt"; // comment me out for no logging of mySQL commands
 
 $CONFIG['DB'] = "daveapi";  // the name of the database in use
+$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
 $CONFIG['dbhost'] = "127.0.0.1";
 $CONFIG['dbuser'] = "root";
 $CONFIG['dbpass'] = "";
-
-$CONFIG['LOG_DB'] = $CONFIG['DB']; // There can be a seperate DB in use for logging.  The LogTable table is expected to be within this database.
-
-$CONFIG['MySQLLogFile'] = $CONFIG['LogFolder']."SQL.txt"; // comment me out for no logging of mySQL commands
 
 /*********************************************************/
 // CRON
@@ -76,7 +76,7 @@ $CONFIG['MaxLogFileSize'] = 1048576 * 1;  // 1MB
 
 $CONFIG['LogsToCheck'] = array(); // log files that might get big that you want to automatically truncate
 $CONFIG['LogsToCheck'][] = $CONFIG['CronLogFile'];
-$CONFIG['LogsToCheck'][] = $CONFIG['MySQLLogFile'];
+$CONFIG['LogsToCheck'][] = $CONFIG['DBLogFile'];
 
 /*********************************************************/
 // CACHE

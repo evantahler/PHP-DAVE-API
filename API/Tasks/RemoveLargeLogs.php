@@ -13,7 +13,7 @@ class RemoveLargeLogs extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBObj;
+		global $CONFIG, $DBOBJ;
 				
 		clearstatcache();
 		$i = 0;

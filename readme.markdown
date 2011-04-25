@@ -82,7 +82,7 @@ You can get started on your local machine in 5 minutes!  This tutorial is for Un
   * `git clone git://github.com/evantahler/PHP-DAVE-API.git /path/where/you/want/it` OR just hit the `download` button above
 * Rename `/API/CONFIG.example.php` to `/API/CONFIG.php`
 * Configure CONFIG.php.  Assuming we will be running mySQL locally as root with no password, all you should need to change is:
-  * `$CONFIG['systemTimeZone']`  (check http://www.php.net/manual/en/timezones.php for how to define your timezone)
+  * `$CONFIG['SystemTimeZone']`  (check http://www.php.net/manual/en/timezones.php for how to define your timezone)
   * `$CONFIG['App_dir']`  (this is where the /API folder is)
 * setup mySQL for DAVE
   * create a mysql database called "daveapi"

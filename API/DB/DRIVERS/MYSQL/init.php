@@ -13,20 +13,14 @@ require_once($_driver_db_path."DirectDBFunctions.php");
 
 // go no further if we don't know about databases
 if (class_exists("DBConnection")) {
-	
-	/*********************************************************/
-	// Table information
-	$CONFIG['TableConfigFile'] = $CONFIG['App_dir']."DB/TABLES.php";
-	$CONFIG['TableConfigRefreshTime'] = 60; // time in seconds for this application to re-poll mySQL for table layout information.  0 will never poll
 
-	$DBObj = new DBConnection();
-	$Status = $DBObj->GetStatus();
+	$DBOBJ = new DBConnection(); // keep this variable name
+	$Status = $DBOBJ->GetStatus();
 	if ($Status === true)
 	{
-		$Connection = $DBObj->GetConnection();
+		$Connection = $DBOBJ->GetConnection();
 		require_once($_driver_db_path."TableConfig.php");
 		require_once($_driver_db_path."DAVE.php");
-		
 	}
 	else
 	{
