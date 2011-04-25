@@ -10,6 +10,7 @@ There are certain required global functions for DAVE that are very related to th
 - LogAPIRequest()
 - _DBSetCache()
 - _DBGetCache()
+- StartTransaction()
 - CreateDBSaveState()
 - RestoreDBSaveState()
 
@@ -114,6 +115,24 @@ function _DBGetCache($Key)
 		else { return false; }
 	}
 	else { return false; }
+}
+
+
+/*
+If your database type supports it, start a transaction for this connection
+*/
+function StartTransaction()
+{
+	global $DBOBJ;
+	if (($DBOBJ instanceof DBConnection) == true && $DBOBJ->GetStatus() == true)
+	{
+		$DBOBJ->Query("START TRANSACTION;");
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /*

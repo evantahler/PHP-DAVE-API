@@ -1,6 +1,4 @@
-
 <?php
-
 /***********************************************
 DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
@@ -19,23 +17,20 @@ if ($ERROR == 100)
 	$result = GetCache($CacheKey);
 	if ($result === false)
 	{
-		$SQL = 'SELECT * FROM `developers` WHERE (`APIKey` = "'.$PARAMS["APIKey"].'") LIMIT 1;';
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true)
-		{
-			$DBOBJ->Query($SQL);
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true){ $Results = $DBOBJ->GetResults();}
-			else{ $ERROR = $Status; }
-		}
-		else { $ERROR = $Status; } 
+		$Results = _VIEW("developers",array("APIKey" => $PARAMS["APIKey"]));
 	}
 	
-	$DeveloperID_ = $Results[0]['DeveloperID_'];
-	$APIKey_ = $Results[0]['APIKey_'];
-	$UserActions = $Results[0]['UserActions'];
-	$IsAdmin = $Results[0]['IsAdmin'];
-	$ERROR = $Results[0]['ERROR'];
+	if (count($Results[1]) == 1)
+	{
+		$DeveloperID_ = $Results[1][0]['DeveloperID'];
+		$APIKey_ = $Results[1][0]['APIKey'];
+		$UserActions = $Results[1][0]['UserActions'];
+		$IsAdmin = $Results[1][0]['IsAdmin'];
+	}
+	else
+	{
+		$ERROR = "API Key not found";
+	}
 }
 // Check that the API Key has admin rights for user Actions
 if ($ERROR == 100)
@@ -48,15 +43,14 @@ if ($ERROR == 100)
 // the hash should be md5($DeveloperID{secret}.$APIKey.$Rand), IN THIS ORDER!!!!
 if ($CONFIG['SafeMode'] == true)
 {
-	if ($ERROR == 100)
-	{
-		if ($PARAMS["Hash"] != "" && $PARAMS["Rand"] == ""){ $PARAMS["Rand"] = "0"; } // check to see if 0 was sent as the Rand... try it anyway
-		if ($PARAMS["Rand"] == ""){ $ERROR = "You need to provide a RAND to authenticate with"; }
-		if ($PARAMS["Hash"] == ""){ $ERROR = "You need to provide a HASH to authenticate with"; }
-	}
+	if ($ERROR == 100) { if ($PARAMS["Rand"] == ""){ $ERROR = "You need to provide a Rand to authenticate with"; } }
+	if ($ERROR == 100) { if ($PARAMS["Hash"] == ""){ $ERROR = "You need to provide a Hash to authenticate with"; } }
 	if ($ERROR == 100)
 	{
 		$TestHash = md5(($DeveloperID_.$APIKey_.$PARAMS["Rand"]));
+		$OUTPUT["DeveloperID_"] = $DeveloperID_;
+		$OUTPUT["APIKey_"] = $APIKey_;
+		$OUTPUT["rand_"] = $PARAMS["Rand"];
 		if (!($TestHash == $PARAMS["Hash"]))
 		{
 			$ERROR = "Developer Authentication Failed";

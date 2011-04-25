@@ -65,12 +65,9 @@ if ($CONFIG['RequestLimitPerHour'] > 0)
 // start transaction for connection if needed
 if (isset($PARAMS['Rollback']))
 	{
-	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBOBJ instanceof DBConnection) == true)
+	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'])
 	{
-		if ($DBOBJ->GetStatus() == true)
-		{
-			$DBOBJ->Query("START TRANSACTION;");
-		}
+		StartTransaction();
 	}
 	else
 	{
