@@ -5,6 +5,7 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I am a collection of common API functions that will be re-used, such as special-case input validation.  
+CommonFunctions that are tied to a specific DB implementation will be found in DB/DRIVERS/{DB}/DirectDBFunctions.php
 /*************************************************************/
 
 function humanize_actions()

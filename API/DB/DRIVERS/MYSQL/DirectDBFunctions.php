@@ -104,7 +104,7 @@ function _DBGetCache($Key)
 	if ($Status === true)
 	{
 		$Connection = $DBOBJ->GetConnection();
-		$SQL = 'SELECT `Value` FROM `'.$CONFIG['CacheTable'].'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") LIMIT 1;' ;
+		$SQL = 'SELECT `Value` FROM `'.$CONFIG['CacheTable'].'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") ORDER BY `ExpireTime` DESC LIMIT 1;' ;
 		$DBOBJ->Query($SQL);
 		$Status = $DBOBJ->GetStatus();
 		if ($Status === true){

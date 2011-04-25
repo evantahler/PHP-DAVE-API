@@ -4,7 +4,7 @@ DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
-I initilize all the DB specific code, including the core DAVE functions
+I initilize all the DB specific code, including the core DAVE functions.  I will create the $DBOBJ object.
 ***********************************************/
 
 $_driver_db_path = $CONFIG['App_dir']."DB/DRIVERS/".$CONFIG["DBType"]."/";
