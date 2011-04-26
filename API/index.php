@@ -27,6 +27,7 @@ $ComputationStartTime = microtime_float();
 
 // Start the Output
 $OUTPUT = array();
+$OUTPUT["APIVersion"] = $CONFIG["APIVersion"];
 
 // Get IP (if not provided)
 if (empty($PARAMS["IP"]) || $PARAMS["IP"] == "")

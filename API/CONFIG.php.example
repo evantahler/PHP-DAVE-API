@@ -27,6 +27,8 @@ unset($path);
 // Set the ERROR.  This is used by all steps to ensure that nothing has perviously gone awry, and allows the next step to excecute.  All steps will first check to make sure that ERROR == 100.
 $ERROR = 100; 
 
+$CONFIG["APIVersion"] = 0.8;
+
 $CONFIG['SystemTimeZone'] = "America/Los_Angeles";
 date_default_timezone_set($CONFIG['SystemTimeZone']);
 $CONFIG['DefaultOutputType'] = "JSON" ;  // XML, PHP, VAR, SOAP, LINE, CONSOLE, or JSON
