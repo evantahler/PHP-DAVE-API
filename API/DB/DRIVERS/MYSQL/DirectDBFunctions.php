@@ -168,8 +168,8 @@ function CreateDBSaveState($PARAMS = array())
 		{
 			$output[] = "saving `".$table."` to `~~".$table."`";
 			$DBOBJ->Query("DROP TABLE IF EXISTS `~~".$table."`;");
-			$DBOBJ->Query("CREATE TABLE `~~".$table."` LIKE `".$table."`;");
-			$DBOBJ->Query("INSERT INTO `~~".$table."` SELECT * FROM `".$table."`;");
+			$DBOBJ->Query("RENAME TABLE `".$table."` TO `~~".$table."`;");
+			$DBOBJ->Query("CREATE TABLE `".$table."` LIKE `~~".$table."`;");
 		}
 		else
 		{
@@ -213,9 +213,7 @@ function RestoreDBSveState($PARAMS = array())
 		{
 			$output[] = "restoring `".$table."` to `".substr($table,2)."`";
 			$DBOBJ->Query("DROP TABLE IF EXISTS `".substr($table,2)."`;");
-			$DBOBJ->Query("CREATE TABLE `".substr($table,2)."` LIKE `".$table."`;");
-			$DBOBJ->Query("INSERT INTO `".substr($table,2)."` SELECT * FROM `".$table."`;");
-			$DBOBJ->Query("DROP TABLE `".$table."`;");
+			$DBOBJ->Query("RENAME TABLE `".$table."` TO `".substr($table,2)."`;");
 		}
 		else
 		{
