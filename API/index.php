@@ -51,8 +51,8 @@ if ($CONFIG['RequestLimitPerHour'] > 0)
 	{ 
 		$_api_requests_so_far = GetAPIRequestsCount();
 		if (!is_int($_api_requests_so_far)){ $OUTPUT['ERROR'] = $_api_requests_so_far; require('Output.php'); exit;}
-		$OUTPUT['api_requests_remaining'] = $CONFIG['RequestLimitPerHour'] - $_api_requests_so_far;
-		if ($OUTPUT['api_requests_remaining'] <= 0)
+		$OUTPUT['APIRequestsRemaining'] = $CONFIG['RequestLimitPerHour'] - $_api_requests_so_far;
+		if ($OUTPUT['APIRequestsRemaining'] <= 0)
 		{
 			$DBOBJ->close();
 			$OUTPUT['ERROR'] = "You have exceeded your allotted ".$CONFIG['RequestLimitPerHour']." requests this hour.";
@@ -87,13 +87,13 @@ while ($_ActionCounter < count($ACTIONS))
 {
 	if (0 == strcmp($PARAMS["Action"],$ACTIONS[$_ActionCounter][0]))
 	{
+		$Action = $ACTIONS[$_ActionCounter][0];
 		if ($ACTIONS[$_ActionCounter][2] != "Public")
 		{
 			require("CheckAPIKey.php");
 		}
 		if ($ERROR == 100)
 		{
-			$Action = $ACTIONS[$_ActionCounter][0];
 			require($ACTIONS[$_ActionCounter][1]);
 		}
 		$ActionPreformed = 1;

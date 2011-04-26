@@ -58,4 +58,14 @@ if ($CONFIG['SafeMode'] == true)
 	}
 }
 
+if ($ERROR == 100)
+{
+	$OUTPUT["DeveloperAuthentication"] = "TRUE";
+}
+else
+{
+	$OUTPUT["DeveloperAuthentication"] = "FALSE";
+}
+
+
 ?>

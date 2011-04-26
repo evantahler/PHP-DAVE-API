@@ -9,13 +9,13 @@ I check general API functionality
 require_once("../spec_helper.php");
 $T = new DaveTest("General API Tests");
 
-$T->context("api_requests_remaining should decrement on subsequent loads");
+$T->context("APIRequestsRemaining should decrement on subsequent loads");
 	$PostArray = array("OutputType" => "PHP");
 	$APIDATA = $T->api_request($PostArray);
-	$first = $APIDATA["api_requests_remaining"];
+	$first = $APIDATA["APIRequestsRemaining"];
 	$T->assert(">",$first,0);
 	$APIDATA = $T->api_request($PostArray);
-	$second = $APIDATA["api_requests_remaining"];
+	$second = $APIDATA["APIRequestsRemaining"];
 	$T->assert(">",$second,0);
 	$T->assert("<",$second,$first);
 

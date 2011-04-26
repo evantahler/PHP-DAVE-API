@@ -10,10 +10,11 @@ Actions, defined as "verb",  then "page location", then "Public" or "Private" in
 $ACTIONS = array();
 
 // default actions
-$ACTIONS[] = array('DescribeActions', 'Actions/examples/DescribeActions.php', 'Private');
+$ACTIONS[] = array('DescribeActions', 'Actions/examples/DescribeActions.php', 'Public');
 $ACTIONS[] = array('DescribeTables', 'Actions/examples/DescribeTables.php', 'Public');
 
 // some basic actions
+$ACTIONS[] = array('PrivateAction', 'Actions/examples/PrivateAction.php', 'Private');
 $ACTIONS[] = array('CacheTest', 'Actions/examples/CacheTest.php', 'Public');
 $ACTIONS[] = array('ObjectTest', 'Actions/examples/ObjectTest.php', 'Public');
 $ACTIONS[] = array('CookieTest', 'Actions/examples/CookieTest.php', 'Public');

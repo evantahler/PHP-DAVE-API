@@ -1,5 +1,4 @@
 <?php
-
 /***********************************************
 DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
