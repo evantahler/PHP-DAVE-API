@@ -1,0 +1,25 @@
+/* TEAM */
+	Project Lead: Evan Tahler
+	Site: http://evantahler.com
+	Twitter: @GordoMandoza
+
+/* CONTRIBUTORS */
+	The person who coined the term "D.A.V.E." and Architecture Contributor: Erica Sandbothe
+	Site: http://www.evilgeniusdesigns.com/
+	
+	Architecture Contributor: David Evans
+	Site: http://campevans.net/
+	Twitter: @spaceLenny
+
+/* THANKS */
+	mySQL-foo: Daniel Chetlin
+	Twitter: @dwma
+	
+	Original Inception, Documentation Help: Kyle Prestenback
+	Twitter: @theotherkyle
+	
+	Original Inception: Jeff Ashbrook
+	Twitter: @JefeMcOwnage
+	
+	
+	
