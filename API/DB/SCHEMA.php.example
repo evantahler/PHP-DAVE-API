@@ -1,0 +1,46 @@
+<?php 
+/***********************************************
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
+
+I am an example of TABLES.php which is created by the database driver.  
+- $TableBuildTime: unix timestamp of the creation of this file.  I am compared to to check if I should be re-created again from the DB.
+- Each table has a ["META"]["KEY"].  This is the primary key of the table in most cases.
+- For the columns in the table the sub array is: array("Column name", Unique?, Required?)
+
+If your DB is not relational (IE: Not table-based), then this document should be used to define static object types?  I'll have to come back to this...
+
+I am here to demonstrate syntax.
+***********************************************/
+$TableBuildTime = "1303193499"; 
+
+$TABLES["Developers"]["META"]["KEY"] = ID; 
+$TABLES["Developers"][] = array("ID",true,true); 
+$TABLES["Developers"][] = array("DeveloperID",true,true); 
+$TABLES["Developers"][] = array("APIKey",true,true); 
+$TABLES["Developers"][] = array("UserActions",false,true); 
+$TABLES["Developers"][] = array("IsAdmin",false,true); 
+
+$TABLES["SESSIONS"]["META"]["KEY"] = ID; 
+$TABLES["SESSIONS"][] = array("ID",true,true); 
+$TABLES["SESSIONS"][] = array("KEY",true,true); 
+$TABLES["SESSIONS"][] = array("DATA",false,true); 
+$TABLES["SESSIONS"][] = array("created_at",false,true); 
+$TABLES["SESSIONS"][] = array("updated_at",false,true); 
+
+$TABLES["Users"]["META"]["KEY"] = UserID; 
+$TABLES["Users"][] = array("UserID",true,true); 
+$TABLES["Users"][] = array("FirstName",false,true); 
+$TABLES["Users"][] = array("LastName",false,true); 
+$TABLES["Users"][] = array("PhoneNumber",true,false); 
+$TABLES["Users"][] = array("Gender",false,false); 
+$TABLES["Users"][] = array("ScreenName",true,true); 
+$TABLES["Users"][] = array("EMail",true,true); 
+$TABLES["Users"][] = array("Birthday",false,false); 
+$TABLES["Users"][] = array("PasswordHash",true,true); 
+$TABLES["Users"][] = array("Salt",false,true); 
+$TABLES["Users"][] = array("Joined",false,false); 
+
+// END 
+?>
