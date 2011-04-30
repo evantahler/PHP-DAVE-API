@@ -48,6 +48,7 @@ $CONFIG['App_dir'] = "/var/www/html/API/"; // the location of this application
 
 /*********************************************************/
 // Log
+$CONFIG['Logging'] = true; // log user actions and rate limit?
 $CONFIG['LogFolder'] = $CONFIG['App_dir']."log/";
 $CONFIG['LogAge'] = 60*60*24; // time to keep log entries in the DB (in seconds)
 // If you want to ignore certain Actions, list them here (For logging purposes)
