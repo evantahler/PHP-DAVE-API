@@ -6,13 +6,17 @@ Evan Tahler | 2011
 
 There are certain required global functions for DAVE that are very related to the DB type you are using.  Those are defined here.  If they make no sense for your DB type, then return true.  They still need to be defined.
 
-- GetAPIRequestsCount()
-- LogAPIRequest()
+- _GetAPIRequestsCount()
+- _LogAPIRequest()
 - _DBSetCache()
 - _DBGetCache()
-- StartTransaction()
-- CreateDBSaveState()
-- RestoreDBSaveState()
+- _StartTransaction()
+- _CreateDBSaveState()
+- _RestoreDBSaveState()
+- _TruncateTable()
+- _CleanSessions()
+- _CleanLog()
+- _CleanCache()
 
 ***********************************************/
 
@@ -21,7 +25,7 @@ I querey the LOG table within the database for a given $IP and lookup how many r
 
 $SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
 */
-function GetAPIRequestsCount()
+function _GetAPIRequestsCount()
 {
 	global $IP, $CONFIG, $DBOBJ;
 	
@@ -51,7 +55,7 @@ I insert a record for an API requset for a given $IP, and log important informat
 
 $SQL= 'INSERT INTO `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` (`Action`, `APIKey`, `DeveloperID`, `ERROR`, `IP`, `Params`) VALUES ("'.mysql_real_escape_string($PARAMS["Action"],$Connection).'", "'.mysql_real_escape_string($PARAMS["APIKey"],$Connection).'", "'.mysql_real_escape_string($PARAMS["DeveloperID"],$Connection).'", "'.mysql_real_escape_string($ERROR,$Connection).'", "'.mysql_real_escape_string($IP,$Connection).'" , "'.mysql_real_escape_string(json_encode($PARAMS),$Connection).'");'; 
 */
-function LogAPIRequest()
+function _LogAPIRequest()
 {
 	global $CONFIG, $PARAMS, $DBOBJ, $IP;
 	
@@ -117,11 +121,10 @@ function _DBGetCache($Key)
 	else { return false; }
 }
 
-
 /*
 If your database type supports it, start a transaction for this connection
 */
-function StartTransaction()
+function _StartTransaction()
 {
 	global $DBOBJ;
 	if (($DBOBJ instanceof DBConnection) == true && $DBOBJ->GetStatus() == true)
@@ -138,7 +141,7 @@ function StartTransaction()
 /*
 I create a restorable copy of the entire working database.  This may be the creation of "backup" tables, a file-based dump of the database, etc.  This backup will be restored with RestoreDBSveState.  This backup should leave the current state of the data and schema (if applicable) available in the "normal" tables, as well as copy it to the backup.  For mySQL, we create backup tables denoted with ~~ before the table name. 
 */
-function CreateDBSaveState($PARAMS = array())
+function _CreateDBSaveState($PARAMS = array())
 {
 	global $CONFIG, $TABLES, $DBOBJ;
 	
@@ -161,6 +164,9 @@ function CreateDBSaveState($PARAMS = array())
 		}
 	}
 	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true){ $DBOBJ->Query("LOCK TABLES;"); }
+	
 	foreach($TablesToSave as $table)
 	{
 		$Status = $DBOBJ->GetStatus();
@@ -177,13 +183,17 @@ function CreateDBSaveState($PARAMS = array())
 			break;
 		}
 	}
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true){ $DBOBJ->Query("UNLOCK TABLES;"); }
+	
 	return $output;
 } 
 
 /*
 I restore a copy of the entire working database (creted with CreateDBSaveState). I will erase any modifications (D's,A's,V's, or E's) since the backup state was created.  For mySQL, we look for any tables with the ~~ name indicating that they are a backup.  We then drop the existing table, and rename the backup. 
 */
-function RestoreDBSveState($PARAMS = array())
+function _RestoreDBSaveState($PARAMS = array())
 {
 	global $CONFIG, $TABLES, $DBOBJ;
 	
@@ -205,6 +215,9 @@ function RestoreDBSveState($PARAMS = array())
 			}
 		}
 	}
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true){ $DBOBJ->Query("LOCK TABLES;"); }
 			
 	foreach($TablesToRestore as $table)
 	{
@@ -221,7 +234,150 @@ function RestoreDBSveState($PARAMS = array())
 			break;
 		}
 	}
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true){ $DBOBJ->Query("UNLOCK TABLES;"); }
+	
 	return $output;
 }
+
+/*
+I will clear out all rows/objects from a table.  I will also reset any auto-incrament counters to 0.  In mySQL, this is the truncate command.
+*/
+function _TruncateTable($PARAMS = array())
+{
+	global $CONFIG, $DBOBJ;
+	
+	$resp = "";
+	$stop = false;
+	if (strlen($PARAMS['table']) == 0)
+	{
+		$resp = 'Provide a table name with --table';
+		$stop = true;
+	}
+	
+	if (strlen($PARAMS['DB']) > 0)
+	{
+		$ThisDB = $PARAMS['DB'];
+	}
+	else
+	{
+		$ThisDB = $CONFIG['DB'];
+	}
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($stop == false && !($Status === true))
+	{
+		$resp = "DB Error: ".$Status;
+		$stop = true;
+	}
+			
+	if ($stop == false)
+	{
+		$SQL= 'TRUNCATE TABLE `'.$ThisDB.'`.`'.$PARAMS['table'].'`;'; 	
+		$DBOBJ->Query($SQL);
+		if ($DBOBJ->NumRowsEffected() == 0)
+		{
+			$resp = $PARAMS['table']." table truncated from the ".$ThisDB." DB";
+		}
+		else
+		{
+			$resp = "Table ".$PARAMS['table']." cannot be found in ".$ThisDB;
+		}
+	}
+	else
+	{
+		$resp = "cannot connect to ".$ThisDB;
+	}
+	return $resp;
+}
+
+/*
+I will remove old sessions from the sessions table
+*/
+function _CleanSessions($PARAMS = array())
+{
+	global $CONFIG, $DBOBJ;
+	$stop = false;
+	$resp = "";
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($stop == false && !($Status === true))
+	{
+		$resp = "DB Error: ".$Status;
+		$stop = true;
+	}
+	
+	if ($stop == false)
+	{
+		$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;';
+		$DBOBJ->Query($SQL);
+		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the SESSIONS Table in the DB";
+	}
+	else
+	{
+		$resp = "cannot connect to database";
+	}
+	return $resp;
+}
+
+/*
+I will remove old log entries from the log table/db
+*/
+function _CleanLog()
+{
+	global $CONFIG, $DBOBJ;
+	$stop = false;
+	$resp = "";
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($stop == false && !($Status === true))
+	{
+		$resp = "DB Error: ".$Status;
+		$stop = true;
+	}
+	
+	if ($stop == false)
+	{
+		$SQL= 'DELETE FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['LogAge'])).'") ;'; 	
+		$DBOBJ->Query($SQL);
+		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the LOG Table in the ".$CONFIG['LOG_DB']." DB";
+	}
+	else
+	{
+		$resp = "cannot connect to ".$CONFIG['LOG_DB'];
+	}
+	return $resp;
+}
+
+/*
+I will remove old log entries from the log table/db
+*/
+function _CleanCache()
+{
+	global $CONFIG, $DBOBJ;
+	$stop = false;
+	$resp = "";
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($stop == false && !($Status === true))
+	{
+		$resp = "DB Error: ".$Status;
+		$stop = true;
+	}
+	
+	if ($stop == false)
+	{
+		$SQL= 'DELETE FROM `'.$CONFIG['DB'].'`.`'.$CONFIG['CacheTable'].'` WHERE (`ExpireTime` < "'.(time() - $CONFIG['CacheTime']).'") ;';
+		$DBOBJ->Query($SQL);
+		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the CACHE DB";
+	}
+	else
+	{
+		$resp = "cannot connect to ".$CONFIG['LOG_DB'];
+	}
+	return $resp;
+}
+
 
 ?>

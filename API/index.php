@@ -50,7 +50,7 @@ if ($CONFIG['Logging'] == true && $CONFIG['RequestLimitPerHour'] > 0)
 {
 	if ($CONFIG['CorrectLimitLockPass'] != $PARAMS["LimitLockPass"])
 	{ 
-		$_api_requests_so_far = GetAPIRequestsCount();
+		$_api_requests_so_far = _GetAPIRequestsCount();
 		if (!is_int($_api_requests_so_far)){ $OUTPUT['ERROR'] = $_api_requests_so_far; require('Output.php'); exit;}
 		$OUTPUT['APIRequestsRemaining'] = $CONFIG['RequestLimitPerHour'] - $_api_requests_so_far;
 		if ($OUTPUT['APIRequestsRemaining'] <= 0)
@@ -68,7 +68,7 @@ if (isset($PARAMS['Rollback']))
 	{
 	if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'])
 	{
-		StartTransaction();
+		_StartTransaction();
 	}
 	else
 	{
@@ -147,7 +147,7 @@ if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBOBJ instanceof DBCon
 
 // output and cleanup
 require('Output.php');
-if ($CONFIG['Logging'] == true){ LogAPIRequest(); }
+if ($CONFIG['Logging'] == true){ _LogAPIRequest(); }
 @$DBOBJ->close();
 
 ?>

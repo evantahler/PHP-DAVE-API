@@ -13,35 +13,27 @@ class CleanCache extends task
 	
 	public function run($PARAMS = array())
 	{
-		global $CONFIG, $DBOBJ;
+		global $CONFIG;
 		
-		if (self::check_DBObj())
+		/////////////////////////////////////////////////////////////////////////
+		// Check the CACHE DB table for old entries, and remove them
+		$resp = _CleanCache($PARAMS); // I am defined in DirectDBFunctions in the DB Driver. 
+		$this->task_log($resp);
+	
+		/////////////////////////////////////////////////////////////////////////
+		// Check the CACHE Folder table for old entries, and remove them
+		$files = scandir($CONFIG['CacheFolder']);
+		$counter = 0;
+		foreach ($files as $num => $fname)
 		{
-			/////////////////////////////////////////////////////////////////////////
-			// Check the CACHE DB table for old entries, and remove them
-			$SQL= 'DELETE FROM `'.$CONFIG['DB'].'`.`'.$CONFIG['CacheTable'].'` WHERE (`ExpireTime` < "'.(time() - $CONFIG['CacheTime']).'") ;';
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true)
+			$ThisFile = $CONFIG['CacheFolder'].$fname;
+			if (file_exists($ThisFile) && ((time() - filemtime($ThisFile)) > $CONFIG['CacheTime']) && $fname != "." && $fname != ".." && $fname != ".svn") 
 			{
-				$DBOBJ->Query($SQL);
-				$this->task_log('Deleted '.$DBOBJ->NumRowsEffected()." entries from the CACHE DB");
+				unlink($ThisFile);
+				$counter++;
 			}
-		
-			/////////////////////////////////////////////////////////////////////////
-			// Check the CACHE Folder table for old entries, and remove them
-			$files = scandir($CONFIG['CacheFolder']);
-			$counter = 0;
-			foreach ($files as $num => $fname)
-			{
-				$ThisFile = $CONFIG['CacheFolder'].$fname;
-				if (file_exists($ThisFile) && ((time() - filemtime($ThisFile)) > $CONFIG['CacheTime']) && $fname != "." && $fname != ".." && $fname != ".svn") 
-				{
-					unlink($ThisFile);
-					$counter++;
-				}
-			}
-			$this->task_log('Deleted '.$counter." files from the CACHE directory");
 		}
+		$this->task_log('Deleted '.$counter." files from the CACHE directory");
 	}
 }
 

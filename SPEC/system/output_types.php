@@ -35,8 +35,8 @@ require_once("../spec_helper.php");
 		$APIDATA = $T->api_request($PostArray);
 		$Lines = explode("\r\n",$T->get_raw_api_respnse());
 		$T->assert(">",count($Lines),0);
-		$T->assert("==",$Lines[2],"Action: Unknown Action");
-		$T->assert("==",$Lines[9],"ERROR: That Action cannot be found.  Did you send the 'Action' parameter?  List Actions with Action=DescribeActions");
+		$T->assert("==",$Lines[3],"Action: Unknown Action");
+		$T->assert("==",$Lines[10],"ERROR: That Action cannot be found.  Did you send the 'Action' parameter?  List Actions with Action=DescribeActions");
 
 $T->end();
 

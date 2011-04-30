@@ -13,7 +13,7 @@ class CreateDBSaveState extends task
 	
 	public function run($PARAMS = array())
 	{
-		$resp = CreateDBSaveState($PARAMS); // Defined by DB Driver
+		$resp = _CreateDBSaveState($PARAMS); // Defined by DB Driver
 		foreach($resp as $line){ $this->task_log($line); }
 	}
 }
