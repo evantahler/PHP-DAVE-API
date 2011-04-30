@@ -13,7 +13,7 @@ class RestoreDBSaveState extends task
 	
 	public function run($PARAMS = array())
 	{
-		$resp = RestoreDBSveState($PARAMS); // Defined by DB Driver
+		$resp = _RestoreDBSaveState($PARAMS); // Defined by DB Driver
 		foreach($resp as $line){ $this->task_log($line); }
 	}
 }
