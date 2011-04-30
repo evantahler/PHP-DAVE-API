@@ -13,12 +13,12 @@ I inspect the state of your mySQL database and build the array descirbing all th
 $TABLES = array();
 $ToReload = false;
 
-if (!file_exists($CONFIG['App_dir'].$CONFIG['TableConfigFile'])) {
+if (!file_exists($CONFIG['TableConfigFile'])) {
 	$ToReload = true;
 }
 else
 {
-	require_once($CONFIG['App_dir'].$CONFIG['TableConfigFile']);
+	require_once($CONFIG['TableConfigFile']);
 	if ($CONFIG['TableConfigRefreshTime'] > 0) 
 	{
 		if ($TableBuildTime + $CONFIG['TableConfigRefreshTime'] < time()) {

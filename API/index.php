@@ -46,7 +46,7 @@ if (empty($PARAMS["IP"]) || $PARAMS["IP"] == "")
 else {$IP = $PARAMS["IP"];}
 
 // check if this user has made too many requests this hour
-if ($CONFIG['RequestLimitPerHour'] > 0)
+if ($CONFIG['Logging'] == true && $CONFIG['RequestLimitPerHour'] > 0)
 {
 	if ($CONFIG['CorrectLimitLockPass'] != $PARAMS["LimitLockPass"])
 	{ 
@@ -147,7 +147,7 @@ if ($PARAMS['Rollback'] == $CONFIG['RollbackPhrase'] && ($DBOBJ instanceof DBCon
 
 // output and cleanup
 require('Output.php');
-LogAPIRequest();
+if ($CONFIG['Logging'] == true){ LogAPIRequest(); }
 @$DBOBJ->close();
 
 ?>
