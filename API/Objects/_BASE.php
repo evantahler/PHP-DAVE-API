@@ -69,60 +69,17 @@ class DaveTableObject
 
 	public function maximum($col)
 	{
-		if(strlen($col) == 0){return false;}
-		else
-		{
-			$Conditions["SQL_Override"] = true;
-			$Conditions["where_additions"] = " `".$col."` = (SELECT MAX(`".$col."`) from `".$this->Table."` ) ";
-
-			$results = _VIEW($this->Table, array(), $Conditions);
-			if (count($results[1][0]) > 0){
-				$this_obj = new DaveRowObject($this, $results[1][0]);
-				return $this_obj;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return _FindDBMaxValue($this->Table, $col); //A DiretDBFunction from DRIVER
 	}
 	
 	public function minimum($col)
 	{
-		if(strlen($col) == 0){return false;}
-		else
-		{
-			$Conditions["SQL_Override"] = true;
-			$Conditions["where_additions"] = " `".$col."` = (SELECT MIN(`".$col."`) from `".$this->Table."` ) ";
-
-			$results = _VIEW($this->Table, array(), $Conditions);
-			if (count($results[1][0]) > 0){
-				$this_obj = new DaveRowObject($this, $results[1][0]);
-				return $this_obj;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return _FindDBMinValue($this->Table, $col); //A DiretDBFunction from DRIVER
 	}
 	
-	public function count($Conditions = null)
+	public function count()
 	{
-		if (!$this->Status){return false;}
-		
-		if($Conditions == null){$Conditions = array();}
-		$Conditions["SQL_Override"] = true;
-		$Conditions["select"] = " COUNT(1) AS 'total' FROM ".$this->Table." ";
-		
-		$results = _VIEW($this->Table, array(), $Conditions);
-		if (count($results[1]) > 0){
-			return (int)$results[1][0]['total'];
-		}
-		else
-		{
-			return 0;
-		}
+		return _CountRowsInTable($this->Table); //A DiretDBFunction from DRIVER
 	}
 	
 	public function find($Params = null, $Conditions = null)
