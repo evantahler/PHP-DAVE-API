@@ -228,7 +228,7 @@ class DaveRowObject
 		{
 			foreach($params as $k => $v)
 			{
-				if (in_array($k,array_keys($this->DATA)))
+				if (is_array($this->DATA) && in_array($k,array_keys($this->DATA)))
 				{
 					$this->DATA[$k] = $v;
 				}
@@ -275,11 +275,14 @@ class DaveRowObject
 	
 	private function clean_data()
 	{
-		foreach ($this->DATA as $key => $val)
+		if(is_array($this->DATA))
 		{
-			if (!in_array($key, $this->DaveTableObject->column_names()))
+			foreach ($this->DATA as $key => $val)
 			{
-				unset($this->DATA[$key]);
+				if (!in_array($key, $this->DaveTableObject->column_names()))
+				{
+					unset($this->DATA[$key]);
+				}
 			}
 		}
 	}
