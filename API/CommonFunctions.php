@@ -71,6 +71,84 @@ function reload_tables()
 	}
 }
 
+function _tableCheck($Table)
+{
+	global $TABLES;
+	// does this table exist?
+	$Keys = array_keys($TABLES);
+	if( in_array($Table, $Keys))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function _getAllTableCols($Table)
+{
+	global $TABLES;
+	$Vars = array();
+	$i = 0;
+	while ($i < count($TABLES[$Table]))
+	{
+		$Vars[] = $TABLES[$Table][$i][0];
+		//
+		$i++;
+	}
+	return $Vars;
+}
+
+function _getRequiredTableVars($Table)
+{
+	global $TABLES;
+	$RequiredVars = array();
+	$i = 0;
+	while ($i < count($TABLES[$Table]))
+	{
+		if ($TABLES[$Table][$i][2] == true && $TABLES[$Table]["META"]["KEY"] != $TABLES[$Table][$i][0])
+		{
+			$RequiredVars[] = $TABLES[$Table][$i][0];
+		}
+		//
+		$i++;
+	}
+	return $RequiredVars;
+}
+
+function _getUniqueTableVars($Table)
+{
+	global $TABLES;
+	$UniqueVars = array();
+	$i = 0;
+	while ($i < count($TABLES[$Table]))
+	{
+		if ($TABLES[$Table][$i][1] == true)
+		{
+			$UniqueVars[] = $TABLES[$Table][$i][0];
+		}
+		//
+		$i++;
+	}
+	return $UniqueVars;
+}
+
+function _isSpecialString($string)
+{
+	global $CONFIG;
+	$found = false;
+	foreach ($CONFIG['SpecialStrings'] as $term)
+	{
+		if (stristr($string,$term[0]) !== false)
+		{
+			$found = true;
+			break;
+		}
+	}
+	return $found;
+}
+
 function create_session()
 {
 	$key = md5( uniqid() );
