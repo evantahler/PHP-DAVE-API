@@ -9,38 +9,38 @@ I am an example of TABLES.php which is created by the database driver.
 - Each table has a ["META"]["KEY"].  This is the primary key of the table in most cases.
 - For the columns in the table the sub array is: array("Column name", Unique?, Required?)
 
-If your DB is not relational (IE: Not table-based), then this document should be used to define static object types?  I'll have to come back to this...
+If your DB is not relational (IE: Not table-based), then this document should be used to define only attributes of your objects that need to be unique or requires.  Other attributes can be added at will.
 
 I am here to demonstrate syntax.
 ***********************************************/
 $TableBuildTime = "1303193499"; 
 
-$TABLES["Developers"]["META"]["KEY"] = ID; 
-$TABLES["Developers"][] = array("ID",true,true); 
-$TABLES["Developers"][] = array("DeveloperID",true,true); 
-$TABLES["Developers"][] = array("APIKey",true,true); 
-$TABLES["Developers"][] = array("UserActions",false,true); 
-$TABLES["Developers"][] = array("IsAdmin",false,true); 
+$TABLES["developers"]["META"]["KEY"] = ID; 
+$TABLES["developers"][] = array("ID",true,true); 
+$TABLES["developers"][] = array("DeveloperID",true,true); 
+$TABLES["developers"][] = array("APIKey",true,true); 
+$TABLES["developers"][] = array("UserActions",false,true); 
+$TABLES["developers"][] = array("IsAdmin",false,true); 
 
-$TABLES["SESSIONS"]["META"]["KEY"] = ID; 
-$TABLES["SESSIONS"][] = array("ID",true,true); 
-$TABLES["SESSIONS"][] = array("KEY",true,true); 
-$TABLES["SESSIONS"][] = array("DATA",false,true); 
-$TABLES["SESSIONS"][] = array("created_at",false,true); 
-$TABLES["SESSIONS"][] = array("updated_at",false,true); 
+$TABLES["sessions"]["META"]["KEY"] = ID; 
+$TABLES["sessions"][] = array("ID",true,true); 
+$TABLES["sessions"][] = array("KEY",true,true); 
+$TABLES["sessions"][] = array("DATA",false,true); 
+$TABLES["sessions"][] = array("created_at",false,true); 
+$TABLES["sessions"][] = array("updated_at",false,true); 
 
-$TABLES["Users"]["META"]["KEY"] = UserID; 
-$TABLES["Users"][] = array("UserID",true,true); 
-$TABLES["Users"][] = array("FirstName",false,true); 
-$TABLES["Users"][] = array("LastName",false,true); 
-$TABLES["Users"][] = array("PhoneNumber",true,false); 
-$TABLES["Users"][] = array("Gender",false,false); 
-$TABLES["Users"][] = array("ScreenName",true,true); 
-$TABLES["Users"][] = array("EMail",true,true); 
-$TABLES["Users"][] = array("Birthday",false,false); 
-$TABLES["Users"][] = array("PasswordHash",true,true); 
-$TABLES["Users"][] = array("Salt",false,true); 
-$TABLES["Users"][] = array("Joined",false,false); 
+$TABLES["users"]["META"]["KEY"] = UserID; 
+$TABLES["users"][] = array("UserID",true,true); 
+$TABLES["users"][] = array("FirstName",false,true); 
+$TABLES["users"][] = array("LastName",false,true); 
+$TABLES["users"][] = array("PhoneNumber",true,false); 
+$TABLES["users"][] = array("Gender",false,false); 
+$TABLES["users"][] = array("ScreenName",true,true); 
+$TABLES["users"][] = array("EMail",true,true); 
+$TABLES["users"][] = array("Birthday",false,false); 
+$TABLES["users"][] = array("PasswordHash",true,true); 
+$TABLES["users"][] = array("Salt",false,true); 
+$TABLES["users"][] = array("Joined",false,false); 
 
 // END 
 ?>
