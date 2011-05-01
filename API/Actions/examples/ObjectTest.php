@@ -71,7 +71,6 @@ if ($ERROR == 100)
 
 	// delete that user
 	$delete_resp = $OurUser->DELETE();
-	var_dump($delete_resp);
 	if ($delete_resp === true){$delete_resp = "OK";}
 	$TestResults["I_Delete_User"] = $delete_resp;
 
