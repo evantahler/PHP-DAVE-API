@@ -15,14 +15,19 @@ if (strlen($PARAMS["EMail"]) > 0 && $ERROR == 100)
 
 if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 {
-	list($fun_out, $PARAMS["PhoneNumber"]) = validate_PhoneNumber($PARAMS["PhoneNumber"]);
+	list($func_out, $PARAMS["PhoneNumber"]) = validate_PhoneNumber($PARAMS["PhoneNumber"]);
 	if ($func_out != 100){ $ERROR = $func_out; }
 }
 
 if ($ERROR == 100)
 {
 	// look up the user info
-	list($pass,$result) = _VIEW("users");
+	$UserData = array();
+	foreach($PARAMS as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+	}
+	list($pass,$result) = _VIEW("users",$UserData);
 	if (!$pass){ $ERROR = $result; }
 }
 if ($ERROR == 100)
@@ -31,22 +36,19 @@ if ($ERROR == 100)
 	{
 		// convert supplied password to PasswordHash if set
 		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
-		
 		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 		{
 			if(strlen($PARAMS["NewPassword"]) > 0) // user is trying to change password
 			{
-				$NewPasswordHash = md5($PARAMS["NewPassword"].$result[0]['Salt']);
+				$NewPasswordHash = md5($UserData["NewPassword"].$result[0]['Salt']);
 			}
 			else
 			{
-				$NewPasswordHash = $PARAMS["PasswordHash"]; // no change
+				$NewPasswordHash = $result[0]["PasswordHash"]; // no change
 			}
 			if (count($result) == 1)
 			{
-				$UserData = $PARAMS;
 				$UserData["PasswordHash"] = $NewPasswordHash;
-				
 				list($pass,$result) = _EDIT("users", $UserData);
 				if (!$pass){ $ERROR = $result; }
 				elseif (count($result) == 1)

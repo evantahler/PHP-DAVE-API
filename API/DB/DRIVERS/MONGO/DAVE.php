@@ -20,95 +20,55 @@ function _ADD($Table, $VARS = null)
 	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
 	
 	if ($VARS == null){$VARS = $PARAMS;}
-	
-	if(_tableCheck($Table))
-	{
-		$UniqueVars = _getUniqueTableVars($Table);
-		$RequiredVars = _getRequiredTableVars($Table);
-		$AllTableVars = _getAllTableCols($Table);
-		
-		$SQLKeys = array();
-		$SQLValues= array();
-		
-		$Status = $DBOBJ->GetStatus();
-		if ($Status !== true)
-		{
-			return array(false,$Status);
-		}
-		
-		foreach($RequiredVars as $req)
-		{
-			if(strlen($VARS[$req]) == 0)
-			{
-				return array(false,$req." is a required value and you must provide a value");
-			}
-		}
-		
-		foreach($VARS as $var => $val)
-		{ 
-			if (in_array($var,$AllTableVars))
-			{
-				if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
-				{
-					$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'") ;';
-					$DBOBJ->Query($SQL);
-					$Status = $DBOBJ->GetStatus();
-					if ($Status === true){
-						$results = $DBOBJ->GetResults();
-						if ($results[0]['COUNT(1)'] > 0)
-						{
-							return array(false,"There is already an entry of '".$val."' for ".$var);
-						}
-						else // var OK!
-						{
-							$SQLKeys[] = $var;
-							$SQLValues[] = $val;
-						}
-					}
-				}
-				elseif (strlen($val) > 0) // non-unique
-				{
-					$SQLKeys[] = $var;
-					$SQLValues[] = $val;
-				}
-			}
-		}
-		//
-		$SQL = "INSERT INTO `".$Table."` ( ";
-		$i = 0;
-		$needComma = false;
-		while ($i < count($SQLKeys))
-		{
-			if ($needComma) { $SQL .= ", "; } 
-			$SQL .= ' `'.$SQLKeys[$i].'` '; 
-			$needComma = true;
-			$i++;
-		}
-		$SQL .= " ) VALUES ( ";
-		$i = 0;
-		$needComma = false;
-		while ($i < count($SQLValues))
-		{
-			if ($needComma) { $SQL .= ", "; } 
-			$SQL .= ' "'.mysql_real_escape_string($SQLValues[$i],$Connection).'" '; 
-			$needComma = true;
-			$i++;
-		}
-		$SQL .= " ); ";
 
-		$DBOBJ->Query($SQL);
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true)
-		{
-			$NewKey = $DBOBJ->GetLastInsert();
-			return array(true,array( $TABLES[$Table]['META']['KEY'] => $NewKey)); 
-		}
-		else{return array(false,$Status); }
-	}
-	else
+	$UniqueVars = _getUniqueTableVars($Table);
+	$RequiredVars = _getRequiredTableVars($Table);
+	$attrs = array();
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status !== true)
 	{
-		return array(false,"This table cannot be found");
+		return array(false,$Status);
 	}
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Collection = $MongoDB->$Table;
+	
+	foreach($RequiredVars as $req)
+	{
+		if(strlen($VARS[$req]) == 0)
+		{
+			return array(false,$req." is a required value and you must provide a value");
+		}
+	}
+	
+	foreach($VARS as $var => $val)
+	{ 
+		if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
+		{	
+			$FIND = array( $var  => $val);
+			$count = $Collection->count($FIND);
+			if ($count > 0)
+			{
+				return array(false,"There is already an entry of '".$val."' for ".$var);
+			}
+			else // var OK!
+			{
+				$attrs[$var] = $val;
+			}
+
+		}
+		elseif (strlen($val) > 0) // non-unique
+		{
+			$attrs[$var] = $val;
+		}
+	}
+	
+	$Collection->insert($attrs);
+	$new_obj = $Collection->findOne($attrs);
+	$new_id = (string)$new_obj['_id'];
+	
+	return array(true,array( $TABLES['users']['META']['KEY'] => $new_id)); 
 }
 
 /***********************************************/
@@ -123,130 +83,86 @@ function _EDIT($Table, $VARS = null)
 	
 	if ($VARS == null){$VARS = $PARAMS;}
 	
-	if(_tableCheck($Table))
+	$UniqueVars = _getUniqueTableVars($Table);
+	$RequiredVars = _getRequiredTableVars($Table);
+	$attrs = array();
+	
+	$Status = $DBOBJ->GetStatus();
+	if ($Status !== true)
 	{
-		$UniqueVars = _getUniqueTableVars($Table);
-		$RequiredVars = _getRequiredTableVars($Table);
-		$AllTableVars = _getAllTableCols($Table);
-		
-		$SQLKeys = array();
-		$SQLValues= array();
-		
-		$Status = $DBOBJ->GetStatus();
-		if ($Status !== true)
+		return array(false,$Status);
+	}
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Collection = $MongoDB->$Table;
+	
+	$resp = _VIEW($Table, $VARS);
+	if($resp[0] == false){ return array(false,$resp[1]) ;}
+	if (count($resp[1]) > 1){return array(false,"You need to supply the META KEY for this table, ".$TABLES[$Table]['META']['KEY']) ;}
+	if (count($resp[1]) == 0)
+	{
+		$msg = "You have supplied none of the required parameters to make this delete.  At least one of the following is required: ";
+		foreach($UniqueVars as $var)
 		{
-			return array(false,$Status);
+			$msg .= $var." ";
 		}
-		// get the META KEY if it wasn't provided explicitly
-		if ($VARS[$TABLES[$Table]['META']['KEY']] == "")
+		return array(false,$msg);
+	}
+	if ($VARS[$TABLES[$Table]['META']['KEY']] == "")
+	{
+		$VARS[$TABLES[$Table]['META']['KEY']] = $resp[1][0][$VARS[$TABLES[$Table]['META']['KEY']]];
+	}
+	$current_values = $resp[1][0];
+
+	$new_data = false;
+	foreach($VARS as $var => $val)
+	{
+		if ($var != $TABLES[$Table]['META']['KEY'])
 		{
-			$SQL = 'SELECT '.$TABLES[$Table]['META']['KEY'].' FROM `'.$Table.'` WHERE ( ';
-			$NeedAnd = false;
-			foreach($VARS as $var => $val)
+			if (in_array($var, $UniqueVars) && strlen($val) > 0 && $val != $current_values[$var])  // unique
 			{
-				if (in_array($var,$UniqueVars) && $val != "")
+				$count = $Collection->count(array($var => $val));
+				if ($count > 0)
 				{
-					if ($NeedAnd) { $SQL .= " AND "; }
-					$SQL .= ' `'.$var.'` = "'.$val.'" ';
-					$NeedAnd = true;
-				}
-			}
-			$SQL .= ' ) ;';
-			$DBOBJ->Query($SQL);
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true)
-			{
-				$results = $DBOBJ->GetResults();
-				if (count($results) == 1)
-				{
-					$VARS[$TABLES[$Table]['META']['KEY']] = $results[0][$TABLES[$Table]['META']['KEY']];
+					return array(false,"There is already an entry of '".$val."' for ".$var);
 				}
 				else // var OK!
 				{
-					return array(false,"You need to supply the META KEY for this table, ".$TABLES[$Table]['META']['KEY']);
+					$attrs[$var] = $val;
 				}
 			}
-			else
+			elseif (strlen($val) > 0) // non-unique
 			{
-				return array(false,"You need to supply the META KEY for this table, ".$TABLES[$Table]['META']['KEY'].", or one of the unique keys.");
+				$attrs[$var] = $val;
 			}
-		}
-		//loop
-		foreach($VARS as $var => $val)
-		{
-			if ($var != $TABLES[$Table]['META']['KEY'])
+			if($attrs[$var] != $current_values[$var] && $var != $TABLES[$Table]['META']['KEY'])
 			{
-				// if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
-				// {
-				// 		return array(false,$var." is a required value and you must provide a value");
-				// }
-				if (in_array($var,$AllTableVars))
-				{
-					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
-					{
-						$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
-						$DBOBJ->Query($SQL);
-						$Status = $DBOBJ->GetStatus();
-						if ($Status === true){
-							$results = $DBOBJ->GetResults();
-							if ($results[0]['COUNT(1)'] > 0)
-							{
-								return array(false,"There is already an entry of '".$val."' for ".$var);
-							}
-							else // var OK!
-							{
-								$SQLKeys[] = $var;
-								$SQLValues[] = $val;
-							}
-						}
-					}
-					elseif (strlen($val) > 0) // non-unique
-					{
-						$SQLKeys[] = $var;
-						$SQLValues[] = $val;
-					}
-				}
+				$new_data = true;
 			}
 		}
-		//
-		if(strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0)
+	}
+	
+	// fill in old values
+	foreach($current_values as $var=>$val)
+	{
+		if(empty($attrs[$var]))
 		{
-			if (count($SQLKeys) > 0)
-			{			
-				$SQL = "UPDATE `".$Table."` SET ";
-				$i = 0;
-				$needComma = false;
-				while ($i < count($SQLKeys))
-				{
-					if ($needComma) { $SQL .= ", "; } 
-					$SQL .= ' `'.$SQLKeys[$i].'` = "'.mysql_real_escape_string($SQLValues[$i],$Connection).'" '; 
-					$needComma = true;
-					$i++;
-				}
-				
-				$SQL .= ' WHERE ( `'.$TABLES[$Table]['META']['KEY'].'` = "'.$VARS[$TABLES[$Table]['META']['KEY']].'" ); ';
-				$DBOBJ->Query($SQL);
-				$Status = $DBOBJ->GetStatus();
-				if ($Status === true)
-				{
-					$NewKey = $DBOBJ->GetLastInsert();
-					return _VIEW($Table, $VARS); // do a view again to return fresh data
-				}
-				else{ return array(false,$Status); }
-			}
-			else
-			{
-				return array(false,"There is nothing to change");
-			}
+			$attrs[$var] = $val;
 		}
-		else
+	}
+	
+	if (count($attrs) > 0 && $new_data)
+	{			
+		$MongoId = new MongoID($VARS[$TABLES[$Table]['META']['KEY']]);
+		$resp = $Collection->update(array("_id" => $MongoId), $attrs);
+		if ($resp === true)
 		{
-			return array(false,"You need to provide a parameter for the KEY of this table, ".$VARS[$TABLES[$Table]['META']['KEY']]);
+			return _VIEW($Table, $VARS); // do a view again to return fresh data
 		}
+		else{ return array(false,$Status); }
 	}
 	else
 	{
-		return array(false,"This table cannot be found");
+		return array(false,"There is nothing to change");
 	}
 }
 
@@ -256,14 +172,9 @@ function _EDIT($Table, $VARS = null)
 Table should be defned in $TABLES
 $VARS will be the params of the row to be added.  VARS should include a key/value pair which includes either the primary key for the DB or one of the unique cols for the table.  If unspecified, $PARAMS is used by default)
 Settins is an array that can contain:
-- $Settings["select"]: a replacement select statement (rather than "*").  Example: "FirstName as Name, Address as Addy".  Only Name and Addy will be returned.
-- $Settings["join"]: Join statement (first "JOIN" is added automatically).
-- $Settings["where_additions"]: Specific where statement.  Example: Birtday = "1984-08-27"
-- $Settings["sort"]: sort statment. Example: "Order by Date DESC"
+- $Settings["where_additions"]: Specific where statement. Array() for mongo.  Example: Birtday = "1984-08-27"
 - $Settings["UpperLimit"]: used for LIMIT statement.  Defaults to 100
 - $Settings["LowerLimit"]: used for LIMIT statement.  Defaults to 0
-- $Settings["SQL_Override"]: normally, DAVE wants to only view a single row, and will error unless that row can be defined properly with unique values.  set this true to bypass these checks, and view many rows at once
-
 */
 function _VIEW($Table, $VARS = null, $Settings = null )
 {
@@ -272,96 +183,69 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	
 	// Additonal _VIEW Options and Configurations
 	if ($Settings == null){ $Settings = array(); }
-	$select = $Settings["select"];
-	$join = $Settings["join"];
 	$where_additions = $Settings["where_additions"];
-	$sort = $Settings["sort"];
 	$UpperLimit = $Settings["UpperLimit"];
 	$LowerLimit = $Settings["LowerLimit"];
-	$SQL_Override = $Settings["SQL_Override"];
 	
 	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
 	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
-		
-	if(_tableCheck($Table))
+	
+	$UniqueVars = _getUniqueTableVars($Table);
+	$attrs = array();
+	
+	$NeedAnd = false;
+	if (strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0) // if the primary key is given, use JUST this
 	{
-		$UniqueVars = _getUniqueTableVars($Table);
-		$AllTableVars = _getAllTableCols($Table);
-		
-		if ($select != null)
-		{
-			$SQL = "SELECT ". $select . " ";
-		}
-		else
-		{
-			$SQL = "SELECT * FROM `".$Table."` ";
-		}
-		if ($join != null)
-		{
-			$SQL .= " JOIN ".$join." ";
-		}
-		$SQL .= " WHERE (";
-		$NeedAnd = false;
-		if (strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0 && $SQL_Override != true) // if the primary key is given, use JUST this
-		{
-			$SQL .= ' `'.$TABLES[$Table]['META']['KEY'].'` = "'.$VARS[$TABLES[$Table]['META']['KEY']].'" ';
-			$NeedAnd = true;
-		}
-		else
-		{
-			foreach($VARS as $var => $val)
-			{ 
-				if (in_array($var, $AllTableVars) && strlen($val) > 0)
-				{
-					if ($NeedAnd) { $SQL .= " AND "; } 
-					$SQL .= ' `'.$var.'` = "'.$val.'" ';
-					$NeedAnd = true;
-				}
-			}
-		}
-		if ($where_additions != null)
-		{
-			if ($NeedAnd) { $SQL .= " AND "; } 
-			$SQL .= " ".$where_additions." ";
-                        $NeedAnd = true;
-		}
-		if($NeedAnd == false && $SQL_Override != true)
-		{
-			$msg = "You have supplied none of the required parameters for this Action.  At least one of the following is required: ";
-			foreach($UniqueVars as $var)
-			{
-				$msg .= $var." ";
-			}
-			return array(false,$msg);
-		}
-		elseif ($NeedAnd == false && $SQL_Override == true)
-		{
-			$SQL .= " true ";
-		}
-		$SQL .= " ) ";
-		if ($sort != null)
-		{
-			$SQL .= $sort;
-		}
-		if ($UpperLimit < $LowerLimit) { $ERROR = "UpperLimit must be greater than LowerLimit"; }
-		if ($LowerLimit == "") {$LowerLimit = 0; }
-		if ($UpperLimit == "") {$UpperLimit = 100; }
-		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
-		//
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true)
-		{
-			$DBOBJ->Query($SQL);
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true){ return array(true, $DBOBJ->GetResults()); }
-			else{ return array(false,$Status); }
-		}
-		else { return array(false,$Status); } 
+		$attrs[$TABLES[$Table]['META']['KEY']] = new MongoID($VARS[$TABLES[$Table]['META']['KEY']]);
+		$NeedAnd = true;
 	}
 	else
 	{
-		return array(false,"This table cannot be found");
+		foreach($VARS as $var => $val)
+		{ 
+			if (strlen($val) > 0)
+			{
+				$attrs[$var] = $val;
+				$NeedAnd = true;
+			}
+		}
 	}
+	if (count($where_additions) > 0)
+	{
+		foreach($where_additions as $var=>$val)
+		{
+			$attrs[$var] = $val;
+		}
+        $NeedAnd = true;
+	}
+	if($NeedAnd == false)
+	{
+		$msg = "You have supplied none of the required parameters for this Action.  At least one of the following is required: ";
+		foreach($UniqueVars as $var)
+		{
+			$msg .= $var." ";
+		}
+		return array(false,$msg);
+	}
+	if ($UpperLimit < $LowerLimit) { $ERROR = "UpperLimit must be greater than LowerLimit"; }
+	if ($LowerLimit == "") {$LowerLimit = 0; }
+	if ($UpperLimit == "") {$UpperLimit = 100; }
+	//
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true)
+	{
+		$MongoDB = $DBOBJ->GetMongoDB();
+		$Collection = $MongoDB->$Table;
+		
+		$cursor = $Collection->find($attrs)->limit($UpperLimit - $LowerLimit);
+		$results = array();
+		foreach($cursor as $obj)
+		{
+			$results[] = $obj;
+		}
+		return array(true, $results);
+	}
+	else { return array(false,$Status); } 
 }
 
 /***********************************************/
@@ -376,141 +260,51 @@ function _DELETE($Table, $VARS = null)
 	
 	if ($VARS == null){$VARS = $PARAMS;}
 	
-	if(_tableCheck($Table))
-	{
-		$UniqueVars = _getUniqueTableVars($Table);
-		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
-		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
-		$NeedAnd = false;
-		foreach($VARS as $var => $val)
-		{ 
-			if (in_array($var, $UniqueVars) && strlen($val) > 0)
-			{
-				if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
-				$SQL .= ' `'.$var.'` = "'.$val.'" ';
-				$SQL2 .= ' `'.$var.'` = "'.$val.'" ';
-				$NeedAnd = true;
-			}
-		}
-		if($NeedAnd == false)
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Collection = $MongoDB->$Table;
+	
+	$UniqueVars = _getUniqueTableVars($Table);
+	$attrs = array();
+	$NeedAnd = false;
+	foreach($VARS as $var => $val)
+	{ 
+		if($var == $TABLES[$Table]['META']['KEY'])
 		{
-			$msg = "You have supplied none of the required parameters to make this query.  At least one of the following is required: ";
-			foreach($UniqueVars as $var)
-			{
-				$msg .= $var." ";
-			}
-			return array(false,$msg);
+			$attrs[$TABLES[$Table]['META']['KEY']] = new MongoID($VARS[$TABLES[$Table]['META']['KEY']]);
+			$NeedAnd = true;
 		}
-		$SQL .= " ) ;"; // There is no limit to allow more than one removal
-		$SQL2 .= " ) ;";
-		//
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true)
+		elseif (in_array($var, $UniqueVars) && strlen($val) > 0)
 		{
-			$DBOBJ->Query($SQL2);
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true)
-			{
-				$results = $DBOBJ->GetResults();
-				if ($results[0]['COUNT(1)'] < 1)
-				{
-					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
-				}
-			}
-			else{ return array(false,"The item you are requesting to delete is not found"); }
-			
-			$DBOBJ->Query($SQL);
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true){ return array(true, true); }
-			else{ return array(false,$Status); }
+			$attrs[$var] = $val;
+			$NeedAnd = true;
 		}
-		else {return array(false,$Status); } 
 	}
-	else
+	if($NeedAnd == false)
 	{
-		return array(false,"This table cannot be found");
-	}
-}
-
-/***********************************************/
-// helper functions
-
-function _tableCheck($Table)
-{
-	global $TABLES;
-	// does this table exist?
-	$Keys = array_keys($TABLES);
-	if( in_array($Table, $Keys))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-function _getAllTableCols($Table)
-{
-	global $TABLES;
-	$Vars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
-	{
-		$Vars[] = $TABLES[$Table][$i][0];
-		//
-		$i++;
-	}
-	return $Vars;
-}
-
-function _getRequiredTableVars($Table)
-{
-	global $TABLES;
-	$RequiredVars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
-	{
-		if ($TABLES[$Table][$i][2] == true && $TABLES[$Table]["META"]["KEY"] != $TABLES[$Table][$i][0])
+		$msg = "You have supplied none of the required parameters to make this delete.  At least one of the following is required: ";
+		foreach($UniqueVars as $var)
 		{
-			$RequiredVars[] = $TABLES[$Table][$i][0];
+			$msg .= $var." ";
 		}
-		//
-		$i++;
+		return array(false,$msg);
 	}
-	return $RequiredVars;
-}
 
-function _getUniqueTableVars($Table)
-{
-	global $TABLES;
-	$UniqueVars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
+	$Status = $DBOBJ->GetStatus();
+	if ($Status === true)
 	{
-		if ($TABLES[$Table][$i][1] == true)
+		$count = $Collection->count($attrs);
+		if ($count > 1)
 		{
-			$UniqueVars[] = $TABLES[$Table][$i][0];
+			return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
 		}
-		//
-		$i++;
+		elseif($count < 1) { return array(false,"The item you are requesting to delete is not found"); }
+		
+		$resp = $Collection->remove($attrs);
+		if ($resp === true){ return array(true, true); }
+		else{ return array(false,$resp); }
 	}
-	return $UniqueVars;
-}
+	else {return array(false,$Status); } 
 
-function _isSpecialString($string)
-{
-	global $CONFIG;
-	$found = false;
-	foreach ($CONFIG['SpecialStrings'] as $term)
-	{
-		if (stristr($string,$term[0]) !== false)
-		{
-			$found = true;
-			break;
-		}
-	}
-	return $found;
 }
 
 ?>

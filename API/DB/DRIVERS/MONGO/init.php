@@ -23,7 +23,8 @@ if (class_exists("DBConnection")) {
 	{
 		$Connection = $DBOBJ->GetConnection();
 		// require_once($_driver_db_path."TableConfig.php");
-		// require_once($_driver_db_path."DAVE.php");
+		require_once($CONFIG['TableConfigFile']);
+		require_once($_driver_db_path."DAVE.php");
 	}
 	else
 	{
