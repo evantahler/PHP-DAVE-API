@@ -71,11 +71,12 @@ if ($ERROR == 100)
 
 	// delete that user
 	$delete_resp = $OurUser->DELETE();
-	if ($delete_resp == true){ $delete_resp = "OK";}
+	var_dump($delete_resp);
+	if ($delete_resp === true){$delete_resp = "OK";}
 	$TestResults["I_Delete_User"] = $delete_resp;
 
 	// how many users now?
-	$TestResults["J_Original_User_Count"] = $UsersTable->count();
+	$TestResults["J_Final_User_Count"] = $UsersTable->count();
 
 	
 	

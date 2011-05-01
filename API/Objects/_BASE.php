@@ -192,7 +192,8 @@ class DaveRowObject
 			}
 			$resp = _EDIT($this->DaveTableObject->table(),$this->DATA);
 			$this->clean_data();
-			return $resp[1][0];
+			if($resp[0] === true){ return $resp[1][0]; }
+			else{return $resp[1]; }
 		}
 		else{return true;}
 	}

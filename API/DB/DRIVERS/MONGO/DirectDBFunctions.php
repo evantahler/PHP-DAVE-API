@@ -17,6 +17,9 @@ There are certain required global functions for DAVE that are very related to th
 - _CleanSessions()
 - _CleanLog()
 - _CleanCache()
+- _CountRowsInTable()
+- _FindDBMaxValue()
+- _FindDBMinValue()
 
 ***********************************************/
 
@@ -387,5 +390,49 @@ function _CleanCache()
 	return $resp;
 }
 
+function _CountRowsInTable($Table)
+{
+	global $CONFIG, $DBOBJ;
+	
+	if ($DBOBJ->GetStatus() != true){return false;}
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	return $Colleciton->count();
+}
+
+function _FindDBMaxValue($Table, $col)
+{
+	global $CONFIG, $DBOBJ;
+	
+	if ($DBOBJ->GetStatus() != true){return false;}
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	$object = $Colleciton->find()->sort(array($col),-1)->limit(1);
+	if(!empty($object[$col])){
+		return $object[$col];
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function _FindDBMinValue($Table, $col)
+{
+	global $CONFIG, $DBOBJ;
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	$object = $Colleciton->find()->sort(array($col),1)->limit(1);
+	if(!empty($object[$col])){
+		return $object[$col];
+	}
+	else
+	{
+		return false;
+	}
+}
 
 ?>

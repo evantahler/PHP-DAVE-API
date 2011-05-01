@@ -173,6 +173,7 @@ Table should be defned in $TABLES
 $VARS will be the params of the row to be added.  VARS should include a key/value pair which includes either the primary key for the DB or one of the unique cols for the table.  If unspecified, $PARAMS is used by default)
 Settins is an array that can contain:
 - $Settings["where_additions"]: Specific where statement. Array() for mongo.  Example: Birtday = "1984-08-27"
+- $Settings["SQL_Override"]: normally, DAVE wants to only view a single row, and will error unless that row can be defined properly with unique values.  set this true to bypass these checks, and view many rows at once
 - $Settings["UpperLimit"]: used for LIMIT statement.  Defaults to 100
 - $Settings["LowerLimit"]: used for LIMIT statement.  Defaults to 0
 */
@@ -186,7 +187,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$where_additions = $Settings["where_additions"];
 	$UpperLimit = $Settings["UpperLimit"];
 	$LowerLimit = $Settings["LowerLimit"];
-	// var_dump($VARS);
+	$SQL_Override = $Settings["SQL_Override"];
+
 	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
 	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
 	
@@ -227,7 +229,7 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		}
         $NeedAnd = true;
 	}
-	if($NeedAnd == false)
+	if($NeedAnd == false && $SQL_Override != true)
 	{
 		$msg = "You have supplied none of the required parameters for this Action.  At least one of the following is required: ";
 		foreach($UniqueVars as $var)
