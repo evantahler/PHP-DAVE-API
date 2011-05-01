@@ -80,3 +80,18 @@ CREATE TABLE IF NOT EXISTS `log` (
 -- Dumping data for table `LOG`
 --
 
+
+--
+-- Table structure for table `SESSIONS`
+--
+
+CREATE TABLE  `sessions` (
+`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`KEY` VARCHAR( 128 ) NOT NULL ,
+`DATA` TEXT NOT NULL ,
+`created_at` DATETIME NOT NULL ,
+`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+UNIQUE (
+`KEY`
+)
+) ENGINE = InnoDB ;

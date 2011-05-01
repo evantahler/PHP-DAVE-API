@@ -75,7 +75,7 @@ if ($ToReload)
 	{
 		if ($TABLES[$ThisTable]['META']['KEY'] != null)
 		{
-			$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = '.$TABLES[$ThisTable]['META']['KEY']."; \r\n";
+			$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = "'.$TABLES[$ThisTable]['META']['KEY']."\"; \r\n";
 		}
 		foreach($TABLES[$ThisTable] as $col)
 		{
