@@ -62,7 +62,7 @@ function reload_tables()
 	if ($Status === true)
 	{
 		$TABLES = array();
-		@unlink($CONFIG['TableConfigFile']);
+		$ToReloadTables = true;
 		require($CONFIG['App_dir']."DB/DRIVERS/".$CONFIG["DBType"]."/TableConfig.php"); // requiring again will force a re-load
 	}
 	else
@@ -164,11 +164,12 @@ function create_session()
 function update_session($SessionKey, $SessionData)
 {
 	// this function is destructive and will replace the entire array of session data previously stored
-	_EDIT("sessions",array(
+	$resp = _EDIT("sessions",array(
 		"KEY" => $SessionKey,
 		"updated_at" => date("Y-m-d H:i:s"),
 		"DATA" => serialize($SessionData)
-	));
+	));	
+	return($resp[0]);
 }
 
 function get_session_data($SessionKey)

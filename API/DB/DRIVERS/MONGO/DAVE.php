@@ -100,7 +100,7 @@ function _EDIT($Table, $VARS = null)
 	if (count($resp[1]) > 1){return array(false,"You need to supply the META KEY for this table, ".$TABLES[$Table]['META']['KEY']) ;}
 	if (count($resp[1]) == 0)
 	{
-		$msg = "You have supplied none of the required parameters to make this delete.  At least one of the following is required: ";
+		$msg = "You have supplied none of the required parameters to make this edit.  At least one of the following is required: ";
 		foreach($UniqueVars as $var)
 		{
 			$msg .= $var." ";
@@ -109,7 +109,7 @@ function _EDIT($Table, $VARS = null)
 	}
 	if ($VARS[$TABLES[$Table]['META']['KEY']] == "")
 	{
-		$VARS[$TABLES[$Table]['META']['KEY']] = $resp[1][0][$VARS[$TABLES[$Table]['META']['KEY']]];
+		$VARS[$TABLES[$Table]['META']['KEY']] = $resp[1][0][$TABLES[$Table]['META']['KEY']];
 	}
 	$current_values = $resp[1][0];
 
@@ -146,10 +146,10 @@ function _EDIT($Table, $VARS = null)
 	{
 		if(empty($attrs[$var]))
 		{
+			if(is_object($val) == false)
 			$attrs[$var] = $val;
 		}
 	}
-	
 	if (count($attrs) > 0 && $new_data)
 	{			
 		$MongoId = new MongoID($VARS[$TABLES[$Table]['META']['KEY']]);
@@ -186,13 +186,12 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$where_additions = $Settings["where_additions"];
 	$UpperLimit = $Settings["UpperLimit"];
 	$LowerLimit = $Settings["LowerLimit"];
-	
+	// var_dump($VARS);
 	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
 	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
 	
 	$UniqueVars = _getUniqueTableVars($Table);
 	$attrs = array();
-	
 	$NeedAnd = false;
 	if (strlen($VARS[$TABLES[$Table]['META']['KEY']]) > 0) // if the primary key is given, use JUST this
 	{
@@ -203,10 +202,20 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	{
 		foreach($VARS as $var => $val)
 		{ 
-			if (strlen($val) > 0)
+			if (strlen($val) > 0 && in_array($var,$UniqueVars))
 			{
 				$attrs[$var] = $val;
 				$NeedAnd = true;
+			}
+		}
+		if ($NeedAnd == false)
+		{
+			foreach($VARS as $var => $val)
+			{ 
+				if (strlen($val) > 0)
+				{
+					$attrs[$var] = $val;
+				}
 			}
 		}
 	}

@@ -182,7 +182,7 @@ function _CreateDBSaveState($PARAMS = array())
 			
 			$output[] = "saving `".$table."` to `~~".$table."`";
 			$oldName = "~~".$table;
-			$adminMongoDB->$oldName->drop();
+			$MongoDB->$oldName->drop();
 			$adminMongoDB->command(array( "renameCollection" => $CONFIG["DB"].".".$table, "to" => $CONFIG["DB"].".".$oldName ));
 		}
 		else
@@ -232,8 +232,9 @@ function _RestoreDBSaveState($PARAMS = array())
 			
 			$output[] = "restoring `".$table."` to `".substr($table,2)."`";
 			$origName = substr($table,2);
-			$adminMongoDB->$origName->drop();
+			$MongoDB->$origName->drop();
 			$adminMongoDB->command(array( "renameCollection" => $CONFIG["DB"].".".$table, "to" => $CONFIG["DB"].".".$origName ));
+			$MongoDB->$table->drop();
 		}
 		else
 		{

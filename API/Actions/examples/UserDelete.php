@@ -14,6 +14,7 @@ if ($ERROR == 100)
 	{
 		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
 	}
+	
 	list($pass,$result) = _VIEW("users",$UserData);
 	if (!$pass){ $ERROR = $result; }
 }

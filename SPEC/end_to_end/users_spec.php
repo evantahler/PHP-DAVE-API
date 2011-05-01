@@ -7,6 +7,9 @@ Evan Tahler | 2011
 I check a combination of API actions
 ***********************************************/
 require_once("../spec_helper.php");
+require($CONFIG['TableConfigFile']);
+$__TABLES = $TABLES; // needed because the user key changes depending on the DB type
+
 $T = new DaveTest("End to End Test: Users");
 
 // set some random values to ensure that this user doesn't exist already
@@ -29,9 +32,9 @@ $T->context("I should be able to create a user");
 
 	$APIDATA = $T->api_request($PostArray);
 	$T->assert("==",$APIDATA["ERROR"],"OK");
-	$T->assert(">",$APIDATA["UserID"],0);
+	$T->assert(">",$APIDATA[$__TABLES["users"]["META"]["KEY"]],0);
 	
-$UserID = $APIDATA["UserID"];
+$UserID = $APIDATA[$__TABLES["users"]["META"]["KEY"]];
 
 $T->context("I should be able to View a user publicly");
 	$PostArray = array(
@@ -52,7 +55,7 @@ $T->context("I should be able to View a user privately");
 		"OutputType" => "PHP",
 		"Action" => "UserView",
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass'],
-		"UserID" => $UserID,
+		"ScreenName" => $TestValues['ScreenName'],
 		"Password" => "password",
 	);
 
@@ -63,14 +66,13 @@ $T->context("I should be able to View a user privately");
 	$T->assert("==",$APIDATA["User"]["FirstName"],"DEMO");
 	$T->assert("==",$APIDATA["User"]["LastName"],"TESTMAN");
 	$T->assert("==",$APIDATA["User"]["EMail"],$TestValues['EMail']);
-	$T->assert("==",count($APIDATA["User"]),12);
 	
 $T->context("I should be able to Log In");
 	$PostArray = array(
 		"OutputType" => "PHP",
 		"Action" => "LogIn",
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass'],
-		"UserID" => $UserID,
+		"ScreenName" => $TestValues['ScreenName'],
 		"Password" => "password",
 	);
 
@@ -86,9 +88,9 @@ $T->context("I should be able to Edit a user");
 		"OutputType" => "PHP",
 		"Action" => "UserEdit",
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass'],
-		"UserID" => $UserID,
 		"Password" => "password",
-		"EMail" => "NewEmail@fake.com"
+		"EMail" => "NewEmail@fake.com",
+		$__TABLES["users"]["META"]["KEY"] => $UserID
 	);
 
 	$APIDATA = $T->api_request($PostArray);
@@ -100,7 +102,7 @@ $T->context("I should be able to Delete a user");
 		"OutputType" => "PHP",
 		"Action" => "UserDelete",
 		"LimitLockPass" => $CONFIG['CorrectLimitLockPass'],
-		"UserID" => $UserID,
+		"ScreenName" => $TestValues['ScreenName'],
 		"Password" => "password"
 	);
 
