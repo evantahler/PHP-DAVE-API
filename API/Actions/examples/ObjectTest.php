@@ -13,6 +13,12 @@ if ($ERROR == 100)
 	$TestResults = array();
 	$UsersTable = new DaveTableObject("users");
 	
+	// set some random values to ensure that this user doesn't exist already
+	$TestValues = array(
+		"ScreenName" => rand().time()."_name",
+		"EMail" => rand().time()."@test.com"
+	);
+	
 	// how many users are there now?
 	$TestResults["A_How_Many_Initial_Users"] = $UsersTable->count();
 	
@@ -29,8 +35,8 @@ if ($ERROR == 100)
 	$OurUserData = array(
 		"FirstName" => "John",
 		"LastName" => "Doe",
-		"EMail" => "john_doe@test.com",
-		"ScreenName" => "DaveAPI",
+		"EMail" => $TestValues["EMail"],
+		"ScreenName" => $TestValues["ScreenName"],
 		"Password" => "password"
 	);
 	$OurUser = new User($UsersTable, $OurUserData); 
@@ -47,7 +53,7 @@ if ($ERROR == 100)
 	$TestResults["F_User_Details_From_User_Object"] = $OurUser->VIEW();
 	
 	// view that user by a find on the Table Object	
-	$FoundUserObjects = $UsersTable->find(array("ScreenName" => "DaveAPI"));
+	$FoundUserObjects = $UsersTable->find(array("ScreenName" => $TestValues["ScreenName"]));
 	$FoundUserHashes = array();
 	foreach ($FoundUserObjects as $FoundUser)
 	{

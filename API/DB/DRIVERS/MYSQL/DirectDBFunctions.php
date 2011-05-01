@@ -17,6 +17,9 @@ There are certain required global functions for DAVE that are very related to th
 - _CleanSessions()
 - _CleanLog()
 - _CleanCache()
+- _CountRowsInTable();
+- _FindDBMaxValue();
+- _FindDBMinValue();
 
 ***********************************************/
 
@@ -375,5 +378,55 @@ function _CleanCache()
 	return $resp;
 }
 
+function _CountRowsInTable($Table)
+{
+	global $CONFIG, $DBOBJ;
+	
+	if ($DBOBJ->GetStatus() != true){return false;}
+	$SQL = "SELECT COUNT(1) AS 'total' FROM ".$Table.";";
+	$DBOBJ->query($SQL);
+	$results = $DBOBJ->GetResults();
+	if (count($results[0]) > 0){
+		return (int)$results[0]['total'];
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+function _FindDBMaxValue($Table, $col)
+{
+	global $CONFIG, $DBOBJ;
+	
+	if ($DBOBJ->GetStatus() != true){return false;}
+	$SQL = "SELECT MAX(`".$col."`) as 'total' from `".$Table."` ) ";
+	$DBOBJ->query($SQL);
+	$results = $DBOBJ->GetResults();
+	if (count($results[0]) > 0){
+		return (int)$results[0]['total'];
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function _FindDBMinValue($Table, $col)
+{
+	global $CONFIG, $DBOBJ;
+	
+	if ($DBOBJ->GetStatus() != true){return false;}
+	$SQL = "SELECT MIN(`".$col."`) as 'total' from `".$Table."` ) ";
+	$DBOBJ->query($SQL);
+	$results = $DBOBJ->GetResults();
+	if (count($results[0]) > 0){
+		return (int)$results[0]['total'];
+	}
+	else
+	{
+		return false;
+	}
+}
 
 ?>
