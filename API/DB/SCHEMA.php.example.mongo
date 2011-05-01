@@ -1,0 +1,32 @@
+<?php 
+$TableBuildTime = "1304233693"; 
+
+$TABLES["developers"]["META"]["KEY"] = "_id"; 
+$TABLES["developers"][] = array("_id",true,true); 
+$TABLES["developers"][] = array("DeveloperID",true,true); 
+$TABLES["developers"][] = array("APIKey",true,true); 
+$TABLES["developers"][] = array("UserActions",false,true); 
+$TABLES["developers"][] = array("IsAdmin",false,true); 
+
+$TABLES["sessions"]["META"]["KEY"] = "_id"; 
+$TABLES["sessions"][] = array("_id",true,true); 
+$TABLES["sessions"][] = array("KEY",true,true); 
+$TABLES["sessions"][] = array("DATA",false,true); 
+$TABLES["sessions"][] = array("created_at",false,true); 
+$TABLES["sessions"][] = array("updated_at",false,true); 
+
+$TABLES["users"]["META"]["KEY"] = "_id"; 
+$TABLES["users"][] = array("_id",true,true); 
+$TABLES["users"][] = array("FirstName",false,true); 
+$TABLES["users"][] = array("LastName",false,true); 
+$TABLES["users"][] = array("PhoneNumber",true,false); 
+$TABLES["users"][] = array("Gender",false,false); 
+$TABLES["users"][] = array("ScreenName",true,true); 
+$TABLES["users"][] = array("EMail",true,true); 
+$TABLES["users"][] = array("Birthday",false,false); 
+$TABLES["users"][] = array("PasswordHash",true,true); 
+$TABLES["users"][] = array("Salt",false,true); 
+$TABLES["users"][] = array("Joined",false,false); 
+
+// END 
+?>
