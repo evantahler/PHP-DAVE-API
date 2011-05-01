@@ -285,10 +285,6 @@ function _TruncateTable($PARAMS = array())
 			$resp = "Table ".$PARAMS['table']." cannot be found in ".$ThisDB;
 		}
 	}
-	else
-	{
-		$resp = "cannot connect to ".$ThisDB;
-	}
 	return $resp;
 }
 
@@ -310,7 +306,7 @@ function _CleanSessions($PARAMS = array())
 	
 	if ($stop == false)
 	{
-		$SQL= 'DELETE FROM `SESSIONS` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;';
+		$SQL= 'DELETE FROM `sessions` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;';
 		$DBOBJ->Query($SQL);
 		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the SESSIONS Table in the DB";
 	}
@@ -374,7 +370,7 @@ function _CleanCache()
 	}
 	else
 	{
-		$resp = "cannot connect to ".$CONFIG['LOG_DB'];
+		$resp = "cannot connect to DB";
 	}
 	return $resp;
 }

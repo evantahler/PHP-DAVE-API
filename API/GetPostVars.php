@@ -75,7 +75,8 @@ $POST_VARIABLES = array_unique($POST_VARIABLES);
 
 function _CleanPostVariableInput($string,$Connection=null) 
 {
-	if ($Connection){ $string = mysql_real_escape_string($string,$Connection); }
+	if (is_resource($Connection) == true && get_resource_type($Connection) == "mysql link"){ $string = mysql_real_escape_string($string,$Connection); }
+	else{ $string = addslashes($string); }
 	$replace = "";
 	
 	$search = array(
