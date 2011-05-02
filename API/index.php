@@ -84,6 +84,22 @@ if (isset($PARAMS['Rollback']))
 
 $ActionPreformed = 0;
 $_ActionCounter = 0;
+
+// check for restful requests
+if(empty($PARAMS["Action"]) && count(explode(".",$_SERVER["REQUEST_URI"])) == 1)
+{
+	$parts = explode("?",$_SERVER["REQUEST_URI"]);
+	$path = $parts[0];
+	foreach ($ACTIONS as $action)
+	{
+		if (strlen($action[3]) > 0 && strtolower($path) == strtolower($action[3])) 
+		{
+			$PARAMS["Action"] = $action[0]; 
+			break;
+		}
+	}
+}
+
 while ($_ActionCounter < count($ACTIONS))
 {
 	if (0 == strcmp($PARAMS["Action"],$ACTIONS[$_ActionCounter][0]))
