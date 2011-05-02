@@ -1,4 +1,18 @@
 <?php 
+/***********************************************
+DAVE PHP API
+https://github.com/evantahler/PHP-DAVE-API
+Evan Tahler | 2011
+
+I am an example of TABLES.php which is created by the database driver.  
+- $TableBuildTime: unix timestamp of the creation of this file.  I am compared to to check if I should be re-created again from the DB.
+- Each table has a ["META"]["KEY"].  This is the primary key of the table in most cases.
+- For the columns in the table the sub array is: array("Column name", Unique?, Required?)
+
+If your DB is not relational (IE: Not table-based), then this document should be used to define only attributes of your objects that need to be unique or requires.  Other attributes can be added at will though DAVE actions.
+
+I am here to demonstrate syntax.
+***********************************************/
 $TableBuildTime = "1304233693"; 
 
 $TABLES["developers"]["META"]["KEY"] = "_id"; 
