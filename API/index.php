@@ -92,7 +92,7 @@ if(empty($PARAMS["Action"]) && count(explode(".",$_SERVER["REQUEST_URI"])) == 1)
 	$path = $parts[0];
 	foreach ($ACTIONS as $action)
 	{
-		if (strlen($action[3]) > 0 && strtolower($path) == strtolower($action[3])) 
+		if (strlen($action[3]) > 0 && strstr($path,$action[3]) !== false)
 		{
 			$PARAMS["Action"] = $action[0]; 
 			break;
