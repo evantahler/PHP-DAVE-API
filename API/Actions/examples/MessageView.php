@@ -24,6 +24,9 @@ if ($ERROR == 100)
 	else
 	{		
 		$LobbyID = $resp[1][0]["LobbyID"];
+		$LobbyName = $resp[1][0]["LobbyName"];
+		$OUTPUT["LobbyID"] = $LobbyID;
+		$OUTPUT["LobbyName"] = $LobbyName;
 	}
 }
 if ($ERROR == 100)
