@@ -351,14 +351,19 @@ class DaveTest
 			$line = date("Y-m-d H:i:s")." | ".$line."\r\n";
 		}
 		
-		echo $line;
-		
 		if(isset($CONFIG['TestLog']))
 		{
 			$fh = fopen($CONFIG['TestLog'], 'a');
 			fwrite($fh, $line);
 			fclose($fh);
 		}
+		
+		if (isset($_SERVER['SERVER_ADDR']))
+		{
+			$line = str_replace("\r\n","<br />",$line);
+			$line = str_replace("  ","&nbsp;&nbsp;",$line);
+		}
+		echo $line;
 		
 		return true;
 	}
