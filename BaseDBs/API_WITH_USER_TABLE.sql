@@ -125,4 +125,31 @@ CREATE TABLE  `sessions` (
 UNIQUE (
 `KEY`
 )
-) ENGINE = InnoDB ;
+) ENGINE = InnoDB  DEFAULT CHARSET=latin1; 
+
+--
+-- Table structure for table `lobbies`
+--
+
+CREATE TABLE `lobbies` (
+  `LobbyID` int(11) NOT NULL AUTO_INCREMENT,
+  `LobbyKey` varchar(45) NOT NULL,
+  `LobbyName` varchar(45) NOT NULL,
+  `TimeStamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LobbyID`),
+  UNIQUE KEY `LobbyKey_UNIQUE` (`LobbyKey`),
+  UNIQUE KEY `LobyName_UNIQUE` (`LobbyName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+--
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `MessageID` int(11) NOT NULL AUTO_INCREMENT,
+  `LobbyID` int(11) NOT NULL,
+  `Speaker` varchar(45) NOT NULL,
+  `Message` text NOT NULL,
+  `Timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`MessageID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
