@@ -3,9 +3,11 @@ Who is _DAVE_?
 
 DAVE is a minimalist, multi-node, transactional API framework written in PHP
 
+Dave contains an end-to-end API test suite for TDD, a Task model, an Active Database Model, and a stand-alone development server ( PHP) to get you started.
+
 DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.  DAVE does the work for you, and he's not CRUD.  Dave was built to be both easy to use, but to be as simple as possible.  I was tired of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.  As applications grow and become more 'service oriented', this is the eventual route which many applications go.  I wanted to make is as simple as possible to create a new application with this mindset, and to allow for future flexibility.
 
-The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action's" that handle the input, such as "AddUser" or "GeoLocate". The DAVE API is NOT "RESTful", in that it does not use the normal verbs (Get, Put, etc) and uses a single /path/. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in `/Actions/examples` to see the logic behind adding, editing, viewing, and deleting users. This includes log in.
+The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action's" that handle the input, such as "AddUser" or "GeoLocate". The DAVE API is NOT "RESTful", in that it does not use the normal verbs (Get, Put, etc) and uses a single /path/. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in `/Actions/examples` to see the logic behind adding, editing, viewing, and deleting users. This includes log in.  Restful paths are optional if you really must have them, and be defined per Action.
 
 The DAVE API understands 2 types of security methodology. "Public" actions can be called by anyone, and then can implement optional user-based security (checking userIDs and PasswordHashes?). Optionally, certain Actions can be defined as "Private", and will require a defined developer to authenticate with every request. This requires your developers to provide an MD5 hash of their APIKey and private DeveloperID to authenticate with. You can mix private and public actions.  Of course, you can make your own actions for this as well!
 
@@ -70,7 +72,9 @@ Actions you can try [[&Action=..]] which are included in the framework:
 * CookieTest: Will set cookies in your browser.  Use this to test SERVER's implementation of _setcookie()
 * SlowAction: A simple action that will sleep for a number of seconds.  Use this to test SERVER's non-blocking implementation by making a slow request, and then other requests to ensure that a slow request will not block other actions from processing.
 	
-Example Site: [http://php-dave-api.phpfogapp.com/API/](http://php-dave-api.phpfogapp.com/API/) (Thanks PHPFog! [https://phpfog.com/](https://phpfog.com/))
+Example Site: [hhttp://dave.evantahler.com/API/](http://dave.evantahler.com/API/)
+
+Or try the interactive API explorer here (html included in /examples): [http://dave.evantahler.com/examples/api_explorer.html](http://dave.evantahler.com/examples/api_explorer.html) 
 
 QuickStart
 ----------

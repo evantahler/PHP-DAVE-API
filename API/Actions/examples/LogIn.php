@@ -10,7 +10,12 @@ I contain example useage of the session functions
 ***********************************************/
 if ($ERROR == 100)
 {
-	list($pass,$result) = _VIEW("users");
+	$SourceUserData = array();
+	foreach($PARAMS as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols("users"))) { $SourceUserData[$param] = $val ;}
+	}
+	list($pass,$result) = _VIEW("users",$SourceUserData);
 	if (!$pass){ $ERROR = $result; }
 }
 
@@ -20,7 +25,7 @@ if ($ERROR == 100)
 	{
 		$PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']);
 	}
-	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
+	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash'] && count($result) == 1) // THIS user
 	{
 		$OUTPUT['LOGIN'] = "TRUE";
 		$OUTPUT['SessionKey'] = create_session();

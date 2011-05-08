@@ -10,25 +10,27 @@ I inspect the state of your mySQL database and build the array descirbing all th
 ***********************************************/
 
 // Table Definitions
-$TABLES = array();
-$ToReload = false;
-
-if (!file_exists($CONFIG['TableConfigFile'])) {
-	$ToReload = true;
-}
-else
+if(empty($ToReloadTables))
 {
-	require_once($CONFIG['TableConfigFile']);
-	if ($CONFIG['TableConfigRefreshTime'] > 0) 
+	$TABLES = array();
+	$ToReloadTables = false;
+	if (!file_exists($CONFIG['TableConfigFile'])) {
+		$ToReloadTables = true;
+	}
+	else
 	{
-		if ($TableBuildTime + $CONFIG['TableConfigRefreshTime'] < time()) {
-			$ToReload = true;
-			$TABLES = array(); // clear it, just to be safe
+		require_once($CONFIG['TableConfigFile']);
+		if ($CONFIG['TableConfigRefreshTime'] > 0) 
+		{
+			if ($TableBuildTime + $CONFIG['TableConfigRefreshTime'] < time()) {
+				$ToReloadTables = true;
+				$TABLES = array(); // clear it, just to be safe
+			}
 		}
 	}
 }
 
-if ($ToReload)
+if ($ToReloadTables)
 {
 	$OUTPUT["TableRelaod"] = "true";
 	$Status = $DBOBJ->GetStatus();
@@ -75,7 +77,7 @@ if ($ToReload)
 	{
 		if ($TABLES[$ThisTable]['META']['KEY'] != null)
 		{
-			$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = '.$TABLES[$ThisTable]['META']['KEY']."; \r\n";
+			$TableStringOutput .= '$TABLES["'.$ThisTable.'"]["META"]["KEY"] = "'.$TABLES[$ThisTable]['META']['KEY']."\"; \r\n";
 		}
 		foreach($TABLES[$ThisTable] as $col)
 		{

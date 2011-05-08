@@ -35,7 +35,11 @@ if ($ERROR == 100)
 // use the DAVE Add to take care of the actual DB checks and adding
 if ($ERROR == 100)
 {
-	$UserData = $PARAMS;
+	$UserData = array();
+	foreach($PARAMS as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+	}
 	$UserData["PasswordHash"] = $PasswordHash;
 	$UserData["Salt"] = $Salt;
 	

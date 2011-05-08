@@ -145,14 +145,19 @@ function cleanInternalInput($string)
 	return $string;
 }
 
-function _run($URL, $remote_ip, $client_id) 
+function _run($URL, $OriginalRequestURL, $remote_ip, $client_id) 
 {
 	global $_GET, $_POST, $_COOKIE, $SERVER, $verbose;
 	
 	$_SERVER = array(
-		"PHP_SELF" => $URL,
+		"PHP_SELF" => getcwd()."/".$SERVER['root_path'].$URL,
 		"SERVER_ADDR" => $SERVER['domain'],
 		"SERVER_NAME" => $SERVER['domain'],
+		"SERVER_ADDR" => $SERVER['domain'],
+		"REQUEST_TIME" => time(),
+		"DOCUMENT_ROOT" => getcwd()."/".$SERVER['root_path'],
+		"SERVER_PORT" => $SERVER['public_port'],
+		"REQUEST_URI" => $OriginalRequestURL,
 		"SERVER_PROTOCOL" => "HTTP/1.0",
 		"REMOTE_ADDR" => $remote_ip,
 	);
@@ -167,7 +172,6 @@ function _run($URL, $remote_ip, $client_id)
 	return $script_output;
 }
 
-
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
@@ -176,6 +180,14 @@ function _run($URL, $remote_ip, $client_id)
 $ServerStartTime = time();
 set_time_limit (0);
 ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
+
+$site_index_page = "";
+if (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.php"; }
+elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.html"; }
+elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.htm"; }
+elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.jpg"; }
+elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.png"; }
+else{ $site_index_page = ""; }
 
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 // socket_set_nonblock($sock);
@@ -265,10 +277,6 @@ while (true) {
         if (--$ready <= 0) 
             continue;
     } 
-    
-
-
-
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -345,59 +353,51 @@ while (true) {
 						}
 					}		
 				}
-				
-				
-				
-				
-				server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] REQUEST: ".$URL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
-				
-				
-				
+				$OriginalRequestURL = $URL;
+				server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] REQUEST: ".$OriginalRequestURL." | ".count($_COOKIE)." cookies | ".count($_GET)." get vars | ".count($_POST)." post vars");
 				////////////////////////////////////////////////////////////////////////////////
 				////////////////////////////////////////////////////////////////////////////////
 				////////////////////////////////////////////////////////////////////////////////
 				// Return page content
-				
-				if ($URL == "/"){ $URL = "index.php"; }
-				else{ $URL = substr($URL,1); }
-				if(file_exists($SERVER['root_path'].$URL))
+				if ($URL == "/" ){ $URL = $site_index_page; } else { $URL = substr($URL,1); }
+				$request_handled = false;
+				if(!file_exists($SERVER['root_path'].$URL) && !$request_handled)
 				{
-					$contents = file_get_contents($SERVER['root_path'].$URL);
-					if ($contents === false){
+					if(count(explode(".",$URL)) == 1)
+					{
+						// asume requests with no "." should be re-routed back to main index.
+						// Probably is something that would have used mod_rewrite in a fancy server...
+						$URL = $site_index_page;
+					}
+					else
+					{
 						$headers = make_headers(404, $URL);
 						SendDataToClient($client[$i], $headers);
 						SendDataToClient($client[$i], "Error: 404");
 						server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
+						$request_handled = true;
+					}
+				}
+				if(!$request_handled)
+				{
+					if (substr($URL,-4) == ".php")
+					{
+						_run($URL, $OriginalRequestURL, $client[$i]["IP"], $client[$i]["ID"]);
+						$client[$i]["mode"] = "wait";
 					}
 					else
 					{
-						if (substr($URL,-4) == ".php")
-						{
-							_run($URL, $client[$i]["IP"], $client[$i]["ID"]);
-							$client[$i]["mode"] = "wait";
-						}
-						else
-						{
-							$headers = make_headers(200, $URL);
-							SendDataToClient($client[$i], $headers);
-							SendDataToClient($client[$i], $contents);
-							server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $client[$i]['JoinTime'])."s]");
-						}
+						$contents = @file_get_contents($SERVER['root_path'].$URL);
+						if($contents === false){$contents = "NO CONTENT";}
+						$headers = make_headers(200, $URL);
+						SendDataToClient($client[$i], $headers);
+						SendDataToClient($client[$i], $contents);
+						server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."200 (not php) [".(time() - $client[$i]['JoinTime'])."s]");
 					}
-				}
-				else
-				{
-					$headers = make_headers(404, $URL);
-					SendDataToClient($client[$i], $headers);
-					SendDataToClient($client[$i], "Error: 404");
-					server_log("[#".$client[$i]["ID"]." @ ".$client[$i]["IP"]."] -> "."404 [".(time() - $client[$i]['JoinTime'])."s]");
+					$request_handled = true;
 				}
 			}
         }
-
-
-
-
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////
@@ -442,11 +442,6 @@ while (true) {
 			EndTransfer($i);
 		}
     }
-	
-	
-	
-	
-	
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -495,11 +490,6 @@ while (true) {
 			}
 		}
 	}
-
-
-	
-	
-	
 }
 socket_close($sock);
 

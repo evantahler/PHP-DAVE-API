@@ -9,7 +9,13 @@ I am an example function to Delete a user
 if ($ERROR == 100)
 {
 	// look up the user info
-	list($pass,$result) = _VIEW("users");
+	$UserData = array();
+	foreach($PARAMS as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+	}
+	
+	list($pass,$result) = _VIEW("users",$UserData);
 	if (!$pass){ $ERROR = $result; }
 }
 if ($ERROR == 100)
@@ -21,7 +27,8 @@ if ($ERROR == 100)
 		
 		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
 		{
-			_DELETE("users", $PARAMS);
+			$resp = _DELETE("users", $PARAMS);
+			if($resp[0] == false){$ERROR = $resp[1];}
 		}
 		else
 		{

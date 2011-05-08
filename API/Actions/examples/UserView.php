@@ -9,7 +9,12 @@ If "this" user is viewing (indicated by propper password hash along with another
 ***********************************************/
 if ($ERROR == 100)
 {
-	list($pass,$result) = _VIEW("users");
+	foreach($PARAMS as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+	}
+	
+	list($pass,$result) = _VIEW("users",$UserData);
 	if (!$pass){ $ERROR = $result; }
 }
 

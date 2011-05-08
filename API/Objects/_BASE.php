@@ -69,60 +69,17 @@ class DaveTableObject
 
 	public function maximum($col)
 	{
-		if(strlen($col) == 0){return false;}
-		else
-		{
-			$Conditions["SQL_Override"] = true;
-			$Conditions["where_additions"] = " `".$col."` = (SELECT MAX(`".$col."`) from `".$this->Table."` ) ";
-
-			$results = _VIEW($this->Table, array(), $Conditions);
-			if (count($results[1][0]) > 0){
-				$this_obj = new DaveRowObject($this, $results[1][0]);
-				return $this_obj;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return _FindDBMaxValue($this->Table, $col); //A DiretDBFunction from DRIVER
 	}
 	
 	public function minimum($col)
 	{
-		if(strlen($col) == 0){return false;}
-		else
-		{
-			$Conditions["SQL_Override"] = true;
-			$Conditions["where_additions"] = " `".$col."` = (SELECT MIN(`".$col."`) from `".$this->Table."` ) ";
-
-			$results = _VIEW($this->Table, array(), $Conditions);
-			if (count($results[1][0]) > 0){
-				$this_obj = new DaveRowObject($this, $results[1][0]);
-				return $this_obj;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return _FindDBMinValue($this->Table, $col); //A DiretDBFunction from DRIVER
 	}
 	
-	public function count($Conditions = null)
+	public function count()
 	{
-		if (!$this->Status){return false;}
-		
-		if($Conditions == null){$Conditions = array();}
-		$Conditions["SQL_Override"] = true;
-		$Conditions["select"] = " COUNT(1) AS 'total' FROM ".$this->Table." ";
-		
-		$results = _VIEW($this->Table, array(), $Conditions);
-		if (count($results[1]) > 0){
-			return (int)$results[1][0]['total'];
-		}
-		else
-		{
-			return 0;
-		}
+		return _CountRowsInTable($this->Table); //A DiretDBFunction from DRIVER
 	}
 	
 	public function find($Params = null, $Conditions = null)
@@ -228,14 +185,15 @@ class DaveRowObject
 		{
 			foreach($params as $k => $v)
 			{
-				if (in_array($k,array_keys($this->DATA)))
+				if (is_array($this->DATA) && in_array($k,array_keys($this->DATA)))
 				{
 					$this->DATA[$k] = $v;
 				}
 			}
 			$resp = _EDIT($this->DaveTableObject->table(),$this->DATA);
 			$this->clean_data();
-			return $resp[1][0];
+			if($resp[0] === true){ return $resp[1][0]; }
+			else{return $resp[1]; }
 		}
 		else{return true;}
 	}
@@ -275,11 +233,14 @@ class DaveRowObject
 	
 	private function clean_data()
 	{
-		foreach ($this->DATA as $key => $val)
+		if(is_array($this->DATA))
 		{
-			if (!in_array($key, $this->DaveTableObject->column_names()))
+			foreach ($this->DATA as $key => $val)
 			{
-				unset($this->DATA[$key]);
+				if (!in_array($key, $this->DaveTableObject->column_names()))
+				{
+					unset($this->DATA[$key]);
+				}
 			}
 		}
 	}

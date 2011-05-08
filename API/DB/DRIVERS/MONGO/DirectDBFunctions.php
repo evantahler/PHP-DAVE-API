@@ -17,9 +17,9 @@ There are certain required global functions for DAVE that are very related to th
 - _CleanSessions()
 - _CleanLog()
 - _CleanCache()
-- _CountRowsInTable();
-- _FindDBMaxValue();
-- _FindDBMinValue();
+- _CountRowsInTable()
+- _FindDBMaxValue()
+- _FindDBMinValue()
 
 ***********************************************/
 
@@ -31,20 +31,20 @@ $SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogT
 function _GetAPIRequestsCount()
 {
 	global $IP, $CONFIG, $DBOBJ;
-	
+
 	$Status = $DBOBJ->GetStatus();
-	if ($Status === true)
-	{		
-		$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
-		$DBOBJ->Query($SQL);
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true){
-			$Results = $DBOBJ->GetResults();
-			return (int)$Results[0]['total'];
-		}
-		else{ return $Status; }
+	if($Status === true)
+	{
+		$Connection = $DBOBJ->GetConnection();
+		$LogsDB = $Connection->$CONFIG['LOG_DB'];
+		$Logs = $LogsDB->$CONFIG['LogTable'];		
+		$count = $Logs->count(array(
+			'IP' => $IP,
+			'TimeStamp' => array('$gt' => date('Y-m-d H:i:s',time()-(60*60)))
+			));
+		return $count;
 	}
-	else { return $Status; }
+	else{ return $Status; }
 }
 
 /*
@@ -61,21 +61,28 @@ $SQL= 'INSERT INTO `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` (`Action`, 
 function _LogAPIRequest()
 {
 	global $CONFIG, $PARAMS, $DBOBJ, $IP;
-	
-	$Connection = $DBOBJ->GetConnection();
-	
 	if (count($CONFIG) > 0)
 	{
-		if (!(in_array($PARAMS["Action"],$CONFIG['NoLogActions'])) && !(in_array($PARAMS["APIKey"],$CONFIG['NoLogAPIKeys'])))
+		$Status = $DBOBJ->GetStatus();
+		if($Status === true)
 		{
-			$Status = $DBOBJ->GetStatus();
-			if ($Status === true)
-			{
-				$SQL= 'INSERT INTO `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` (`Action`, `APIKey`, `DeveloperID`, `ERROR`, `IP`, `Params`) VALUES ("'.mysql_real_escape_string($PARAMS["Action"],$Connection).'", "'.mysql_real_escape_string($PARAMS["APIKey"],$Connection).'", "'.mysql_real_escape_string($PARAMS["DeveloperID"],$Connection).'", "'.mysql_real_escape_string($ERROR,$Connection).'", "'.mysql_real_escape_string($IP,$Connection).'" , "'.mysql_real_escape_string(json_encode($PARAMS),$Connection).'");'; 
-				$a = $DBOBJ->Query($SQL);
-			}
+			$Connection = $DBOBJ->GetConnection();
+			$LogsDB = $Connection->$CONFIG['LOG_DB'];
+			$Logs = $LogsDB->$CONFIG['LogTable'];
+			$log = array( 
+				"Action" => $PARAMS["Action"], 
+				"APIKey" => $PARAMS["APIKey"],
+				"DeveloperID" => $PARAMS["DeveloperID"],
+				"ERROR" => $ERROR,
+				"IP" => $IP,
+				"Params" => json_encode($PARAMS),
+				"TimeStamp" => date('Y-m-d H:i:s',time())
+			);
+			return $Logs->insert($log);
 		}
+		else{ return $Status; }
 	}
+	else{ return false; }	
 }
 
 /*
@@ -87,18 +94,20 @@ function _DBSetCache($Key, $Value, $ThisCacheTime = null)
 	if ($ThisCacheTime == null) { $ThisCacheTime = $CONFIG['CacheTime']; }
 	
 	$ExpireTime = time() + $ThisCacheTime;
-			
+	
 	$Status = $DBOBJ->GetStatus();
-	if ($Status === true)
+	if($Status === true)
 	{
-		$Connection = $DBOBJ->GetConnection();
-		$SQL = 'INSERT INTO `'.$CONFIG['CacheTable'].'` (`Key`, `Value`, `ExpireTime`) VALUES ("'.mysql_real_escape_string($Key,$Connection).'", "'.mysql_real_escape_string(serialize($Value),$Connection).'", "'.mysql_real_escape_string($ExpireTime,$Connection).'");' ;
-		$DBOBJ->Query($SQL);
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true){return true;}
-		else { return false; }
+		$MongoDB = $DBOBJ->GetMongoDB();
+		$Caches = $MongoDB->$CONFIG['CacheTable'];
+		$entry = array( 
+			"Key" => $Key, 
+			"Value" => $Value,
+			"ExpireTime" => $ExpireTime
+		);
+		return $Caches->insert($entry);
 	}
-	else { return false; }
+	else{ return false; }
 }
 
 /*
@@ -107,21 +116,28 @@ I am the DB-based method of getting back CACHE objects.  I will be used in defin
 function _DBGetCache($Key)
 {
 	global $CONFIG, $DBOBJ;
-			
+				
 	$Status = $DBOBJ->GetStatus();
-	if ($Status === true)
+	if($Status === true)
 	{
-		$Connection = $DBOBJ->GetConnection();
-		$SQL = 'SELECT `Value` FROM `'.$CONFIG['CacheTable'].'` WHERE (`Key` = "'.mysql_real_escape_string($Key,$Connection).'" AND `ExpireTime` >= "'.mysql_real_escape_string(time(),$Connection).'") ORDER BY `ExpireTime` DESC LIMIT 1;' ;
-		$DBOBJ->Query($SQL);
-		$Status = $DBOBJ->GetStatus();
-		if ($Status === true){
-			$Results = $DBOBJ->GetResults();
-			return unserialize($Results[0]['Value']);
+		$MongoDB = $DBOBJ->GetMongoDB();
+		$Caches = $MongoDB->$CONFIG['CacheTable'];
+		$cursor = $Caches->find(array(
+			'Key' => $Key,
+			'ExpireTime' => array('$gt' => time())
+			));
+		$newest_obj = array("ExpireTime" => 0);
+		foreach ($cursor as $obj) 
+		{
+			if ($obj['ExpireTime'] > $newest_obj["ExpireTime"])
+			{
+				$newest_obj = $obj;
+			}
 		}
-		else { return false; }
+		
+		return $newest_obj['Value'];
 	}
-	else { return false; }
+	else{ return $Status; }
 }
 
 /*
@@ -129,16 +145,7 @@ If your database type supports it, start a transaction for this connection
 */
 function _StartTransaction()
 {
-	global $DBOBJ;
-	if (($DBOBJ instanceof DBConnection) == true && $DBOBJ->GetStatus() == true)
-	{
-		$DBOBJ->Query("START TRANSACTION;");
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 /*
@@ -149,7 +156,8 @@ function _CreateDBSaveState($PARAMS = array())
 	global $CONFIG, $TABLES, $DBOBJ;
 	
 	reload_tables();
-	
+	$MongoDB = $DBOBJ->GetMongoDB();
+		
 	$output = array();
 	$TablesToSave = array();
 	if (strlen($PARAMS['table']) > 0)
@@ -158,27 +166,27 @@ function _CreateDBSaveState($PARAMS = array())
 	}
 	else
 	{
-		foreach($TABLES as $table => $data)
+		$list = $MongoDB->listCollections();
+		$TableList = array();
+		foreach ($list as $sub)
 		{
-			if (substr($table,0,2) != "~~")
-			{
-				$TablesToSave[] = $table;
-			}
+			$name = $sub->getName();
+			if ($name != "cache" && $name != "log" && substr($name,0,2) != "~~") { $TablesToSave[] = $name; }
 		}
 	}
-	
-	$Status = $DBOBJ->GetStatus();
-	// if ($Status === true){ $DBOBJ->Query("LOCK TABLES *"); }
 	
 	foreach($TablesToSave as $table)
 	{
 		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
+			$Connection = $DBOBJ->GetConnection();
+			$adminMongoDB = $Connection->admin; //connect to admin DB to force authentication
+			
 			$output[] = "saving `".$table."` to `~~".$table."`";
-			$DBOBJ->Query("DROP TABLE IF EXISTS `~~".$table."`;");
-			$DBOBJ->Query("RENAME TABLE `".$table."` TO `~~".$table."`;");
-			$DBOBJ->Query("CREATE TABLE `".$table."` LIKE `~~".$table."`;");
+			$oldName = "~~".$table;
+			$MongoDB->$oldName->drop();
+			$adminMongoDB->command(array( "renameCollection" => $CONFIG["DB"].".".$table, "to" => $CONFIG["DB"].".".$oldName ));
 		}
 		else
 		{
@@ -186,9 +194,6 @@ function _CreateDBSaveState($PARAMS = array())
 			break;
 		}
 	}
-	
-	$Status = $DBOBJ->GetStatus();
-	if ($Status === true){ $DBOBJ->Query("UNLOCK TABLES;"); }
 	
 	return $output;
 } 
@@ -201,6 +206,7 @@ function _RestoreDBSaveState($PARAMS = array())
 	global $CONFIG, $TABLES, $DBOBJ;
 	
 	reload_tables();
+	$MongoDB = $DBOBJ->GetMongoDB();
 	
 	$output = array();
 	$TablesToRestore = array();
@@ -210,26 +216,28 @@ function _RestoreDBSaveState($PARAMS = array())
 	}
 	else
 	{
-		foreach($TABLES as $table => $data)
+		$list = $MongoDB->listCollections();
+		$TableList = array();
+		foreach ($list as $sub)
 		{
-			if (substr($table,0,2) == "~~")
-			{
-				$TablesToRestore[] = $table;
-			}
+			$name = $sub->getName();
+			if ($name != "cache" && $name != "log" && substr($name,0,2) == "~~") { $TablesToRestore[] = $name; }
 		}
 	}
-	
-	$Status = $DBOBJ->GetStatus();
-	// if ($Status === true){ $DBOBJ->Query("LOCK TABLES *"); }
 			
 	foreach($TablesToRestore as $table)
 	{
 		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
 		{
+			$Connection = $DBOBJ->GetConnection();
+			$adminMongoDB = $Connection->admin; //connect to admin DB to force authentication
+			
 			$output[] = "restoring `".$table."` to `".substr($table,2)."`";
-			$DBOBJ->Query("DROP TABLE IF EXISTS `".substr($table,2)."`;");
-			$DBOBJ->Query("RENAME TABLE `".$table."` TO `".substr($table,2)."`;");
+			$origName = substr($table,2);
+			$MongoDB->$origName->drop();
+			$adminMongoDB->command(array( "renameCollection" => $CONFIG["DB"].".".$table, "to" => $CONFIG["DB"].".".$origName ));
+			$MongoDB->$table->drop();
 		}
 		else
 		{
@@ -237,9 +245,6 @@ function _RestoreDBSaveState($PARAMS = array())
 			break;
 		}
 	}
-	
-	$Status = $DBOBJ->GetStatus();
-	if ($Status === true){ $DBOBJ->Query("UNLOCK TABLES;"); }
 	
 	return $output;
 }
@@ -277,16 +282,13 @@ function _TruncateTable($PARAMS = array())
 			
 	if ($stop == false)
 	{
-		$SQL= 'TRUNCATE TABLE `'.$ThisDB.'`.`'.$PARAMS['table'].'`;'; 	
-		$DBOBJ->Query($SQL);
-		if ($DBOBJ->NumRowsEffected() == 0)
-		{
-			$resp = $PARAMS['table']." table truncated from the ".$ThisDB." DB";
-		}
-		else
-		{
-			$resp = "Table ".$PARAMS['table']." cannot be found in ".$ThisDB;
-		}
+		$Connection = $DBOBJ->GetConnection();
+		$MongoDB = $Connection->$ThisDB;
+		$Collection = $MongoDB->$PARAMS['table'];
+		$FIND = array();
+		$count = $Collection->count($FIND);
+		$Collection->remove($FIND);
+		$resp = $PARAMS['table']." table truncated from the ".$ThisDB." DB";
 	}
 	return $resp;
 }
@@ -309,13 +311,16 @@ function _CleanSessions($PARAMS = array())
 	
 	if ($stop == false)
 	{
-		$SQL= 'DELETE FROM `sessions` WHERE (`created_at` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge'])).'") ;';
-		$DBOBJ->Query($SQL);
-		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the SESSIONS Table in the DB";
+		$MongoDB = $DBOBJ->GetMongoDB();
+		$Sessions = $MongoDB->sessions;
+		$FIND = array("created_at" => array('$lt' => date('Y-m-d H:i:s',(time() - $CONFIG['SessionAge']))));
+		$count = $Sessions->count($FIND);
+		$Sessions->remove($FIND);
+		$resp = 'Deleted '.$count." entries from the sessions DB";
 	}
 	else
 	{
-		$resp = "cannot connect to database";
+		$resp = "cannot connect to DB";
 	}
 	return $resp;
 }
@@ -338,13 +343,17 @@ function _CleanLog()
 	
 	if ($stop == false)
 	{
-		$SQL= 'DELETE FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`TimeStamp` < "'.date('Y-m-d H:i:s',(time() - $CONFIG['LogAge'])).'") ;'; 	
-		$DBOBJ->Query($SQL);
-		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the LOG Table in the ".$CONFIG['LOG_DB']." DB";
+		$Connection = $DBOBJ->GetConnection();
+		$LogsDB = $Connection->$CONFIG['LOG_DB'];
+		$Logs = $LogsDB->$CONFIG['LogTable'];
+		$FIND = array("TimeStamp" => array('$lt' => date('Y-m-d H:i:s',(time() - $CONFIG['LogAge']))));
+		$count = $Logs->count($FIND);
+		$Logs->remove($FIND);
+		$resp = 'Deleted '.$count." entries from ".$CONFIG['LOG_DB'].".".$CONFIG['LogTable'];
 	}
 	else
 	{
-		$resp = "cannot connect to ".$CONFIG['LOG_DB'];
+		$resp = "cannot connect to ".$CONFIG['LOG_DB'].".".$CONFIG['LogTable'];
 	}
 	return $resp;
 }
@@ -367,9 +376,12 @@ function _CleanCache()
 	
 	if ($stop == false)
 	{
-		$SQL= 'DELETE FROM `'.$CONFIG['DB'].'`.`'.$CONFIG['CacheTable'].'` WHERE (`ExpireTime` < "'.(time() - $CONFIG['CacheTime']).'") ;';
-		$DBOBJ->Query($SQL);
-		$resp = 'Deleted '.$DBOBJ->NumRowsEffected()." entries from the CACHE DB";
+		$MongoDB = $DBOBJ->GetMongoDB();
+		$Caches = $MongoDB->$CONFIG['CacheTable'];
+		$FIND = array("ExpireTime" => array('$lt' => (time() - $CONFIG['CacheTime'])));
+		$count = $Caches->count($FIND);
+		$Caches->remove($FIND);
+		$resp = 'Deleted '.$count." entries from the CACHE DB";
 	}
 	else
 	{
@@ -383,16 +395,10 @@ function _CountRowsInTable($Table)
 	global $CONFIG, $DBOBJ;
 	
 	if ($DBOBJ->GetStatus() != true){return false;}
-	$SQL = "SELECT COUNT(1) AS 'total' FROM ".$Table.";";
-	$DBOBJ->query($SQL);
-	$results = $DBOBJ->GetResults();
-	if (count($results[0]) > 0){
-		return (int)$results[0]['total'];
-	}
-	else
-	{
-		return 0;
-	}
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	return $Colleciton->count();
 }
 
 function _FindDBMaxValue($Table, $col)
@@ -400,11 +406,12 @@ function _FindDBMaxValue($Table, $col)
 	global $CONFIG, $DBOBJ;
 	
 	if ($DBOBJ->GetStatus() != true){return false;}
-	$SQL = "SELECT MAX(`".$col."`) as 'total' from `".$Table."` ) ";
-	$DBOBJ->query($SQL);
-	$results = $DBOBJ->GetResults();
-	if (count($results[0]) > 0){
-		return (int)$results[0]['total'];
+	
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	$object = $Colleciton->find()->sort(array($col),-1)->limit(1);
+	if(!empty($object[$col])){
+		return $object[$col];
 	}
 	else
 	{
@@ -416,12 +423,11 @@ function _FindDBMinValue($Table, $col)
 {
 	global $CONFIG, $DBOBJ;
 	
-	if ($DBOBJ->GetStatus() != true){return false;}
-	$SQL = "SELECT MIN(`".$col."`) as 'total' from `".$Table."` ) ";
-	$DBOBJ->query($SQL);
-	$results = $DBOBJ->GetResults();
-	if (count($results[0]) > 0){
-		return (int)$results[0]['total'];
+	$MongoDB = $DBOBJ->GetMongoDB();
+	$Colleciton = $MongoDB->$Table;
+	$object = $Colleciton->find()->sort(array($col),1)->limit(1);
+	if(!empty($object[$col])){
+		return $object[$col];
 	}
 	else
 	{

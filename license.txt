@@ -1,6 +1,5 @@
 PHP DAVE API License
 Last Update: April 10, 2011
-Copyright Evan Tahler
 
 This software is free and open source.  
 I want to keep this simple.  Here goes:

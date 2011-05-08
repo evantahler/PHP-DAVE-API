@@ -172,38 +172,41 @@ function _EDIT($Table, $VARS = null)
 			}
 		}
 		//loop
-		foreach($VARS as $var => $val)
+		if(is_array($VARS))
 		{
-			if ($var != $TABLES[$Table]['META']['KEY'])
+			foreach($VARS as $var => $val)
 			{
-				// if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
-				// {
-				// 		return array(false,$var." is a required value and you must provide a value");
-				// }
-				if (in_array($var,$AllTableVars))
+				if ($var != $TABLES[$Table]['META']['KEY'])
 				{
-					if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
+					// if (in_array($var, $RequiredVars) && _isSpecialString($val)) // required
+					// {
+					// 		return array(false,$var." is a required value and you must provide a value");
+					// }
+					if (in_array($var,$AllTableVars))
 					{
-						$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
-						$DBOBJ->Query($SQL);
-						$Status = $DBOBJ->GetStatus();
-						if ($Status === true){
-							$results = $DBOBJ->GetResults();
-							if ($results[0]['COUNT(1)'] > 0)
-							{
-								return array(false,"There is already an entry of '".$val."' for ".$var);
-							}
-							else // var OK!
-							{
-								$SQLKeys[] = $var;
-								$SQLValues[] = $val;
+						if (in_array($var, $UniqueVars) && strlen($val) > 0)  // unique
+						{
+							$SQL = 'SELECT COUNT(1) FROM `'.$Table.'` WHERE (`'.$var.'` = "'.$val.'" AND `'.$TABLES[$Table]['META']['KEY'].'` != "'.$VARS[$TABLES[$Table]['META']['KEY']].'") ;'; 
+							$DBOBJ->Query($SQL);
+							$Status = $DBOBJ->GetStatus();
+							if ($Status === true){
+								$results = $DBOBJ->GetResults();
+								if ($results[0]['COUNT(1)'] > 0)
+								{
+									return array(false,"There is already an entry of '".$val."' for ".$var);
+								}
+								else // var OK!
+								{
+									$SQLKeys[] = $var;
+									$SQLValues[] = $val;
+								}
 							}
 						}
-					}
-					elseif (strlen($val) > 0) // non-unique
-					{
-						$SQLKeys[] = $var;
-						$SQLValues[] = $val;
+						elseif (strlen($val) > 0) // non-unique
+						{
+							$SQLKeys[] = $var;
+							$SQLValues[] = $val;
+						}
 					}
 				}
 			}
@@ -382,14 +385,17 @@ function _DELETE($Table, $VARS = null)
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
 		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
-		foreach($VARS as $var => $val)
-		{ 
-			if (in_array($var, $UniqueVars) && strlen($val) > 0)
-			{
-				if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
-				$SQL .= ' `'.$var.'` = "'.$val.'" ';
-				$SQL2 .= ' `'.$var.'` = "'.$val.'" ';
-				$NeedAnd = true;
+		if(is_array($VARS))
+		{
+			foreach($VARS as $var => $val)
+			{ 
+				if (in_array($var, $UniqueVars) && strlen($val) > 0)
+				{
+					if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
+					$SQL .= ' `'.$var.'` = "'.$val.'" ';
+					$SQL2 .= ' `'.$var.'` = "'.$val.'" ';
+					$NeedAnd = true;
+				}
 			}
 		}
 		if($NeedAnd == false)
@@ -412,7 +418,7 @@ function _DELETE($Table, $VARS = null)
 			if ($Status === true)
 			{
 				$results = $DBOBJ->GetResults();
-				if ($results[0]['COUNT(1)'] < 1)
+				if ($results[0]['COUNT(1)'] > 1)
 				{
 					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
 				}
@@ -430,87 +436,6 @@ function _DELETE($Table, $VARS = null)
 	{
 		return array(false,"This table cannot be found");
 	}
-}
-
-/***********************************************/
-// helper functions
-
-function _tableCheck($Table)
-{
-	global $TABLES;
-	// does this table exist?
-	$Keys = array_keys($TABLES);
-	if( in_array($Table, $Keys))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-function _getAllTableCols($Table)
-{
-	global $TABLES;
-	$Vars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
-	{
-		$Vars[] = $TABLES[$Table][$i][0];
-		//
-		$i++;
-	}
-	return $Vars;
-}
-
-function _getRequiredTableVars($Table)
-{
-	global $TABLES;
-	$RequiredVars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
-	{
-		if ($TABLES[$Table][$i][2] == true && $TABLES[$Table]["META"]["KEY"] != $TABLES[$Table][$i][0])
-		{
-			$RequiredVars[] = $TABLES[$Table][$i][0];
-		}
-		//
-		$i++;
-	}
-	return $RequiredVars;
-}
-
-function _getUniqueTableVars($Table)
-{
-	global $TABLES;
-	$UniqueVars = array();
-	$i = 0;
-	while ($i < count($TABLES[$Table]))
-	{
-		if ($TABLES[$Table][$i][1] == true)
-		{
-			$UniqueVars[] = $TABLES[$Table][$i][0];
-		}
-		//
-		$i++;
-	}
-	return $UniqueVars;
-}
-
-function _isSpecialString($string)
-{
-	global $CONFIG;
-	$found = false;
-	foreach ($CONFIG['SpecialStrings'] as $term)
-	{
-		if (stristr($string,$term[0]) !== false)
-		{
-			$found = true;
-			break;
-		}
-	}
-	return $found;
 }
 
 ?>

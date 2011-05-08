@@ -1,4 +1,5 @@
 <?php
+// from http://php.net/manual/en/function.filesize.php
 
 function formatBytes($bytes, $precision = 2) { 
     $units = array('B', 'KB', 'MB', 'GB', 'TB'); 

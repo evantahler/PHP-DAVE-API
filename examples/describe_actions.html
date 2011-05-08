@@ -1,0 +1,89 @@
+<html>
+	<head>
+		<title>PHP DAVE API: Describe Actions Example</title>
+		  <style type="text/css"> 
+		    body {
+		      margin-top: 1.0em;
+		      background-color: #31554a;
+		      font-family: Helvetica, Arial, FreeSans, san-serif;
+		      color: #ffffff;
+		    }
+		    #container {
+		      margin: 0 auto;
+		      width: 700px;
+		    }
+		    h1 { font-size: 3.8em; color: #ceaab5; margin-bottom: 3px; }
+		    h1 a { text-decoration: none }
+		    h2 { font-size: 1.5em; color: #ceaab5; }
+		    h3 { text-align: left; color: #ceaab5; }
+		    a { color: #ceaab5; }
+		    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+		  </style> 
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<script>
+			
+		var API_URL = "/API/";
+		
+		function MakeJSONCallback(URL)
+		{
+			URL = URL.toString();
+			var script = document.createElement('script');
+			script.src = URL;
+			document.body.appendChild(script);
+		}
+		
+		function api_request(Action, Callback, Params)
+		{
+		    t = new Date();
+	        timestamp = t.getTime();
+		    param_string = "?";
+			param_string += "OutputType=JSON";
+			param_string += "&RAND=" + timestamp;
+			param_string += "&Action=" + Action;
+			if(Callback == null){ Callback = "console.log"; }
+			param_string += "&Callback=" + Callback
+			for(x in Params)
+		    {
+				param_string += "&" + encodeURIComponent(x) + "=" + encodeURIComponent(Params[x]);
+			}
+		 	api_req = API_URL + param_string;
+			console.log("requesting: " + api_req);
+		    MakeJSONCallback(api_req);
+		}
+		
+		function DescribeActions()
+		{
+			api_request("DescribeActions", "DescribeActionsCallback", {})
+		}
+		
+		function DescribeActionsCallback(API)
+		{
+			if (API.ERROR == "OK")
+			{
+				str = "<ul>";
+				for(x in API.Actions)
+				{
+					this_action = API.Actions[x];
+					str += "<li><b>"+this_action.Name+"</b> <em>"+this_action.Access+"</em></li>";
+				}
+				str += "</ul>";
+				$("#api_response").html(str);
+			}
+			else{alert(API.ERROR);}
+		}
+		
+		$(document).ready(function() {
+		  DescribeActions();
+		});
+
+		</script>
+		
+		</head>
+	</head>
+	<body>
+		<div style="height:100%; width:100%;">
+			<h2>PHP DAVE API: Describe Actions</h2>
+			<div id="api_response">Loading...</div>
+		</div>	
+	</body>
+</html>

@@ -23,6 +23,12 @@ if (file_exists("CONFIG.php"))
 	require_once("Actions.php");
 	
 	date_default_timezone_set($CONFIG['SystemTimeZone']);
+	
+	if(!file_exists("DB/SCHEMA.php"))
+	{
+		echo "The Database Schema (DB/SCHEMA.php) cannot be found.  If you are using a non-relational DB, you probably need to create it manually\r\n"; 
+		exit;
+	}
 }
 else 
 {
