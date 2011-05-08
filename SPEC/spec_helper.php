@@ -78,7 +78,7 @@ class DaveTest
 		$exec .= " script/api ";
 		foreach ($PARAMS as $k => $v)
 		{
-			$exec .= " --".$k."=".$v." ";
+			$exec .= " --".$k."='".$v."' ";
 		}
 		if (!in_array("OutputType",array_keys($PARAMS)))
 		{
@@ -86,7 +86,7 @@ class DaveTest
 		}
 		$exec .= " ; \"";
 		$resp = `$exec`;
-		$this->LastAPIResponse = $resp;
+		$this->LastAPIResponse = $resp; // raw response	
 		return unserialize($resp);
 	}
 	

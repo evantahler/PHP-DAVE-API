@@ -28,4 +28,12 @@ $ACTIONS[] = array('UserEdit', 'Actions/examples/UserEdit.php', 'Public', '/User
 $ACTIONS[] = array('UserDelete', 'Actions/examples/UserDelete.php', 'Public', '/User/View');
 $ACTIONS[] = array('LogIn', 'Actions/examples/LogIn.php', 'Public', '/LogIn');
 
+// Demo actions for a simple chat protocol 
+$ACTIONS[] = array('LobbyCreate', 'Actions/examples/LobbyCreate.php', 'Public', '/Lobby/Create');
+$ACTIONS[] = array('LobbyView', 'Actions/examples/LobbyView.php', 'Public', '/Lobby/View');
+$ACTIONS[] = array('LobbyAuthenticate', 'Actions/examples/LobbyAuthenticate.php', 'Public', '/Lobby/Authenticate');
+
+$ACTIONS[] = array('MessageAdd', 'Actions/examples/MessageAdd.php', 'Public', '/Message/Add');
+$ACTIONS[] = array('MessageView', 'Actions/examples/MessageView.php', 'Public', '/Message/View');
+
 ?>
