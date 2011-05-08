@@ -43,6 +43,8 @@ if ($ERROR == 100)
 		"UpperLimit" => $UpperLimit,
 		"LowerLimit" => $LowerLimit
 	));
+	
+	$OUTPUT["Messages"] = array();
 	foreach($resp[1] as $message)
 	{
 		$OUTPUT["Messages"][] = $message;
