@@ -168,7 +168,7 @@ function _CreateDBSaveState($PARAMS = array())
 	}
 	
 	$Status = $DBOBJ->GetStatus();
-	if ($Status === true){ $DBOBJ->Query("LOCK TABLES;"); }
+	// if ($Status === true){ $DBOBJ->Query("LOCK TABLES *"); }
 	
 	foreach($TablesToSave as $table)
 	{
@@ -220,7 +220,7 @@ function _RestoreDBSaveState($PARAMS = array())
 	}
 	
 	$Status = $DBOBJ->GetStatus();
-	if ($Status === true){ $DBOBJ->Query("LOCK TABLES;"); }
+	// if ($Status === true){ $DBOBJ->Query("LOCK TABLES *"); }
 			
 	foreach($TablesToRestore as $table)
 	{
