@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<title>PHP DAVE API: API Explorer</title>
+		  <style type="text/css"> 
+		    body {
+		      margin-top: 1.0em;
+		      background-color: #31554a;
+		      font-family: Helvetica, Arial, FreeSans, san-serif;
+		      color: #ffffff;
+		    }
+		    #container {
+		      margin: 0 auto;
+		      width: 700px;
+		    }
+		    h1 { font-size: 3.8em; color: #ceaab5; margin-bottom: 3px; }
+		    h1 a { text-decoration: none }
+		    h2 { font-size: 1.5em; color: #ceaab5; }
+		    h3 { text-align: left; color: #ceaab5; }
+		    a { color: #ceaab5; }
+		    hr { border: 0; width: 100%; border-bottom: 1px solid #aaa}
+		  </style> 
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<script>
+			
+		var API_URL = "/API/";
+		var input_counter = 0;
+		
+		function MakeJSONCallback(URL)
+		{
+			URL = URL.toString();
+			var script = document.createElement('script');
+			script.src = URL;
+			document.body.appendChild(script);
+		}
+		
+		function api_request(Action, Callback, Params)
+		{
+		    t = new Date();
+	        timestamp = t.getTime();
+		    param_string = "?";
+			param_string += "OutputType=JSON";
+			param_string += "&RAND=" + timestamp;
+			param_string += "&Action=" + Action;
+			if(Callback == null){ Callback = "console.log"; }
+			param_string += "&Callback=" + Callback
+			for(x in Params)
+		    {
+				param_string += "&" + encodeURIComponent(x) + "=" + encodeURIComponent(Params[x]);
+			}
+		 	api_req = API_URL + param_string;
+			console.log("requesting: " + api_req);
+		    MakeJSONCallback(api_req);
+		}
+		
+		function api_reqest()
+		{
+			Action = $('input[name="Action"]').val();
+			if (Action == null || typeof Action  == "undefined"){Action = "";}
+			i = 0;
+			params = {};
+			while(i <= input_counter)
+			{
+				if (i > 0){
+					key_str = 'input[name="key_'+i+'"]';
+					val_str = 'input[name="value_'+i+'"]';
+					// console.log($(key_str).val() + ": " + $(val_str).val());
+					params[$(key_str).val()] = $(val_str).val();
+				}
+				i++;
+			}
+			$('#api_response').html("Loading...");
+			api_request(Action, "api_callback", params);
+		}
+		
+		function api_callback(API)
+		{
+			api_string = print_json(API);
+			$('#api_response').html(api_string);
+		}
+		
+		function print_json(JSON,depth,api_string)
+		{
+			api_string = typeof(api_string) != 'undefined' ? api_string : "";
+			depth = typeof(depth) != 'undefined' ? depth : 0;
+			
+			for(x in JSON)
+			{
+				// console.log( x + ", " + JSON[x] + " : " + typeof JSON[x]);
+				if(typeof JSON[x] == "boolean" || typeof JSON[x] == "number" || typeof JSON[x] == "string" )
+				{
+					api_string += pad_spaces(depth) + "<b>" + x + "</b>: " + JSON[x] + "</br>";
+				}
+				else
+				{
+					api_string += pad_spaces(depth) + "<b>" + x + "</b>:<br />"
+					api_string += print_json(JSON[x],(depth + 1));
+				}
+			}
+			return api_string
+		}
+		
+		function pad_spaces(depth)
+		{
+			str = "";
+			i = 0;
+			while (i < depth)
+			{
+				str += "&nbsp;&nbsp;&nbsp;&nbsp;";
+				i++;
+			}
+			return str;
+		}
+		
+		function add_input()
+		{
+			input_counter++;
+			// content = $('#input_form').html();
+			// content += 'key: <input type="text" name="key_'+input_counter+'" /> value: <input type="text" name="value_'+input_counter+'" /> <br />';
+			// $('#input_form').html(content);
+			$('#input_form').append('key: <input type="text" name="key_'+input_counter+'" /> value: <input type="text" name="value_'+input_counter+'" /> <br />');
+		}
+		
+		$(document).ready(function() {
+		  api_reqest();
+		});
+
+		</script>
+		
+		</head>
+	</head>
+	<body>
+		<div style="height:100%; width:100%;">
+			<h2>PHP DAVE API: API Explorer</h2>
+			<form id="input_form" onSubmit="api_reqest();" action="" method="post">
+				Action: <input type="text" name="Action" /><br />
+				<input type="button" value="Add Variable" onclick="add_input();"/><input type="button" value="Submit" onclick="api_reqest();"/>
+				<br /><br />
+			</form>
+			<hr />
+			<div id="api_response">Loading...</div>
+		</div>	
+	</body>
+</html>
