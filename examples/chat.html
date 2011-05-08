@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<title>PHP DAVE API: Chat Example</title>
+		  <style type="text/css"> 
+		    body {
+		      margin-top: 1.0em;
+		      background-color: #31554a;
+		      font-family: Helvetica, Arial, FreeSans, san-serif;
+		      color: #ffffff;
+		    }
+		    #container {
+		      margin: 0 auto;
+		      width: 700px;
+		    }
+		    h1 { font-size: 3.8em; color: #ceaab5; margin-bottom: 3px; }
+		    h1 a { text-decoration: none }
+		    h2 { font-size: 1.5em; color: #ceaab5; }
+		    h3 { text-align: left; color: #ceaab5; }
+		    a { color: #ceaab5; }
+		    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+		  </style> 
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<script>
+			
+		var API_URL = "http://dave.evantahler.com/API/";
+		var chat_cycle_time = 3000;
+		var message_timer;
+		
+		function MakeJSONCallback(URL)
+		{
+			URL = URL.toString();
+			var script = document.createElement('script');
+			script.src = URL;
+			document.body.appendChild(script);
+		}
+		
+		function api_request(Action, Callback, Params)
+		{
+		    t = new Date();
+	        timestamp = t.getTime();
+		    param_string = "?";
+			param_string += "OutputType=JSON";
+			param_string += "&RAND=" + timestamp;
+			param_string += "&Action=" + Action;
+			if(Callback == null){ Callback = "console.log"; }
+			param_string += "&Callback=" + Callback
+			for(x in Params)
+		    {
+				param_string += "&" + encodeURIComponent(x) + "=" + encodeURIComponent(Params[x]);
+			}
+		 	api_req = API_URL + param_string;
+			console.log("requesting: " + api_req);
+		    MakeJSONCallback(api_req);
+		}
+		
+		function newLobby()
+		{
+			LobbyName = $("input[name='LobbyName']").val();
+			if (LobbyName == ""){alert("Please enter a LobbyName")}
+			else
+			{
+				api_request("LobbyAdd", "NewLobbyCallback", {"LobbyName":LobbyName});
+			}
+		}
+		
+		function NewLobbyCallback(API)
+		{
+			if (API.ERROR != "OK") { alert(API.ERROR); }
+			else
+			{	LobbyKey = API.LobbyKey;
+				$("input[name='LobbyKey']").val(LobbyKey);
+				alert("Great! Tell those you want to chat with this webpage and your LobbyKey: " + LobbyKey)
+			}
+		}
+		
+		function addChat()
+		{
+			Speaker = $("input[name='Speaker']").val();
+			LobbyKey = $("input[name='LobbyKey']").val();
+			Message = $("input[name='Message']").val();
+			if (LobbyKey != "" && Speaker != "" && Message != "")
+			{
+				api_request("MessageAdd", "addChatCallback", {"LobbyKey":LobbyKey,"Speaker":Speaker,"Message":Message});
+				$("input[name='Message']").val("");
+				clearTimeout(message_timer);
+				api_request("MessageView", "getChatsCallback", {"LobbyKey":LobbyKey});
+			}
+			else{ alert("Please fill out your Name, LobbyKey, and Message"); }
+		}
+		
+		function addChatCallback(API)
+		{
+			if (API.ERROR != "OK"){alert(API.ERROR);}
+		}
+		
+		function getChats()
+		{
+			Speaker = $("input[name='Speaker']").val();
+			LobbyKey = $("input[name='LobbyKey']").val();
+			if (LobbyKey != "" && Speaker != "")
+			{
+				api_request("MessageView", "getChatsCallback", {"LobbyKey":LobbyKey});
+			}
+			else{ message_timer = setTimeout(getChats, chat_cycle_time); }
+		}
+		
+		function getChatsCallback(API)
+		{
+			if (API.ERROR == "OK")
+			{
+				message_div = "";
+				$('#LobbyNameSpan').html(API.LobbyName);
+				console.log(API);
+				for(x in API.Messages)
+				{
+					message_div += "<em>" + unescape(API.Messages[x].Timestamp) + "</em>&nbsp;&nbsp;|&nbsp;&nbsp;<b>" + unescape(API.Messages[x].Speaker) + "</b>: " + unescape(API.Messages[x].Message) + "<br />"
+				}
+				$("#message_div").html(message_div);
+			}
+			message_timer = setTimeout(getChats, chat_cycle_time);
+		}
+		
+		$(document).ready(function() {
+		  getChats();
+		});
+
+		</script>
+		
+		</head>
+	</head>
+	<body>
+		<div style="height:100%; width:100%;">
+			<h2>PHP DAVE API: Chat Example</h2>
+			<div id="message_entry" style="text-align:left; width:100%; height:200px;">
+				<h3>Chat Entry:</h3>
+				<form onSubmit="addChat();" action="#" method="post">
+					Name: <input type="text" name="Speaker" />
+					LobbyKey: <input type="text" name="LobbyKey" />
+					Message: <input type="text" name="Message" />
+					<input type="button" value="Submit" onClick="addChat();"/>
+				</form>
+				<h3>New Lobby:</h3>
+				<form onSubmit="newLobby();" action="#" method="post">
+					LobbyName: <input type="text" name="LobbyName" />
+					<input type="button" value="Submit" onClick="newLobby();"/>
+				</form>
+			</div>
+			<div id="messages" style="text-align:left; width:100%;">
+				<h3>Messages for <span id="LobbyNameSpan">{nothing}</span>:</h3>
+				<div id="message_div">No Messages Yet.  Join a Lobby.</div>
+			</div>
+		</div>	
+	</body>
+</html>
