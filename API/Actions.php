@@ -29,7 +29,7 @@ $ACTIONS[] = array('UserDelete', 'Actions/examples/UserDelete.php', 'Public', '/
 $ACTIONS[] = array('LogIn', 'Actions/examples/LogIn.php', 'Public', '/LogIn');
 
 // Demo actions for a simple chat protocol 
-$ACTIONS[] = array('LobbyCreate', 'Actions/examples/LobbyCreate.php', 'Public', '/Lobby/Create');
+$ACTIONS[] = array('LobbyAdd', 'Actions/examples/LobbyAdd.php', 'Public', '/Lobby/Add');
 $ACTIONS[] = array('LobbyView', 'Actions/examples/LobbyView.php', 'Public', '/Lobby/View');
 $ACTIONS[] = array('LobbyAuthenticate', 'Actions/examples/LobbyAuthenticate.php', 'Public', '/Lobby/Authenticate');
 
