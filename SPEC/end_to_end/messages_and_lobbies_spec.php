@@ -18,7 +18,7 @@ $TestValues = array(
 $T->context("I should be able to create a lobby");
 	$PostArray = array(
 		"OutputType" => "PHP",
-		"Action" => "LobbyCreate",
+		"Action" => "LobbyAdd",
 		"LobbyName" => $TestValues["LobbyName"]
 	);
 
