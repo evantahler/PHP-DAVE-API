@@ -8,36 +8,19 @@ I am an example function to Delete a user
 ***********************************************/
 if ($ERROR == 100)
 {
-	// look up the user info
-	$UserData = array();
-	foreach($PARAMS as $param=>$val)
+	$AuthResp = AuthenticateUser();
+	if ($AuthResp !== true)
 	{
-		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
-	}
-	
-	list($pass,$result) = _VIEW("users",$UserData);
-	if (!$pass){ $ERROR = $result; }
-}
-if ($ERROR == 100)
-{
-	if (count($result) == 1)
-	{
-		// convert supplied password to PasswordHash if set
-		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
-		
-		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
-		{
-			$resp = _DELETE("users", $PARAMS);
-			if($resp[0] == false){$ERROR = $resp[1];}
-		}
-		else
-		{
-			$ERROR = "Passwords do not match or PasswordHash was not provided";
-		}
+		$ERROR = $AuthResp;
 	}
 	else
 	{
-		$ERROR = "That user is not found";
+		$resp = _DELETE("users", array(
+			"UserID" => $PARAMS['UserID'],
+			"ScreenName" => $PARAMS['ScreenName'],
+			"EMail" => $PARAMS['EMail']
+			));
+		if($resp[0] == false){$ERROR = $resp[1];}
 	}
 }
 

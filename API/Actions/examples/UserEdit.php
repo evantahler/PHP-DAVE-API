@@ -21,20 +21,14 @@ if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 
 if ($ERROR == 100)
 {
-	// look up the user info
-	$UserData = array();
-	foreach($PARAMS as $param=>$val)
+	$AuthResp = AuthenticateUser();
+	if ($AuthResp !== true)
 	{
-		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+		$ERROR = $AuthResp;
 	}
-	
-	list($pass,$result) = _VIEW("users",$UserData);
-	if (!$pass){ $ERROR = $result; }
-}
-if ($ERROR == 100)
-{
-	if (count($result) == 1)
+	else
 	{
+		$UserData = only_table_columns($PARAMS, "users");
 		// convert supplied password to PasswordHash if set
 		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
 		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user

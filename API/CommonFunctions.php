@@ -189,6 +189,70 @@ function get_session_data($SessionKey)
 	}
 }
 
+function only_table_columns($DATA, $Table)
+{
+	$CleanData = array();
+	foreach($DATA as $param=>$val)
+	{
+		if(in_array($param,_getAllTableCols($Table))) { $CleanData[$param] = $val ;}
+	}
+	return $CleanData;
+}
+
+function AuthenticateUser($DATA = null)
+{
+	// (UserID || ScreenName || EMail) + (Password || PasswordHash) || (Hash + Rand + UserID)
+	// Hash = md5(UserID.Password.Rand)
+	
+	global $PARAMS;
+	$OUT = false;
+	if ($DATA == null){$DATA = $PARAMS;}
+	
+	if (empty($DATA['UserID']) && empty($DATA['EMail']) && empty($DATA['ScreenName']))
+	{
+		$OUT = "Authentication: Provide either UserID, EMail, or ScreenName";
+	}
+	
+	list($msg, $ReturnedUsers) = _VIEW("users",array(
+		"UserID" => $DATA['UserID'],
+		"ScreenName" => $DATA['ScreenName'],
+		"EMail" => $DATA['EMail']
+	));
+	
+	if($msg != true)
+	{
+		$OUT = $ReturnedUsers;
+	}
+	else
+	{
+		if (count($ReturnedUsers) != 1)
+		{
+			$OUT = "Authentication: User not found";
+		}
+		elseif (!empty($DATA['Hash']))
+		{
+			if (empty($DATA['Rand'])){$OUT = "Authentication: Rand is required";}
+			else
+			{
+				$LocalHash = md5($ReturnedUsers[0]['UserID'].$ReturnedUsers[0]['Password'].$DATA['Rand']);
+				if ($DATA['Hash'] == $LocalHash){$OUT = true;}
+				else{$OUT = "Authentication: Hash does not match expected";}
+			}
+		}
+		elseif(!empty($DATA['Password']) || !empty($DATA['PasswordHash']))
+		{
+			if(empty($DATA['PasswordHash'])){$DATA['PasswordHash'] = md5($DATA['Password'].$ReturnedUsers[0]['Salt']);}
+			if ($DATA['PasswordHash'] == $ReturnedUsers[0]['PasswordHash']){$OUT = true;}
+			else{$OUT = "Authentication: Password or PasswordHash does not match";}
+		}
+		else
+		{
+			$OUT = "Authentication: Send either Hash [ md5(UserID.Password.Rand) ], Password, or PasswordHash ";
+		}
+	}
+	return $OUT;
+}
+
 function validate_EMail($EMail)
 {
 	if (preg_match("/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i",$EMail))
