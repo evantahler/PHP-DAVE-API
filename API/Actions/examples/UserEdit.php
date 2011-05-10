@@ -28,41 +28,34 @@ if ($ERROR == 100)
 	}
 	else
 	{
-		$UserData = only_table_columns($PARAMS, "users");
-		// convert supplied password to PasswordHash if set
-		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
-		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
+		list($msg, $ReturnedUsers) = _VIEW("users",array(
+			"UserID" => $PARAMS['UserID'],
+			"ScreenName" => $PARAMS['ScreenName'],
+			"EMail" => $PARAMS['EMail'],
+		));
+		if ($msg == false)
 		{
+			$ERROR = $ReturnedUsers;
+		}
+		elseif(count($ReturnedUsers) == 1)
+		{
+			$UserData = only_table_columns($PARAMS, "users");
+			$UserData["PasswordHash"] = $ReturnedUsers[0]["PasswordHash"]; // no change
 			if(strlen($PARAMS["NewPassword"]) > 0) // user is trying to change password
 			{
-				$NewPasswordHash = md5($UserData["NewPassword"].$result[0]['Salt']);
+				$UserData["PasswordHash"] = md5($PARAMS["NewPassword"].$ReturnedUsers[0]['Salt']);
 			}
-			else
+		
+			list($pass,$result) = _EDIT("users", $UserData);
+			if (!$pass){ $ERROR = $result; }
+			elseif (count($result) == 1)
 			{
-				$NewPasswordHash = $result[0]["PasswordHash"]; // no change
-			}
-			if (count($result) == 1)
-			{
-				$UserData["PasswordHash"] = $NewPasswordHash;
-				list($pass,$result) = _EDIT("users", $UserData);
-				if (!$pass){ $ERROR = $result; }
-				elseif (count($result) == 1)
+				foreach( $result[0] as $key => $val)
 				{
-					foreach( $result[0] as $key => $val)
-					{
-						$OUTPUT["User"][$key] = $val;
-					}
+					$OUTPUT["User"][$key] = $val;
 				}
 			}
 		}
-		else
-		{
-			$ERROR = "Passwords do not match or PasswordHash was not provided";
-		}
-	}
-	else
-	{
-		$ERROR = "That user is not found";
 	}
 }
 
