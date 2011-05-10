@@ -5,10 +5,12 @@ https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
 I initilize all the DB specific code, including the core DAVE functions.  I will create the $DBOBJ object.
+Use the included php RIAK driver for the RIAK restful API
 ***********************************************/
 
 $_driver_db_path = $CONFIG['App_dir']."DB/DRIVERS/".$CONFIG["DBType"]."/";
-require_once($_driver_db_path."/riak-php-client/riak.php");
+$_riak_path = "basho-riak-php-client-3cbfc90/";
+require_once($_driver_db_path.$_riak_path."riak.php");
 require_once($_driver_db_path."ConnectToDatabase.php");
 require_once($_driver_db_path."DirectDBFunctions.php");
 
@@ -19,10 +21,10 @@ if (class_exists("DBConnection")) {
 	$Status = $DBOBJ->GetStatus();
 	if ($Status === true)
 	{
-		$Riak = $DBOBJ->GetConnection();
-		$RiakBucket = $DBOBJ->GetBucket();
+		$Connection = $DBOBJ->GetConnection();
 		// require_once($_driver_db_path."TableConfig.php");
-		// require_once($_driver_db_path."DAVE.php");
+		require_once($CONFIG['TableConfigFile']);
+		require_once($_driver_db_path."DAVE.php");
 	}
 	else
 	{

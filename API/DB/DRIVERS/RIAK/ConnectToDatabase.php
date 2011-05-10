@@ -5,7 +5,7 @@ DAVE PHP API
 https://github.com/evantahler/PHP-DAVE-API
 Evan Tahler | 2011
 
-I am the Riak connection class. 
+I am the RIAK connection class.  To create a simmilar class for other DB types, please note the functions that that DBConnection class should contain and thier implamentation:
 
 - __construct(): 
   - Can be passsed an additional $DB than the default.  
@@ -13,12 +13,8 @@ I am the Riak connection class.
   - Returns false on failure, logs error to $This->Status
 - riak_log(): Will log "queries" to file
 - CheckForSpecialStrings(): Will inspect queries for special strings ($CONFIG['SpecialStrings']) and replace.  This is to fix situations where user might post "0" as input, etc
-
-- GetLastInsert(): returns the auto incramanet ID of the row added
-- NumRowsEffected(): returns a count of the rows effected by the "Edit" command
 - GetConnection(): returns the connction object if applicable 
 - GetStatus(): returns the last status message
-- GetResults(): returns the result of the last query()
 - close(): closes the DB connection
 
 //////////////
@@ -46,36 +42,40 @@ use the GetLastInsert() function to get the deatils of an entry you just added.
 
 class DBConnection
 {
-	protected $Connection, $Status, $OUT, $DataBase, $Bucket;
+	protected $Connection, $Status, $OUT, $DataBase, $BaseURL, $Port;
 	
 	public function __construct($OtherDB = "")
 	{
 		global $CONFIG;
 		$this->Status = true;
 		
-		if ($OtherDB != "") { $this->DataBase = $OtherDB ; } 
-		else { $this->DataBase = $CONFIG['DB']; }
-		
-		$url_parts = explode(":",$CONFIG['dbhost']);
-		if(!is_int($url_parts[1])){$url_parts[1] = 8098;}
-		$this->Connection = new RiakClient($url_parts[0], $url_parts[1]);
-		
-		if(!empty($this->Connection))
+		if ($OtherDB != "") { $DataBase = $this->DataBase = $OtherDB ; } 
+		else { $DataBase = $this->DataBase = $CONFIG['DB']; }
+		$tmp = explode(":",$this->DataBase);
+		if (count($tmp) == 2)
 		{
-			$this->Bucket = $this->Connection->bucket($this->DataBase);
-			if (!empty($this->Bucket))
-			{
-				return true;
-			}
-			else
-			{
-				$this->Status = "Bucket Selection Error (riak)";
-				return false;
-			}
+			$this->BaseURL = $tmp[0];
+			$this->Port = $tmp[1];
+		}
+		elseif(count($tmp) == 1)
+		{
+			$this->BaseURL = $this->DataBase;
+			$this->Port = 8098;
 		}
 		else
 		{
-			$this->Status = "Connection Error (riak) | Connection Access or permission error";
+			$this->Status = "URL definition error.  Use host:port";
+		}
+		
+		$this->Connection = new RiakClient($this->BaseURL, $this->Port);
+		
+		if(!empty($this->Connection))
+		{
+			return true;
+		}
+		else
+		{
+			$this->Status = "Connection Error (Riak) | Connection Access or permission error";
 			return false;
 		}		
 	}
@@ -102,7 +102,6 @@ class DBConnection
 	private function CheckForSpecialStrings($string)
 	{	
 		global $CONFIG;
-		
 		foreach ($CONFIG['SpecialStrings'] as $term)
 		{
 			$string = str_replace($term[0],$term[1],$string);
@@ -111,24 +110,9 @@ class DBConnection
 		return $string;
 	}
 	
-	public function GetLastInsert()
-	{
-
-	}
-	
-	public function NumRowsEffected()
-	{
-
-	}
-	
 	public function GetConnection()
 	{
 		return $this->Connection;
-	}
-	
-	public function GetBucket()
-	{
-		return $this->Bucket;
 	}
 	
 	public function GetStatus()
@@ -136,15 +120,11 @@ class DBConnection
 		return $this->Status;
 	}
 	
-	public function GetResults()
-	{
-
-	}
-	
 	public function close()
 	{
+		// @mysql_close($this->Connection);
 		unset($this->Connection);
-		$this->Status = "Disconnected. (riak)";
+		$this->Status = "Disconnected. (Mongo)";
 	}
 }
 
