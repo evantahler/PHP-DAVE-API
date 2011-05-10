@@ -10,39 +10,31 @@ I contain example useage of the session functions
 ***********************************************/
 if ($ERROR == 100)
 {
-	$SourceUserData = array();
-	foreach($PARAMS as $param=>$val)
+	$AuthResp = AuthenticateUser();
+	if ($AuthResp !== true)
 	{
-		if(in_array($param,_getAllTableCols("users"))) { $SourceUserData[$param] = $val ;}
+		$ERROR = $AuthResp;
+		$OUTPUT['LOGIN'] = "FALSE";
 	}
-	list($pass,$result) = _VIEW("users",$SourceUserData);
-	if (!$pass){ $ERROR = $result; }
-}
-
-if ($ERROR == 100)
-{
-	if (strlen($PARAMS["Password"]) > 0)
+	else
 	{
-		$PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']);
-	}
-	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash'] && count($result) == 1) // THIS user
-	{
+		list($msg, $ReturnedUsers) = _VIEW("users",array(
+			"UserID" => $PARAMS['UserID'],
+			"ScreenName" => $PARAMS['ScreenName'],
+			"EMail" => $PARAMS['EMail'],
+		));
+		
 		$OUTPUT['LOGIN'] = "TRUE";
 		$OUTPUT['SessionKey'] = create_session();
 		$SessionData = array();
 		$SessionData["login_time"] = time();
-		$userData = $result[0];
+		$userData = $ReturnedUsers[0];
 		foreach ($userData as $k => $v)
 		{
 			$SessionData[$k] = $v;
 		}
 		update_session($OUTPUT['SessionKey'], $SessionData);
 		$OUTPUT['SESSION'] = get_session_data($OUTPUT['SessionKey']);
-	}
-	else // another user
-	{
-		$OUTPUT['LOGIN'] = "FALSE";
-		$ERROR = "Password MissMatch or user not found";
 	}
 }
 

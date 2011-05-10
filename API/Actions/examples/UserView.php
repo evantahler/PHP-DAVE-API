@@ -8,45 +8,44 @@ I am an example function to view a user.
 If "this" user is viewing (indicated by propper password hash along with another key, all data is shown), otherwise, just basic info is returned
 ***********************************************/
 if ($ERROR == 100)
-{
-	foreach($PARAMS as $param=>$val)
+{	
+	list($msg, $ReturnedUsers) = _VIEW("users",array(
+		"UserID" => $PARAMS['UserID'],
+		"ScreenName" => $PARAMS['ScreenName'],
+		"EMail" => $PARAMS['EMail'],
+	));
+	if ($msg == false)
 	{
-		if(in_array($param,_getAllTableCols("users"))) { $UserData[$param] = $val ;}
+		$ERROR = $ReturnedUsers;
 	}
-	
-	list($pass,$result) = _VIEW("users",$UserData);
-	if (!$pass){ $ERROR = $result; }
-}
-
-if ($ERROR == 100)
-{
-	// convert supplied password to PasswordHash if set
-	if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
-	
-	if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
+	elseif(count($ReturnedUsers) == 1)
 	{
-		if (count($result) == 1)
+		if(!empty($PARAMS["PasswordHash"]) || !empty($PARAMS["Password"]))
 		{
 			$OUTPUT["User"]['InformationType'] = "Private";
-			foreach( $result[0] as $key => $val)
+			$AuthResp = AuthenticateUser();
+			if ($AuthResp !== true)
 			{
-				$OUTPUT["User"][$key] = $val;
+				$ERROR = $AuthResp;
+			}
+			else
+			{
+				foreach( $ReturnedUsers[0] as $key => $val)
+				{
+					$OUTPUT["User"][$key] = $val;
+				}
 			}
 		}
-		else
+		else // Public Data Request
 		{
-			$ERROR = "That User cannot be found";
+			$OUTPUT["User"]['InformationType'] = "Public";
+			$OUTPUT["User"]['ScreenName'] = $ReturnedUsers[0]['ScreenName'];
+			$OUTPUT["User"]['Joined'] = $ReturnedUsers[0]['Joined'];
 		}
 	}
-	elseif(!empty($PARAMS["Password"]) || !empty($PARAMS["PasswordHash"]))
+	else
 	{
-		$ERROR = "Passwords do not match or PasswordHash was not provided";
-	}
-	else // Public Data Request
-	{
-		$OUTPUT["User"]['InformationType'] = "Public";
-		$OUTPUT["User"]['ScreenName'] = $result[0]['ScreenName'];
-		$OUTPUT["User"]['Joined'] = $result[0]['Joined'];
+		$ERROR = "User cannot be found";
 	}
 }
 
