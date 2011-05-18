@@ -89,7 +89,7 @@ CREATE TABLE `users` (
   `PhoneNumber` varchar(32) DEFAULT NULL,
   `Gender` text,
   `ScreenName` varchar(32) NOT NULL,
-  `EMail` varchar(32) NOT NULL,
+  `EMail` varchar(255) NOT NULL,
   `Birthday` date DEFAULT NULL,
   `PasswordHash` varchar(32) NOT NULL,
   `Salt` varchar(32) NOT NULL,
