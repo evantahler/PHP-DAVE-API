@@ -203,14 +203,15 @@ function AuthenticateUser($DATA = null)
 {
 	// (UserID || ScreenName || EMail) + (Password || PasswordHash) || (Hash + Rand + UserID)
 	// Hash = md5(UserID.Password.Rand)
+	// returns arrray(status, note || user_details)
 	
 	global $PARAMS;
-	$OUT = false;
+	$OUT = array(false, "");
 	if ($DATA == null){$DATA = $PARAMS;}
 	
 	if (empty($DATA['UserID']) && empty($DATA['EMail']) && empty($DATA['ScreenName']))
 	{
-		$OUT = "Authentication: Provide either UserID, EMail, or ScreenName";
+		$OUT[1] = "Authentication: Provide either UserID, EMail, or ScreenName";
 	}
 	
 	list($msg, $ReturnedUsers) = _VIEW("users",array(
@@ -221,33 +222,33 @@ function AuthenticateUser($DATA = null)
 	
 	if($msg != true)
 	{
-		$OUT = $ReturnedUsers;
+		$OUT[1] = "Authentication: ".$ReturnedUsers;
 	}
 	else
 	{
 		if (count($ReturnedUsers) != 1)
 		{
-			$OUT = "Authentication: User not found";
+			$OUT[1] = "Authentication: User not found";
 		}
 		elseif (!empty($DATA['Hash']))
 		{
-			if (empty($DATA['Rand'])){$OUT = "Authentication: Rand is required";}
+			if (empty($DATA['Rand'])){$OUT[1] = "Authentication: Rand is required";}
 			else
 			{
 				$LocalHash = md5($ReturnedUsers[0]['UserID'].$ReturnedUsers[0]['Password'].$DATA['Rand']);
 				if ($DATA['Hash'] == $LocalHash){$OUT = true;}
-				else{$OUT = "Authentication: Hash does not match expected";}
+				else{$OUT[1] = "Authentication: Hash does not match expected";}
 			}
 		}
 		elseif(!empty($DATA['Password']) || !empty($DATA['PasswordHash']))
 		{
 			if(empty($DATA['PasswordHash'])){$DATA['PasswordHash'] = md5($DATA['Password'].$ReturnedUsers[0]['Salt']);}
-			if ($DATA['PasswordHash'] == $ReturnedUsers[0]['PasswordHash']){$OUT = true;}
-			else{$OUT = "Authentication: Password or PasswordHash does not match";}
+			if ($DATA['PasswordHash'] == $ReturnedUsers[0]['PasswordHash']){$OUT[0] = true; $OUT[1] = $ReturnedUsers[0];}
+			else{$OUT[1] = "Authentication: Password or PasswordHash does not match";}
 		}
 		else
 		{
-			$OUT = "Authentication: Send either Hash [ md5(UserID.Password.Rand) ], Password, or PasswordHash ";
+			$OUT[1] = "Authentication: Send either Hash [ md5(UserID.Password.Rand) ], Password, or PasswordHash ";
 		}
 	}
 	return $OUT;

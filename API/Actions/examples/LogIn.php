@@ -11,18 +11,14 @@ I contain example useage of the session functions
 if ($ERROR == 100)
 {
 	$AuthResp = AuthenticateUser();
-	if ($AuthResp !== true)
+	if ($AuthResp[0] !== true)
 	{
-		$ERROR = $AuthResp;
+		$ERROR = $AuthResp[1];
 		$OUTPUT['LOGIN'] = "FALSE";
 	}
 	else
 	{
-		list($msg, $ReturnedUsers) = _VIEW("users",array(
-			"UserID" => $PARAMS['UserID'],
-			"ScreenName" => $PARAMS['ScreenName'],
-			"EMail" => $PARAMS['EMail'],
-		));
+		$ReturnedUsers = $AuthResp[1];
 		
 		$OUTPUT['LOGIN'] = "TRUE";
 		$OUTPUT['SessionKey'] = create_session();

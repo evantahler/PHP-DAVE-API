@@ -9,9 +9,9 @@ I am an example function to Delete a user
 if ($ERROR == 100)
 {
 	$AuthResp = AuthenticateUser();
-	if ($AuthResp !== true)
+	if ($AuthResp[0] !== true)
 	{
-		$ERROR = $AuthResp;
+		$ERROR = $AuthResp[1];
 	}
 	else
 	{

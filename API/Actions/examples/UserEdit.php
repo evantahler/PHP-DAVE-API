@@ -22,9 +22,9 @@ if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 if ($ERROR == 100)
 {
 	$AuthResp = AuthenticateUser();
-	if ($AuthResp !== true)
+	if ($AuthResp[0] !== true)
 	{
-		$ERROR = $AuthResp;
+		$ERROR = $AuthResp[1];
 	}
 	else
 	{

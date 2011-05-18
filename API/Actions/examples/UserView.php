@@ -24,9 +24,9 @@ if ($ERROR == 100)
 		{
 			$OUTPUT["User"]['InformationType'] = "Private";
 			$AuthResp = AuthenticateUser();
-			if ($AuthResp !== true)
+			if ($AuthResp[0] !== true)
 			{
-				$ERROR = $AuthResp;
+				$ERROR = $AuthResp[1];
 			}
 			else
 			{
