@@ -1,48 +1,18 @@
--- phpMyAdmin SQL Dump
--- version 3.2.0.1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Jul 06, 2010 at 04:04 PM
--- Server version: 5.1.37
--- PHP Version: 5.3.0
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
+delimiter $$
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Database: `API`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `CACHE`
---
-
-CREATE TABLE IF NOT EXISTS `cache` (
-  `Key` text NOT NULL,
+CREATE TABLE `cache` (
+  `Key` varchar(255) NOT NULL,
   `Value` text NOT NULL,
-  `ExpireTime` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `ExpireTime` int(11) NOT NULL,
+  KEY `Key` (`Key`),
+  KEY `ExpireTime` (`ExpireTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
---
--- Dumping data for table `CACHE`
---
+delimiter $$
 
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Developers`
---
-
-CREATE TABLE IF NOT EXISTS `developers` (
+CREATE TABLE `developers` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `DeveloperID` varchar(32) NOT NULL,
   `APIKey` varchar(32) NOT NULL,
@@ -51,47 +21,39 @@ CREATE TABLE IF NOT EXISTS `developers` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `DeveloperID` (`DeveloperID`),
   UNIQUE KEY `APIKey` (`APIKey`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
---
--- Dumping data for table `Developers`
---
+delimiter $$
 
-
--- --------------------------------------------------------
-
---
--- Table structure for table `LOG`
---
-
-CREATE TABLE IF NOT EXISTS `log` (
+CREATE TABLE `log` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `IP` text NOT NULL,
+  `IP` varchar(255) NOT NULL,
   `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Action` text NOT NULL,
-  `ERROR` text NOT NULL,
-  `APIKey` text NOT NULL,
-  `DeveloperID` text NOT NULL,
+  `Action` varchar(255) NOT NULL,
+  `ERROR` varchar(255) NOT NULL,
+  `APIKey` varchar(32) NOT NULL,
+  `DeveloperID` varchar(32) NOT NULL,
   `Params` text NOT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`ID`),
+  KEY `IP` (`IP`),
+  KEY `TimeStamp` (`TimeStamp`),
+  KEY `Action` (`Action`),
+  KEY `Error` (`ERROR`),
+  KEY `APIKey` (`APIKey`),
+  KEY `DeveloperID` (`DeveloperID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
---
--- Dumping data for table `LOG`
---
+delimiter $$
 
+CREATE TABLE `sessions` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `KEY` varchar(128) NOT NULL,
+  `DATA` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `KEY` (`KEY`),
+  KEY `created_at` (`created_at`),
+  KEY `updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
---
--- Table structure for table `SESSIONS`
---
-
-CREATE TABLE  `sessions` (
-`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`KEY` VARCHAR( 128 ) NOT NULL ,
-`DATA` TEXT NOT NULL ,
-`created_at` DATETIME NOT NULL ,
-`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-UNIQUE (
-`KEY`
-)
-) ENGINE = InnoDB ;
