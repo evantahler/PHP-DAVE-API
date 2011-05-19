@@ -422,6 +422,10 @@ function _DELETE($Table, $VARS = null)
 				{
 					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
 				}
+                                elseif($results[0]['COUNT(1)'] < 1)
+				{
+					return array(false,"The row specified for deletion cannot be found.");
+				}
 			}
 			else{ return array(false,"The item you are requesting to delete is not found"); }
 			
