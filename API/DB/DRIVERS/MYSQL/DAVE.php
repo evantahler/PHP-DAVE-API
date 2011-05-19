@@ -382,6 +382,7 @@ function _DELETE($Table, $VARS = null)
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
+                $AllTableVars = _getAllTableCols($Table);
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
 		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
@@ -389,7 +390,7 @@ function _DELETE($Table, $VARS = null)
 		{
 			foreach($VARS as $var => $val)
 			{ 
-				if (in_array($var, $UniqueVars) && strlen($val) > 0)
+				if (in_array($var, $AllTableVars) && strlen($val) > 0)
 				{
 					if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
 					$SQL .= ' `'.$var.'` = "'.$val.'" ';
