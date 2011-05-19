@@ -14,7 +14,7 @@ EXAMPLE USE:
 	);
 
 	$API_URL = "127.0.0.1/API/"; // local host
-	$APIRequest = new APIRequest($IP, $API_URL, $PostArray);
+	$APIRequest = new APIRequest($API_URL, $PostArray, $IP);
 	$APIDATA = $APIRequest->DoRequest();
 	if ($APIDATA != false)
 	{
