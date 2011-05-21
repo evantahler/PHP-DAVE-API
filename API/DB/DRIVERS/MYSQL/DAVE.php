@@ -371,6 +371,75 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 
 /*
 Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  VARS should include a key/value pair which includes either the primary key for the DB or one of the unique cols for the table.  If unspecified, $PARAMS is used by default)
+Settins is an array that can contain:
+- $Settings["join"]: Join statement (first "JOIN" is added automatically).
+- $Settings["where_additions"]: Specific where statement.  Example: Birtday = "1984-08-27"
+
+*/
+function _COUNT($Table, $VARS = null, $Settings = null)
+{
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
+	if ($VARS == null){$VARS = $PARAMS;}
+	
+	// Additonal _VIEW Options and Configurations
+	if ($Settings == null){ $Settings = array(); }
+	$join = $Settings["join"];
+	$where_additions = $Settings["where_additions"];
+		
+	if(_tableCheck($Table))
+	{
+		$AllTableVars = _getAllTableCols($Table);
+		
+		$SQL = "SELECT COUNT(1) as 'count' FROM ".$Table." ";
+		if ($join != null)
+		{
+			$SQL .= " JOIN ".$join." ";
+		}
+		$SQL .= " WHERE (";
+		$NeedAnd = false;
+		foreach($VARS as $var => $val)
+		{ 
+			if (in_array($var, $AllTableVars) && strlen($val) > 0)
+			{
+				if ($NeedAnd) { $SQL .= " AND "; } 
+				$SQL .= ' `'.$var.'` = "'.$val.'" ';
+				$NeedAnd = true;
+			}
+		}
+		if ($where_additions != null)
+		{
+			if ($NeedAnd) { $SQL .= " AND "; } 
+			$SQL .= " ".$where_additions." ";
+            $NeedAnd = true;
+		}
+		elseif ($NeedAnd == false)
+		{
+			$SQL .= " true ";
+		}
+		$SQL .= " ) ";
+		//
+		$Status = $DBOBJ->GetStatus();
+		if ($Status === true)
+		{
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
+			$results = $DBOBJ->GetResults();
+			if ($Status === true){ return array(true, $results[0]['count']); }
+			else{ return array(false,$Status); }
+		}
+		else { return array(false,$Status); } 
+	}
+	else
+	{
+		return array(false,"This table cannot be found");
+	}
+}
+
+/***********************************************/
+
+/*
+Table should be defned in $TABLES
 $VARS will be the params of the row to be added.  If unspecified, $PARAMS is used by default)
 */
 function _DELETE($Table, $VARS = null)
