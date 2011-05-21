@@ -238,9 +238,14 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		}
 		return array(false,$msg);
 	}
-	if ($UpperLimit < $LowerLimit) { $ERROR = "UpperLimit must be greater than LowerLimit"; }
-	if ($LowerLimit == "") {$LowerLimit = 0; }
-	if ($UpperLimit == "") {$UpperLimit = 100; }
+	if ($UpperLimit < $LowerLimit) { return array(false,"UpperLimit must be greater than LowerLimit"); }
+        $limit = null;
+        $skip = null;
+        if ($UpperLimit != "" && $LowerLimit != "")
+        {
+            $skip = (int)$LowerLimit;  
+            $limit = (int)$UpperLimit - (int)$LowerLimit;
+        }
 	//
 	$Status = $DBOBJ->GetStatus();
 	if ($Status === true)
@@ -248,7 +253,7 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		$MongoDB = $DBOBJ->GetMongoDB();
 		$Collection = $MongoDB->$Table;
 		
-		$cursor = $Collection->find($attrs)->limit($UpperLimit - $LowerLimit);
+		$cursor = $Collection->find($attrs)->skip($skip)->limit($limit);
 		$results = array();
 		foreach($cursor as $obj)
 		{
