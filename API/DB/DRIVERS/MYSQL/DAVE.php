@@ -346,9 +346,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		{
 			$SQL .= $sort;
 		}
-		if ($UpperLimit < $LowerLimit) { $ERROR = "UpperLimit must be greater than LowerLimit"; }
-		if ($LowerLimit == "") {$LowerLimit = 0; }
-		if ($UpperLimit == "") {$UpperLimit = 100; }
+		if ($UpperLimit < $LowerLimit) { return array(false,"UpperLimit must be greater than LowerLimit"); }
+		elseif ($LowerLimit != "" && $UpperLimit != "") { $SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." "; }
 		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
 		//
 		$Status = $DBOBJ->GetStatus();
