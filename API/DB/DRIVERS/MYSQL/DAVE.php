@@ -283,8 +283,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$LowerLimit = $Settings["LowerLimit"];
 	$SQL_Override = $Settings["SQL_Override"];
 	
-	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
-	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
+	if ($UpperLimit === ""){$UpperLimit = $PARAMS["UpperLimit"];}
+	if ($LowerLimit === ""){$LowerLimit = $PARAMS["LowerLimit"];}
 		
 	if(_tableCheck($Table))
 	{
@@ -347,8 +347,7 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 			$SQL .= $sort;
 		}
 		if ($UpperLimit < $LowerLimit) { return array(false,"UpperLimit must be greater than LowerLimit"); }
-		elseif ($LowerLimit != "" && $UpperLimit != "") { $SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." "; }
-		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
+		elseif ($LowerLimit !== "" && $UpperLimit !== "" && $LowerLimit != $UpperLimit) { $SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." "; }
 		//
 		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
@@ -450,7 +449,7 @@ function _DELETE($Table, $VARS = null)
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
-                $AllTableVars = _getAllTableCols($Table);
+		$AllTableVars = _getAllTableCols($Table);
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
 		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
@@ -491,7 +490,7 @@ function _DELETE($Table, $VARS = null)
 				{
 					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
 				}
-                                elseif($results[0]['COUNT(1)'] < 1)
+				elseif($results[0]['COUNT(1)'] < 1)
 				{
 					return array(false,"The row specified for deletion cannot be found.");
 				}
