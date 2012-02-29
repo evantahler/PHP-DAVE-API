@@ -18,13 +18,13 @@ if ($ERROR == 100)
 	}
 	else
 	{
-		$ReturnedUsers = $AuthResp[1];
+		$ReturnedUser = $AuthResp[1];
 		
 		$OUTPUT['LOGIN'] = "TRUE";
 		$OUTPUT['SessionKey'] = create_session();
 		$SessionData = array();
 		$SessionData["login_time"] = time();
-		$userData = $ReturnedUsers[0];
+		$userData = $ReturnedUser;
 		foreach ($userData as $k => $v)
 		{
 			$SessionData[$k] = $v;
