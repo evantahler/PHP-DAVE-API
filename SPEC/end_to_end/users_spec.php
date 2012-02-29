@@ -118,7 +118,7 @@ $T->context("Deleted users should not be found");
 	);
 
 	$APIDATA = $T->api_request($PostArray);
-	$T->assert("==",$APIDATA["ERROR"],"That User cannot be found");
+	$T->assert("==",$APIDATA["ERROR"],"User cannot be found");
 
 $T->end();
 ?>

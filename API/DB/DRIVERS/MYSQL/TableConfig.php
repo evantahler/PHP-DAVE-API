@@ -96,19 +96,12 @@ if ($ToReloadTables)
 	}
 	$TableStringOutput .= "// END \r\n";
 	$TableStringOutput .= "?>";
-	
-	if (is_dir($CONFIG['App_dir']))
-	{
-		$fh = fopen($CONFIG['TableConfigFile'], 'w');
-		fwrite($fh, $TableStringOutput);
-		fclose($fh);
-		chmod($CONFIG['TableConfigFile'],0777);
-	}
-	else
-	{
-		$ERROR = "CONFIGURATION ERROR: ".$CONFIG['App_dir']." doesn't seem to be a directory.  Please check your CONFIG.";
-	}
-	
+
+	$fh = fopen($CONFIG['TableConfigFile'], 'w');
+	fwrite($fh, $TableStringOutput);
+	fclose($fh);
+	chmod($CONFIG['TableConfigFile'],0777);
+
 	unset($TABLES["TableBuildTime"]);
 }
 else

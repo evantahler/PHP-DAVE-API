@@ -22,6 +22,18 @@ if ($ERROR == 100 && strlen($PARAMS["PhoneNumber"]) > 0)
 if ($ERROR == 100)
 {
 	$AuthResp = AuthenticateUser();
+<<<<<<< HEAD
+	if ($AuthResp !== true)
+	{
+		$ERROR = $AuthResp;
+	}
+	else
+	{
+		$UserData = only_table_columns($PARAMS, "users");
+		// convert supplied password to PasswordHash if set
+		if (!empty($PARAMS["Password"])){ $PARAMS["PasswordHash"] = md5($PARAMS["Password"].$result[0]['Salt']); }
+		if ($PARAMS["PasswordHash"] == $result[0]['PasswordHash']) // THIS user
+=======
 	if ($AuthResp[0] !== true)
 	{
 		$ERROR = $AuthResp[1];
@@ -34,6 +46,7 @@ if ($ERROR == 100)
 			"EMail" => $PARAMS['EMail'],
 		));
 		if ($msg == false)
+>>>>>>> master
 		{
 			$ERROR = $ReturnedUsers;
 		}

@@ -26,7 +26,7 @@ There are certain required global functions for DAVE that are very related to th
 /*
 I querey the LOG table within the database for a given $IP and lookup how many requests they have made so far within this timeframe
 
-$SQL = 'SELECT COUNT(*) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
+$SQL = 'SELECT COUNT(1) as "total" FROM `'.$CONFIG['LOG_DB'].'`.`'.$CONFIG['LogTable'].'` WHERE (`IP` = "'.$IP.'" AND `TimeStamp` > "'.date('Y-m-d H:i:s',time()-(60*60)).'") ;';
 */
 function _GetAPIRequestsCount()
 {

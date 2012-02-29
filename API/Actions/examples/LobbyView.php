@@ -8,7 +8,7 @@ I will list lobbies
 ***********************************************/
 if ($ERROR == 100)
 {
-	$resp = _VIEW("lobbies",null,array("SQL_Override" => true, "sort" => "ORDER BY TimeStamp DESC", "UpperLimit" => 10));
+	$resp = _VIEW("lobbies",null,array("SQL_Override" => true, "sort" => "ORDER BY TimeStamp DESC"));
 	if ($resp[0] == false){$ERROR = $resp[1];}
 	else
 	{

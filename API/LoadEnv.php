@@ -24,7 +24,7 @@ if (file_exists("CONFIG.php"))
 	
 	date_default_timezone_set($CONFIG['SystemTimeZone']);
 	
-	if(!file_exists("DB/SCHEMA.php"))
+	if(!file_exists($CONFIG['App_dir']."DB/SCHEMA.php"))
 	{
 		echo "The Database Schema (DB/SCHEMA.php) cannot be found.  If you are using a non-relational DB, you probably need to create it manually\r\n"; 
 		exit;

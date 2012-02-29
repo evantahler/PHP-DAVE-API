@@ -283,8 +283,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 	$LowerLimit = $Settings["LowerLimit"];
 	$SQL_Override = $Settings["SQL_Override"];
 	
-	if ($UpperLimit == ""){$UpperLimit = $PARAMS["UpperLimit"];}
-	if ($LowerLimit == ""){$LowerLimit = $PARAMS["LowerLimit"];}
+	if ($UpperLimit === ""){$UpperLimit = $PARAMS["UpperLimit"];}
+	if ($LowerLimit === ""){$LowerLimit = $PARAMS["LowerLimit"];}
 		
 	if(_tableCheck($Table))
 	{
@@ -346,10 +346,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		{
 			$SQL .= $sort;
 		}
-		if ($UpperLimit < $LowerLimit) { $ERROR = "UpperLimit must be greater than LowerLimit"; }
-		if ($LowerLimit == "") {$LowerLimit = 0; }
-		if ($UpperLimit == "") {$UpperLimit = 100; }
-		$SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." ";
+		if ($UpperLimit < $LowerLimit) { return array(false,"UpperLimit must be greater than LowerLimit"); }
+		elseif ($LowerLimit !== "" && $UpperLimit !== "" && $LowerLimit != $UpperLimit) { $SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." "; }
 		//
 		$Status = $DBOBJ->GetStatus();
 		if ($Status === true)
@@ -357,6 +355,75 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 			$DBOBJ->Query($SQL);
 			$Status = $DBOBJ->GetStatus();
 			if ($Status === true){ return array(true, $DBOBJ->GetResults()); }
+			else{ return array(false,$Status); }
+		}
+		else { return array(false,$Status); } 
+	}
+	else
+	{
+		return array(false,"This table cannot be found");
+	}
+}
+
+/***********************************************/
+
+/*
+Table should be defned in $TABLES
+$VARS will be the params of the row to be added.  VARS should include a key/value pair which includes either the primary key for the DB or one of the unique cols for the table.  If unspecified, $PARAMS is used by default)
+Settins is an array that can contain:
+- $Settings["join"]: Join statement (first "JOIN" is added automatically).
+- $Settings["where_additions"]: Specific where statement.  Example: Birtday = "1984-08-27"
+
+*/
+function _COUNT($Table, $VARS = null, $Settings = null)
+{
+	Global $TABLES, $DBOBJ, $Connection, $PARAMS; 
+	if ($VARS == null){$VARS = $PARAMS;}
+	
+	// Additonal _VIEW Options and Configurations
+	if ($Settings == null){ $Settings = array(); }
+	$join = $Settings["join"];
+	$where_additions = $Settings["where_additions"];
+		
+	if(_tableCheck($Table))
+	{
+		$AllTableVars = _getAllTableCols($Table);
+		
+		$SQL = "SELECT COUNT(1) as 'count' FROM ".$Table." ";
+		if ($join != null)
+		{
+			$SQL .= " JOIN ".$join." ";
+		}
+		$SQL .= " WHERE (";
+		$NeedAnd = false;
+		foreach($VARS as $var => $val)
+		{ 
+			if (in_array($var, $AllTableVars) && strlen($val) > 0)
+			{
+				if ($NeedAnd) { $SQL .= " AND "; } 
+				$SQL .= ' `'.$var.'` = "'.$val.'" ';
+				$NeedAnd = true;
+			}
+		}
+		if ($where_additions != null)
+		{
+			if ($NeedAnd) { $SQL .= " AND "; } 
+			$SQL .= " ".$where_additions." ";
+            $NeedAnd = true;
+		}
+		elseif ($NeedAnd == false)
+		{
+			$SQL .= " true ";
+		}
+		$SQL .= " ) ";
+		//
+		$Status = $DBOBJ->GetStatus();
+		if ($Status === true)
+		{
+			$DBOBJ->Query($SQL);
+			$Status = $DBOBJ->GetStatus();
+			$results = $DBOBJ->GetResults();
+			if ($Status === true){ return array(true, $results[0]['count']); }
 			else{ return array(false,$Status); }
 		}
 		else { return array(false,$Status); } 
@@ -382,6 +449,7 @@ function _DELETE($Table, $VARS = null)
 	if(_tableCheck($Table))
 	{
 		$UniqueVars = _getUniqueTableVars($Table);
+		$AllTableVars = _getAllTableCols($Table);
 		$SQL = "DELETE FROM `".$Table."` WHERE ( ";
 		$SQL2 = "SELECT COUNT(1) FROM `".$Table."` WHERE ( ";
 		$NeedAnd = false;
@@ -389,7 +457,7 @@ function _DELETE($Table, $VARS = null)
 		{
 			foreach($VARS as $var => $val)
 			{ 
-				if (in_array($var, $UniqueVars) && strlen($val) > 0)
+				if (in_array($var, $AllTableVars) && strlen($val) > 0)
 				{
 					if ($NeedAnd) { $SQL .= " AND "; $SQL2 .= " AND "; } 
 					$SQL .= ' `'.$var.'` = "'.$val.'" ';
@@ -421,6 +489,10 @@ function _DELETE($Table, $VARS = null)
 				if ($results[0]['COUNT(1)'] > 1)
 				{
 					return array(false,"More than one item matches these parameters.  Only one row can be deleted at a time.");
+				}
+				elseif($results[0]['COUNT(1)'] < 1)
+				{
+					return array(false,"The row specified for deletion cannot be found.");
 				}
 			}
 			else{ return array(false,"The item you are requesting to delete is not found"); }

@@ -9,9 +9,15 @@ I am an example function to Delete a user
 if ($ERROR == 100)
 {
 	$AuthResp = AuthenticateUser();
+<<<<<<< HEAD
+	if ($AuthResp !== true)
+	{
+		$ERROR = $AuthResp;
+=======
 	if ($AuthResp[0] !== true)
 	{
 		$ERROR = $AuthResp[1];
+>>>>>>> master
 	}
 	else
 	{
