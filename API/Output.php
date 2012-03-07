@@ -32,6 +32,7 @@ elseif ($PARAMS["OutputType"] == "XML")
 
 elseif ($PARAMS["OutputType"] == "JSON")
 {
+	header('content-type: application/json; charset=utf-8');
 	$JSON = json_encode($OUTPUT);
 	if (strlen($PARAMS['Callback']) > 0)
 	{
