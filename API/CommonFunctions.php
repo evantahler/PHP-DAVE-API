@@ -199,6 +199,24 @@ function only_table_columns($DATA, $Table)
 	return $CleanData;
 }
 
+function SessionAutenticate($DATA = null){
+	global $PARAMS;
+	if ($DATA == null){$DATA = $PARAMS;}
+	
+	if($DATA["KEY"]==null){
+		return "KEY is required for this action";
+	}else{
+		list($msg, $ReturnedUsers) = _VIEW("sessions",array(
+			"KEY" => $DATA['KEY'],
+		));
+	}
+	if($msg != true || count($ReturnedUsers) != 1){
+		return "KEY not found";
+	}else{
+		return true;
+	}
+}
+
 function AuthenticateUser($DATA = null)
 {
 	// (UserID || ScreenName || EMail) + (Password || PasswordHash) || (Hash + Rand + UserID)
