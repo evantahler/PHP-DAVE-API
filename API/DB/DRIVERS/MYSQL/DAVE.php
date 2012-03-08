@@ -346,6 +346,8 @@ function _VIEW($Table, $VARS = null, $Settings = null )
 		{
 			$SQL .= $sort;
 		}
+		$UpperLimit = CheckForSpecialStrings($UpperLimit);
+		$LowerLimit = CheckForSpecialStrings($LowerLimit);
 		if ($UpperLimit < $LowerLimit) { return array(false,"UpperLimit must be greater than LowerLimit"); }
 		elseif ($LowerLimit !== "" && $UpperLimit !== "" && $LowerLimit != $UpperLimit) { $SQL .= " LIMIT ".$LowerLimit.",".($UpperLimit - $LowerLimit)." "; }
 		//
@@ -508,6 +510,21 @@ function _DELETE($Table, $VARS = null)
 	{
 		return array(false,"This table cannot be found");
 	}
+}
+
+/***********************************************/
+
+// helpers
+
+function CheckForSpecialStrings($string)
+{	
+	global $CONFIG;
+	foreach ($CONFIG['SpecialStrings'] as $term)
+	{
+		$string = str_replace($term[0],$term[1],$string);
+	}
+	$string = str_replace("  "," ",$string);
+	return $string;
 }
 
 ?>
