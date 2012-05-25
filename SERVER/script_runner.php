@@ -158,7 +158,8 @@ function _setcookie($name, $value = null, $expire = null, $path = null, $domain 
 }
 
 // send the empty buffer to force all header and cookie functions to fail
-ob_start();ob_end_flush(); 
+// TODO: this seems to break things on newer PHP versions
+// ob_start();ob_end_flush(); 
 
 // output buffer
 ob_start();
