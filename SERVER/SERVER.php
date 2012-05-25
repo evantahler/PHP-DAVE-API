@@ -183,10 +183,10 @@ ini_set( 'default_socket_timeout', (60*60)); // 60 min keep alive
 
 $site_index_page = "";
 if (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.php"; }
-elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.html"; }
-elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.htm"; }
-elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.jpg"; }
-elseif (file_exists($SERVER['root_path']."index.php")){ $site_index_page = "index.png"; }
+elseif (file_exists($SERVER['root_path']."index.html")){ $site_index_page = "index.html"; }
+elseif (file_exists($SERVER['root_path']."index.htm")){ $site_index_page = "index.htm"; }
+elseif (file_exists($SERVER['root_path']."index.jpg")){ $site_index_page = "index.jpg"; }
+elseif (file_exists($SERVER['root_path']."index.png")){ $site_index_page = "index.png"; }
 else{ $site_index_page = ""; }
 
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
