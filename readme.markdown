@@ -74,9 +74,9 @@ Actions you can try [[&Action=..]] which are included in the framework:
 * CookieTest: Will set cookies in your browser.  Use this to test SERVER's implementation of _setcookie()
 * SlowAction: A simple action that will sleep for a number of seconds.  Use this to test SERVER's non-blocking implementation by making a slow request, and then other requests to ensure that a slow request will not block other actions from processing.
 	
-Example Site: [hhttp://dave.evantahler.com/API/](http://dave.evantahler.com/API/)
+Example Site: [http://php-dave-api.phpfogapp.com/](http://php-dave-api.phpfogapp.com/)
 
-Or try the interactive API explorer here (html included in /examples): [http://dave.evantahler.com/examples/api_explorer.html](http://dave.evantahler.com/examples/api_explorer.html) 
+Or try the interactive API explorer here (html included in /examples): [http://php-dave-api.phpfogapp.com/examples/api_explorer.html](http://php-dave-api.phpfogapp.com/examples/api_explorer.html) 
 
 QuickStart
 ----------
