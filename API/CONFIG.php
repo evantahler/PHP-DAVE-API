@@ -19,6 +19,8 @@ RESERVERD VARIABLES THAT ARE SET BY THIS CONFIG FILE OR IN OTHER PARTS OF THE AP
 
 $CONFIG = array();
 
+// Note: phpfog may need special cache settings
+
 // working directory
 $path = substr(__FILE__,0,(strlen(__FILE__) - strlen("CONFIG.php")));
 chdir($path);
