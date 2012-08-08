@@ -17,7 +17,7 @@ RESERVERD VARIABLES THAT ARE SET BY THIS CONFIG FILE OR IN OTHER PARTS OF THE AP
 - $TABLES : The table description object
 ***********************************************/
 
-$CONFIG = array();
+$CONFIG = array(); 
 
 // Note: phpfog may need special cache settings
 
