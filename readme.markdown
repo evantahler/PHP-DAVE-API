@@ -1,5 +1,7 @@
 ** I am probably not going to do much more work on this framework.  However, many of the philosophies and syntax are used in the nodeJS successor to this project.  Check it out @ [https://github.com/evantahler/actionHero](https://github.com/evantahler/actionHero) **
 
+[![Endore Me](http://api.coderwall.com/evantahler/endorsecount.png)](http://coderwall.com/evantahler)
+
 Who is _DAVE_?
 ============
 
