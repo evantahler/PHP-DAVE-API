@@ -1,6 +1,10 @@
 <?php
-// FROM PHP.NET
-
+/**
+ * parseArgs Command Line Interface (CLI) utility function.
+ * @usage               $args = parseArgs($_SERVER['argv']);
+ * @author              Patrick Fisher <patrick@pwfisher.com>
+ * @source              https://github.com/pwfisher/CommandLine.php
+ */
 function __parseArgs(){
 	global $argv;
     array_shift($argv);
