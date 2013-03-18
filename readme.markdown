@@ -74,10 +74,7 @@ Actions you can try [[&Action=..]] which are included in the framework:
 * ObjectTest: An example of on-the-fly database object manipulation.  Check the code for this file to see how simple it is.
 * CookieTest: Will set cookies in your browser.  Use this to test SERVER's implementation of _setcookie()
 * SlowAction: A simple action that will sleep for a number of seconds.  Use this to test SERVER's non-blocking implementation by making a slow request, and then other requests to ensure that a slow request will not block other actions from processing.
-	
-Example Site: [http://php-dave-api.phpfogapp.com/](http://php-dave-api.phpfogapp.com/)
 
-Or try the interactive API explorer here (html included in /examples): [http://php-dave-api.phpfogapp.com/examples/api_explorer.html](http://php-dave-api.phpfogapp.com/examples/api_explorer.html) 
 
 QuickStart
 ----------
