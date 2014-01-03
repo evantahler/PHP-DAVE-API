@@ -1,6 +1,8 @@
 *I will not be doing more work on this framework.  However, many of the philosophies and syntax are used in the [nodeJS](http://nodejs.org) successor to this project.  Check it out @ [https://github.com/evantahler/actionHero](https://github.com/evantahler/actionHero)*
 *If you are interested in helping to maintain this project, please open an Issue or Pull Request, and let me know!*
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/evantahler/php-dave-api/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 Who is _DAVE_?
 ============
 
