@@ -1,4 +1,4 @@
-*I will not be doing more work on this framework.  However, many of the philosophies and syntax are used in the [nodeJS](http://nodejs.org) successor to this project.  Check it out @ [https://github.com/evantahler/actionHero](https://github.com/evantahler/actionHero)*
+*I will not be doing more work on this framework.  However, many of the philosophies and syntax are used in the [node.js](http://nodejs.org) successor to this project.  Check it out @ [https://github.com/evantahler/actionHero](https://github.com/evantahler/actionHero)*
 *If you are interested in helping to maintain this project, please open an Issue or Pull Request, and let me know!*
 
 Who is _DAVE_?
@@ -6,11 +6,11 @@ Who is _DAVE_?
 
 DAVE is a minimalist, multi-node, transactional API framework written in PHP
 
-Dave contains an end-to-end API test suite for TDD, a Task model, an Active Database Model, and a stand-alone development server ( PHP) to get you started.
+Dave contains an end-to-end API test suite for TDD, a Task model, an Active Database Model, and a stand-alone development server (written in PHP) to get you started.
 
-DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.  DAVE does the work for you, and he's not CRUD.  Dave was built to be both easy to use, but to be as simple as possible.  I was tired of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.  As applications grow and become more 'service oriented', this is the eventual route which many applications go.  I wanted to make is as simple as possible to create a new application with this mindset, and to allow for future flexibility.
+DAVE is an acronym that stands for Delete, Add, Edit, and View. These four methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.  DAVE does the work for you, and he's not CRUD.  Dave was built to be both easy to use, but to be as simple as possible.  I was tired of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.  As applications grow and become more 'service oriented', this is the eventual route which many applications go.  I wanted to make is as simple as possible to create a new application with this mindset, and to allow for future flexibility.
 
-The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action's" that handle the input, such as "AddUser" or "GeoLocate". The DAVE API is NOT "RESTful", in that it does not use the normal verbs (Get, Put, etc) and uses a single /path/. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in `/Actions/examples` to see the logic behind adding, editing, viewing, and deleting users. This includes log in.  Restful paths are optional if you really must have them, and be defined per Action.
+The DAVE API defines a single access point and accepts GET, POST, or COOKIE input. You define "Action's" that handle the input, such as "AddUser" or "GeoLocate". The DAVE API is NOT "RESTful", in that it does not use the normal verbs (Get, Put, etc) and uses a single /path/. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic user system included. Look in `/Actions/examples` to see the logic behind adding, editing, viewing, and deleting users. This includes log in.  RESTful paths are optional if you really must have them, and be defined per Action.
 
 The DAVE API understands 2 types of security methodology. "Public" actions can be called by anyone, and then can implement optional user-based security (checking userIDs and PasswordHashes?). Optionally, certain Actions can be defined as "Private", and will require a defined developer to authenticate with every request. This requires your developers to provide an MD5 hash of their APIKey and private DeveloperID to authenticate with. You can mix private and public actions.  Of course, you can make your own actions for this as well!
 
@@ -25,7 +25,7 @@ If you have ever asked these questions of other web-frameworks, then DAVE might 
 * Why are linear actions so hidden in object abstraction?
 * Why can't I de-couple my M's, V's and C's?
 * Why can't my test suite use the real application?
-* Is there an option for a non-restFUL API?
+* Is there an option for a non-RESTful API?
 * Why isn't there an easier way to develop and test locally with PHP?
 * Why are there no modern PHP API Frameworks?!
 
@@ -37,8 +37,8 @@ Features
 * Built with a Multi-Node system in mind, but works great on a single machine as well
 * Developer-based authentication in tandem with user-level authentication
 * Rate Limiting for client connections
-* Class-based abstraction of mySQL connections
-* Built-in support for multiple types of Caching (Flat File, mySQL, memcache)
+* Class-based abstraction of MySQL connections
+* Built-in support for multiple types of Caching (Flat File, MySQL, memcache)
 * CRON processing of delayed events
 * Simple error handling and input sanitization
 * XML, JSON, Serialized PHP output types built in
@@ -56,7 +56,7 @@ Run "php SERVER.php" from within the project directory to get started.  Point yo
 Requirements
 ------------
 * PHP 5.3+
-* mySQL 5+
+* MySQL 5+
 
 However, for production deployment, your traditional LAMP stack is best.
 
@@ -80,8 +80,8 @@ QuickStart
 ----------
 You can get started on your local machine in 5 minutes!  This tutorial is for Unix-like machines (OSX OK!).  We'll be using the included stand-alone server for development. You certainly don't need to use the bundled SERVER to run dave.  For production deployment, upload DAVE to `/var/www/html` (or however you normally deploy).
 
-* Instal PHP (OSX users already have it, Linux folks yum/apt install php5)
-* Install mySQL 5 [OSX: http://www.mysql.com/] [Linux: yum/apt install mysql-server and mysql-client)
+* Instal PHP (OSX users already have it, Linux folks use yum/apt-get install php5)
+* Install mySQL 5 [OSX: http://www.mysql.com/] [Linux: yum/apt-get install mysql-server mysql-client)
 * Get clone this project
   * `git clone git://github.com/evantahler/PHP-DAVE-API.git /path/where/you/want/it` OR just hit the `download` button above
 * Rename `/API/CONFIG.example.php` to `/API/CONFIG.php`
