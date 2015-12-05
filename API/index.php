@@ -13,9 +13,10 @@ This is the main page that does all the work
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-$parts = explode("/",__FILE__);
+$ThisURI = str_replace('\\', '/', __FILE__);
+$parts = explode("/",$ThisURI);
 $ThisFile = $parts[count($parts) - 1];
-chdir(substr(__FILE__,0,(strlen(__FILE__) - strlen($ThisFile))));
+chdir(substr($ThisURI,0,(strlen($ThisURI) - strlen($ThisFile))));
 require_once("LoadEnv.php"); unset($parts); unset($ThisFile);
 
 // don't cache these API pages
